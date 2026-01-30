@@ -33,7 +33,7 @@ const AdminLayout = () => {
 
      {/* sidebar */}
       <AdminSidebar />
-     </div>
+     </div> 
 
      {/* Main Content */}
      <div className="flex-grow p-6 overflow-auto">
