@@ -10,6 +10,9 @@ app.use(cors());
 
 dotenv.config();
 
+console.log("SECRET:", process.env.JWT_SECRET);
+
+
 const PORT = process.env.PORT || 3000;
 
 // Connect To MongoDB

@@ -1,7 +1,7 @@
 const express = require("express");
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
-
+const {protect} = require("../middleware/authMiddleware")
 const router = express.Router();
 
 // @route POST /api/users/register
@@ -26,7 +26,7 @@ router.post("/register", async (req, res) => {
         jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: "40h"}, (err, token) => {
             if (err) throw err;
 
-            // Send the user and toke in response 
+            // Send the user and token in response 
             res.status(201).json({
                 user: {
                     _id: user._id,
@@ -65,7 +65,7 @@ router.post("/login", async (req, res) => {
         jwt.sign(payload, process.env.JWT_SECRET, {expiresIn: "40h"}, (err, token) => {
             if (err) throw err;
 
-            // Send the user and toke in response 
+            // Send the user and token in response 
             res.json({
                 user: {
                     _id: user._id,
@@ -81,5 +81,13 @@ router.post("/login", async (req, res) => {
         res.status(500).send("Server Error");
     }
 })
+
+// @route GET /api/users/profile
+// @desc Get logged-in users profile (protected Route)
+// @access Private
+router.get("/profile", protect, async (req, res) => {
+    res.json(req.user);
+});
+
 
 module.exports = router;
