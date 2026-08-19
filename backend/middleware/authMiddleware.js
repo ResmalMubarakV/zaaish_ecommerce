@@ -1,35 +1,58 @@
 const jwt = require("jsonwebtoken");
 const User = require("../models/User");
+const AppError = require("../utils/AppError");
 
-// Middleware to protect routes
 const protect = async (req, res, next) => {
-    let token;
+  const authorizationHeader = req.headers.authorization;
 
-    if (req.headers.authorization && 
-        req.headers.authorization.startsWith("Bearer")
-    ) {
-        try {
-            token = req.headers.authorization.split(" ")[1];
-            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+  if (!authorizationHeader || !authorizationHeader.startsWith("Bearer ")) {
+    return next(new AppError("Authentication is required to access this resource", 401));
+  }
 
-            req.user = await User.findById(decoded.user.id).select("-password"); // Exclude password
-            next();
-        } catch (error) {
-            console.error("Token Verification failed",error)
-            res.status(401).json({message: "Not authorized, token failed"})
-        }
-    } else {
-        res.status(401).json({message: "Not authorized, no token provided"})
+  if (!process.env.JWT_SECRET) {
+    return next(new AppError("Server authentication configuration is unavailable", 500));
+  }
+
+  const token = authorizationHeader.split(" ")[1];
+
+  if (!token) {
+    return next(new AppError("Authentication token is missing", 401));
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const userId = decoded.id || decoded.user?.id;
+
+    if (!userId) {
+      return next(new AppError("Authentication token is malformed", 401));
     }
+
+    const user = await User.findById(userId).select("-password");
+
+    if (!user || user.isActive === false) {
+      return next(new AppError("The account associated with this token is unavailable", 401));
+    }
+
+    req.user = user;
+    return next();
+  } catch (error) {
+    if (error.name === "TokenExpiredError") {
+      return next(new AppError("Authentication token has expired", 401));
+    }
+
+    return next(new AppError("Authentication token is invalid", 401));
+  }
 };
 
-// Middleware to check the user is an Admin
 const admin = (req, res, next) => {
-    if (req.user && req.user.role === "admin") {
-        next();
-    } else {
-        res.status(403).json({message: "Not authorized as an admin"});
-    }
-}
+  if (!req.user || req.user.role !== "admin") {
+    return next(new AppError("Administrator access is required", 403));
+  }
 
-module.exports = {protect , admin};
+  return next();
+};
+
+module.exports = {
+  protect,
+  admin
+};

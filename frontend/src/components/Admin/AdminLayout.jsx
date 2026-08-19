@@ -1,46 +1,77 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { FaBars } from 'react-icons/fa';
 import AdminSidebar from './AdminSidebar';
-import { Outlet } from 'react-router-dom';
+import { Outlet, useNavigate } from 'react-router-dom';
 
 const AdminLayout = () => {
-  const [isSidebarOpen , setIsSidebarOpen] = useState(false);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+  const [isAdminAuthenticated, setIsAdminAuthenticated] = useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    const storedUser = localStorage.getItem("userInfo");
+
+    if (!token || !storedUser) {
+      navigate("/admin/login");
+      return;
+    }
+
+    try {
+      const user = JSON.parse(storedUser);
+      if (user.role !== "admin") {
+        alert("Access denied. Admin credentials required.");
+        navigate("/admin/login");
+      } else {
+        setIsAdminAuthenticated(true);
+      }
+    } catch (error) {
+      console.error("Auth check error:", error);
+      navigate("/admin/login");
+    }
+  }, [navigate]);
 
   const toggleSidebar = () => {
-    setIsSidebarOpen(!isSidebarOpen)
+    setIsSidebarOpen(!isSidebarOpen);
+  };
+
+  if (!isAdminAuthenticated) {
+    return null; 
   }
+
   return (
-    <div className='min-h-screen flex flex-col md:flex-row relative'>
-      {/* Mobile Toggle Button */}
-      <div className='flex md:hidden p-4 bg-gray-900 text-white z-20'>
-        <button onClick={toggleSidebar}>
-          <FaBars size={24} />
-        </button>
-          <h1 className='ml-4 text-xl font-medium'>Admin dashboard</h1>
+    <div className='h-screen w-full flex overflow-hidden bg-stone-50'>
+      {/* Mobile Toggle Button Header */}
+      <div className='flex md:hidden fixed top-0 left-0 right-0 p-4 bg-stone-900 text-white z-40 items-center justify-between shadow-md'>
+        <div className="flex items-center space-x-3">
+          <button onClick={toggleSidebar} className="p-1">
+            <FaBars size={20} />
+          </button>
+          <span className='font-serif text-lg tracking-wider'>Zaaish Admin</span>
+        </div>
       </div>
 
-      {/* overlay for mobile sidebar */}
+      {/* Overlay for mobile sidebar */}
       {isSidebarOpen && (
         <div 
-        className='fixed inset-0 z-10 bg-black/50  md:hidden' 
-        onClick={toggleSidebar} ></div>
+          className='fixed inset-0 z-30 bg-black/50 md:hidden backdrop-blur-sm' 
+          onClick={toggleSidebar} 
+        />
       )}
 
-     {/* sidebar */} 
-     <div className={`bg-gray-900 w-64 min-h-screen text-white absolute md:relative transform ${
-      isSidebarOpen ? "translate-x-0" : "-translate-x-full"
-     } transition-transform duration-300 md:translate-x-0 md:static md:block z-20`}>
+      {/* Sticky / Fixed Sidebar */} 
+      <div className={`bg-stone-900 w-64 h-full fixed md:static inset-y-0 left-0 transform ${
+        isSidebarOpen ? "translate-x-0" : "-translate-x-full"
+      } transition-transform duration-300 md:translate-x-0 z-40 flex-shrink-0`}>
+        <AdminSidebar />
+      </div> 
 
-     {/* sidebar */}
-      <AdminSidebar />
-     </div> 
-
-     {/* Main Content */}
-     <div className="flex-grow p-6 overflow-auto">
-      <Outlet />
-     </div>
+      {/* Main Content (Scrollable Area - Locked horizontally) */}
+      <div className="flex-1 w-full h-full overflow-y-auto overflow-x-hidden pt-16 md:pt-0">
+        <Outlet />
+      </div>
     </div>
-  )
-}
+  );
+};
 
-export default AdminLayout
+export default AdminLayout;

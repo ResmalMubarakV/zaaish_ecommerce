@@ -2,17 +2,21 @@ import { Link } from "react-router-dom"
 
 const ProductGrid = ({ products }) => {
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {products.map((product, index) => (
-            <Link key={index} to={`/product/${product._id}`} 
-            className="block" >
-                <div className="bg-white p-4 rounded-lg">
-                    <div className="w-full h-96 mb-4">
-                        <img src={product.images[0].url} alt={product.images[0].alText || product.name}
-                        className="w-full h-full object-cover rounded-lg" />
+    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+        {products && products.map((product) => (
+            <Link key={product._id} to={`/product/${product._id}`} className="group block">
+                <div className="flex flex-col">
+                    <div className="w-full h-[420px] mb-4 overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 relative">
+                        <img 
+                            src={product.images && product.images[0] ? product.images[0].url : "https://picsum.photos/500/500"} 
+                            alt={product.images?.[0]?.altText || product.name}
+                            className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500 ease-out" 
+                        />
                     </div>
-                    <h3 className="text-sm mb-2">{product.name}</h3>
-                    <p className="text-gray-500 font-medium text-sm tracking-tighter">$ {product.price}</p>
+                    <h3 className="text-sm font-serif text-stone-800 dark:text-stone-200 mb-1 truncate tracking-wide group-hover:text-stone-600 dark:group-hover:text-stone-400 transition-colors">{product.name}</h3>
+                    <p className="text-stone-900 dark:text-stone-100 font-medium text-sm tracking-tight">
+                        ${product.currentPrice || product.price}
+                    </p>
                 </div>
             </Link>
         ))}
@@ -20,4 +24,4 @@ const ProductGrid = ({ products }) => {
   )
 }
 
-export default ProductGrid
+export default ProductGrid;

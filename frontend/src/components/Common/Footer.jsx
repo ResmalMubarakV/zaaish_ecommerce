@@ -1,101 +1,75 @@
 import { IoLogoInstagram } from "react-icons/io"
 import { RiTwitterXLine } from "react-icons/ri"
 import { TbBrandMeta } from "react-icons/tb"
-import { FiPhoneCall } from "react-icons/fi"
 import { Link } from "react-router-dom"
 
-
 const Footer = () => {
-  return <footer className="border-t py-12">
-    <div className="container mx-auto grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 px-4 lg:px-0">
-        <div>
-            <h3 className="text-lg text-gray-800 mb-4">Newsletter</h3>
-            <p className="text-gray-500 mb-4">
-                Be the First To Hear About New Products, Exclusive Events, 
-                And Online Offers.
-            </p>
-            <p className="font-medium text-sm text-gray-600 mb-6">Sign Up And Get 10% Off On Your First Order.</p>
-
-            {/* Newsletter Form */}
-            <form className="flex">
-                <input type="email" placeholder="Enter Your Email" 
-                className="p-3 w-full text-sm border-t border-l border-b  border-gray-300 rounded-l-md
-                focus:outline-none focus:ring-2 focus:ring-gray-500 transition-all" required/>
-            <button type="submit" className="bg-black text-white px-6 py-3 text-sm rounded-r-md 
-            hover:bg-gray-800 transition-all">Subscribe</button>
-            </form>
-        </div>
-
-        {/* Shop Links */}
-        <div>
-        <h3 className="text-lg text-gray-800 mb-4">Shop</h3>
-        <ul className="space-y-2 text-gray-600">
-            <li>
-                <Link to="#" className="hover:text-gray-500 transition-colors">Men's Top Wear</Link>
-            </li>
-            <li>
-                <Link to="#" className="hover:text-gray-500 transition-colors">Women's Top Wear</Link>
-            </li>
-            <li>
-                <Link to="#" className="hover:text-gray-500 transition-colors">Men's Bottom Wear</Link>
-            </li>
-            <li>
-                <Link to="#" className="hover:text-gray-500 transition-colors">Women's Top Wear</Link>
-            </li>
-        </ul>
-        </div>
-
-        {/* Support Links */}
-        <div>
-        <h3 className="text-lg text-gray-800 mb-4">Support</h3>
-        <ul className="space-y-2 text-gray-600">
-            <li>
-                <Link to="#" className="hover:text-gray-500 transition-colors">Contact Us</Link>
-            </li>
-            <li>
-                <Link to="#" className="hover:text-gray-500 transition-colors">About Us</Link>
-            </li>
-            <li>
-                <Link to="#" className="hover:text-gray-500 transition-colors">FAQs</Link>
-            </li>
-            <li>
-                <Link to="#" className="hover:text-gray-500 transition-colors">Features</Link>
-            </li>
-        </ul>
-        </div>
+  return (
+    <footer className="bg-stone-900 dark:bg-stone-950 text-stone-300 dark:text-stone-400 py-10 border-t border-stone-800 dark:border-stone-900">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-8 px-6 lg:px-8 items-center">
         
-        {/* Follow Us */}
-        <div>
-            <h3 className="text-lg text-gray-800 mb-4">Follow Us</h3>
-            <div className="flex items-center space-x-4 mb-6">
-                <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer"
-                className="hover:text-gray-500">
-                    <TbBrandMeta className="h-5 w-5"/>
+        <div className="space-y-3 text-center md:text-left">
+            <h3 className="text-white font-serif text-base tracking-[0.2em] uppercase">Zaaish</h3>
+            <div className="flex justify-center md:justify-start items-center space-x-4 text-stone-400">
+                <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors cursor-pointer" title="Meta">
+                    <TbBrandMeta className="h-4 w-4 stroke-[1.5]"/>
                 </a>
-                <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer"
-                className="hover:text-gray-500">
-                    <IoLogoInstagram className="h-5 w-5"/>
+                <a href="https://www.instagram.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors cursor-pointer" title="Instagram">
+                    <IoLogoInstagram className="h-4 w-4"/>
                 </a>
-                <a href="https://www.facebook.com" target="_blank" rel="noopener noreferrer"
-                className="hover:text-gray-500">
-                    <RiTwitterXLine className="h-4 w-4"/>
+                <a href="https://twitter.com" target="_blank" rel="noopener noreferrer" className="hover:text-white transition-colors cursor-pointer" title="Twitter">
+                    <RiTwitterXLine className="h-3.5 w-3.5"/>
                 </a>
             </div>
-            <p className="text-gray-500 ">Call Us</p>
-            <p>
-                <FiPhoneCall className="inline-block mr-2 "/>0123-456-789
-            </p>
         </div>
-    </div>
-    {/* Footer Bottom */}
-    <div className="container mx-auto mt-12 px-4 lg:px-0 border-t border-gray-500 pt-6">
-        <p className="text-gray-500 text-sm tracking-tighter text-center">
-          ©  2025, Zaaish. All Rights Reserved.
-        </p>
-    </div>
-  </footer>
-   
-  
+
+        <div className="text-center md:text-left">
+            <h4 className="text-white text-xs uppercase tracking-widest font-semibold mb-2">Shop</h4>
+            <ul className="space-y-1.5 text-xs font-light text-stone-400 dark:text-stone-400">
+                <li><Link to="/collections/Men" className="hover:text-white transition-colors cursor-pointer">Men's Apparel</Link></li>
+                <li><Link to="/collections/Women" className="hover:text-white transition-colors cursor-pointer">Women's Apparel</Link></li>
+                <li><Link to="/collections/Top Wear" className="hover:text-white transition-colors cursor-pointer">Top Wear</Link></li>
+                <li><Link to="/collections/Bottom Wear" className="hover:text-white transition-colors cursor-pointer">Bottom Wear</Link></li>
+            </ul>
+        </div>
+
+        <div className="text-center md:text-left">
+            <h4 className="text-white text-xs uppercase tracking-widest font-semibold mb-2">Support</h4>
+            <ul className="space-y-1.5 text-xs font-light text-stone-400">
+                <li><Link to="#" className="hover:text-white transition-colors cursor-pointer">Contact Us</Link></li>
+                <li><Link to="#" className="hover:text-white transition-colors cursor-pointer">About Our Brand</Link></li>
+                <li><Link to="#" className="hover:text-white transition-colors cursor-pointer">FAQs &amp; Shipping</Link></li>
+                <li><Link to="#" className="hover:text-white transition-colors cursor-pointer">Store Policy</Link></li>
+            </ul>
+        </div>
+        
+        <div className="text-center md:text-left">
+            <h4 className="text-white text-xs uppercase tracking-widest font-semibold mb-2">Newsletter</h4>
+            <p className="text-stone-400 text-xs font-light mb-3">Get 10% off your first order.</p>
+            <form className="flex max-w-sm mx-auto md:mx-0">
+                <input 
+                    type="email" 
+                    placeholder="Enter email" 
+                    className="p-2.5 w-full text-xs bg-stone-800 dark:bg-stone-900 border border-stone-700 dark:border-stone-800 text-white rounded-l-lg placeholder:text-stone-500 focus:outline-none focus:border-stone-500 transition-colors" 
+                    required
+                />
+                <button 
+                    type="submit" 
+                    className="bg-white text-stone-900 px-4 py-2.5 text-xs uppercase tracking-widest font-semibold rounded-r-lg hover:bg-stone-200 transition-colors cursor-pointer"
+                >
+                    Join
+                </button>
+            </form>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto mt-8 px-6 lg:px-8 border-t border-stone-800/80 dark:border-stone-900 pt-6 text-center">
+          <p className="text-stone-500 text-[11px] tracking-wider">
+            &copy; {new Date().getFullYear()} ZAAISH. All Rights Reserved.
+          </p>
+      </div>
+    </footer>
+  )
 }
 
-export default Footer
+export default Footer;
