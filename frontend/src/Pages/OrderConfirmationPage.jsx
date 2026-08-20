@@ -38,11 +38,11 @@ const OrderConfirmationPage = () => {
     };
 
     if (loading) {
-        return <div className="text-center py-20 text-stone-400 text-xs uppercase tracking-widest">Loading order receipt...</div>;
+        return <div className="text-center py-32 text-stone-400 text-xs uppercase tracking-[0.2em] font-light">Loading order receipt...</div>;
     }
 
   return (
-    <div className="min-h-screen bg-stone-50/50 dark:bg-stone-950 py-12 px-6 transition-colors">
+    <div className="min-h-screen bg-stone-50/50 dark:bg-stone-950 py-16 px-6 transition-colors">
       <style>{`
         @page { margin: 0; }
         @media print {
@@ -54,73 +54,73 @@ const OrderConfirmationPage = () => {
         }
       `}</style>
 
-      <div className='max-w-xl mx-auto p-6 bg-white dark:bg-stone-900 rounded-2xl shadow-sm border border-stone-200/80 dark:border-stone-800 receipt-box text-stone-900 dark:text-stone-100'>
+      <div className='max-w-xl mx-auto p-8 bg-white dark:bg-stone-900 rounded-3xl shadow-sm border border-stone-200/80 dark:border-stone-800 receipt-box text-stone-900 dark:text-stone-100'>
           
-          <div className='flex justify-between items-center mb-6 no-print'>
-              <Link to="/my-orders" className='text-stone-600 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white font-medium text-xs uppercase tracking-wider'>
+          <div className='flex justify-between items-center mb-8 no-print'>
+              <Link to="/my-orders" className='text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-white font-medium text-xs uppercase tracking-[0.2em]'>
                   &larr; Back to My Orders
               </Link>
               <button 
                   onClick={handlePrintInvoice}
-                  className='bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 px-5 py-2.5 rounded-xl text-xs uppercase tracking-widest font-semibold hover:bg-stone-800 dark:hover:bg-stone-200 transition shadow-sm cursor-pointer'
+                  className='bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 px-5 py-3 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition shadow-sm cursor-pointer'
               >
                   Print / Save Receipt
               </button>
           </div>
 
           <div className='font-sans'>
-              <div className='text-center border-b border-stone-200 dark:border-stone-800 pb-5 mb-5'>
-                  <h2 className='text-2xl font-serif font-medium tracking-[0.2em] uppercase'>ZAAISH</h2>
-                  <p className='text-[10px] uppercase tracking-widest text-stone-400 mt-0.5'>Luxury Fashion Store</p>
-                  <p className='text-xs font-medium text-stone-600 dark:text-stone-400 mt-2'>Official Purchase Receipt</p>
+              <div className='text-center border-b border-stone-200 dark:border-stone-800 pb-6 mb-6'>
+                  <h2 className='text-2xl font-serif font-light tracking-[0.25em] uppercase'>ZAAISH</h2>
+                  <p className='text-[10px] uppercase tracking-[0.2em] text-stone-400 mt-1 font-light'>Luxury Fashion Store</p>
+                  <p className='text-xs font-medium text-stone-600 dark:text-stone-400 mt-2 uppercase tracking-widest'>Official Purchase Receipt</p>
               </div>
 
               {order ? (
                   <div>
-                      <div className='flex justify-between text-xs text-stone-600 dark:text-stone-400 mb-4 bg-stone-50 dark:bg-stone-800/50 p-3.5 rounded-xl border border-stone-100 dark:border-stone-800'>
+                      <div className='flex justify-between text-xs text-stone-600 dark:text-stone-400 mb-6 bg-stone-50 dark:bg-stone-950 p-4 rounded-2xl border border-stone-200/80 dark:border-stone-800 font-light'>
                           <div>
-                              <p><span className='font-semibold text-stone-700 dark:text-stone-300'>Order ID:</span> #{order._id}</p>
-                              <p className='mt-1'><span className='font-semibold text-stone-700 dark:text-stone-300'>Date:</span> {new Date(order.createdAt).toLocaleDateString()}</p>
+                              <p><span className='font-medium text-stone-700 dark:text-stone-300 uppercase text-[10px] tracking-wider'>Order ID:</span> #{order._id}</p>
+                              <p className='mt-1.5'><span className='font-medium text-stone-700 dark:text-stone-300 uppercase text-[10px] tracking-wider'>Date:</span> {new Date(order.createdAt).toLocaleDateString()}</p>
                           </div>
                           <div className="text-right">
-                              <p><span className='font-semibold text-stone-700 dark:text-stone-300'>Payment:</span> {order.paymentMethod}</p>
-                              <p className='mt-1 text-emerald-600 dark:text-emerald-400 font-semibold'>{order.isPaid ? "Paid Successfully" : "Pending"}</p>
+                              <p><span className='font-medium text-stone-700 dark:text-stone-300 uppercase text-[10px] tracking-wider'>Payment:</span> {order.paymentMethod}</p>
+                              <p className='mt-1.5 text-emerald-600 dark:text-emerald-400 font-medium'>{order.isPaid ? "Paid Successfully" : "Pending"}</p>
                           </div>
                       </div>
 
-                      <div className='mb-4 text-xs bg-stone-50 dark:bg-stone-800/50 p-3.5 rounded-xl border border-stone-100 dark:border-stone-800'>
-                          <p className='font-semibold uppercase tracking-wider text-stone-700 dark:text-stone-300 mb-1 text-[10px]'>Delivery Address:</p>
+                      <div className='mb-6 text-xs bg-stone-50 dark:bg-stone-950 p-4 rounded-2xl border border-stone-200/80 dark:border-stone-800 font-light'>
+                          <p className='font-medium uppercase tracking-[0.2em] text-stone-400 mb-1.5 text-[10px]'>Delivery Address:</p>
                           <p className='text-stone-900 dark:text-stone-100 font-medium'>{order.shippingAddress.firstName} {order.shippingAddress.lastName}</p>
-                          <p className='text-stone-600 dark:text-stone-400'>{order.shippingAddress.address}, {order.shippingAddress.city}, {order.shippingAddress.country}</p>
+                          <p className='text-stone-600 dark:text-stone-400 mt-0.5'>{order.shippingAddress.address}, {order.shippingAddress.city}, {order.shippingAddress.country}</p>
                       </div>
 
-                      <div className='mb-5'>
+                      <div className='mb-6'>
                           <table className='w-full text-left text-xs'>
                               <thead>
-                                  <tr className='border-b border-stone-200 dark:border-stone-800 text-stone-500 uppercase tracking-wider text-[10px]'>
-                                      <th className='py-2 font-semibold'>Item</th>
-                                      <th className='py-2 text-center font-semibold'>Qty</th>
-                                      <th className='py-2 text-right font-semibold'>Price</th>
-                                      <th className='py-2 text-right font-semibold'>Amount</th>
+                                  <tr className='border-b border-stone-200 dark:border-stone-800 text-stone-400 uppercase tracking-[0.2em] text-[10px] font-medium'>
+                                      <th className='py-3 pb-2'>Item</th>
+                                      <th className='py-3 pb-2 text-center'>Qty</th>
+                                      <th className='py-3 pb-2 text-right'>Price</th>
+                                      <th className='py-3 pb-2 text-right'>Amount</th>
                                   </tr>
                               </thead>
-                              <tbody className='divide-y divide-stone-100 dark:divide-stone-800'>
+                              <tbody className='divide-y divide-stone-100 dark:divide-stone-800/80 font-light'>
                                   {order.orderItems.map((item, index) => (
                                       <tr key={index}>
-                                          <td className='py-2.5 pr-2'>
-                                              <p className='font-medium text-stone-900 dark:text-stone-100'>{item.name}</p>
-                                              <p className='text-[10px] text-stone-400'>{item.color} / {item.size}</p>
+                                          <td className='py-3 pr-2'>
+                                              <p className='font-serif font-medium text-stone-900 dark:text-stone-100'>{item.name}</p>
+                                              <p className='text-[10px] text-stone-400 uppercase tracking-wider'>{item.color} &bull; {item.size}</p>
                                           </td>
-                                          <td className='py-2.5 text-center text-stone-600 dark:text-stone-400'>{item.quantity}</td>
-                                          <td className='py-2.5 text-right text-stone-600 dark:text-stone-400'>${item.price.toFixed(2)}</td>
-                                          <td className='py-2.5 text-right font-semibold text-stone-900 dark:text-stone-100'>${(item.price * item.quantity).toFixed(2)}</td>
+                                          <td className='py-3 text-center text-stone-600 dark:text-stone-400'>{item.quantity}</td>
+                                          <td className='py-3 text-right text-stone-600 dark:text-stone-400'>${item.price.toFixed(2)}</td>
+                                          <td className='py-3 text-right font-medium text-stone-900 dark:text-stone-100'>${(item.price * item.quantity).toFixed(2)}</td>
                                       </tr>
                                   ))}
                               </tbody>
                           </table>
                       </div>
 
-                      <div className='border-t border-stone-200 dark:border-stone-800 pt-3 space-y-1 text-xs'>
+                      <div className='border-t border-stone-200 dark:border-stone-800 pt-4 space-y-2 text-xs font-light'>
                           <div className='flex justify-between text-stone-600 dark:text-stone-400'>
                               <span>Subtotal</span>
                               <span>${order.totalPrice.toFixed(2)}</span>
@@ -129,15 +129,15 @@ const OrderConfirmationPage = () => {
                               <span>Shipping</span>
                               <span>$0.00</span>
                           </div>
-                          <div className='flex justify-between text-stone-900 dark:text-stone-100 font-bold text-sm border-t border-stone-200 dark:border-stone-800 pt-2.5'>
+                          <div className='flex justify-between text-stone-900 dark:text-stone-100 font-serif font-medium text-sm border-t border-stone-200 dark:border-stone-800 pt-3'>
                               <span>Total Amount</span>
                               <span>${order.totalPrice.toFixed(2)}</span>
                           </div>
                       </div>
 
-                      <div className='text-center mt-6 pt-4 border-t border-stone-100 dark:border-stone-800 text-[10px] text-stone-400'>
+                      <div className='text-center mt-8 pt-6 border-t border-stone-100 dark:border-stone-800 text-[10px] text-stone-400 font-light tracking-wide'>
                           <p>Thank you for shopping with Zaaish!</p>
-                          <p className='mt-0.5'>For support, contact support@zaaish.com</p>
+                          <p className='mt-0.5'>For inquiries, contact support@zaaish.com</p>
                       </div>
                   </div>
               ) : (

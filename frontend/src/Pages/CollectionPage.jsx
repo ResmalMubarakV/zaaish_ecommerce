@@ -61,14 +61,16 @@ const CollectionPage = () => {
   const searchQuery = searchParams.get("search");
 
   return (
-    <div className='flex flex-col lg:flex-row relative min-h-screen bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors'>
+    <div className='flex flex-col lg:flex-row relative min-h-screen bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors pt-6 lg:pt-8'>
       {/* Mobile Filter Button */}
-      <button
-        onClick={toggleSidebar}
-        className='lg:hidden border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 p-2.5 flex justify-center items-center m-4 rounded-xl text-xs uppercase tracking-wider cursor-pointer shadow-sm'
-      >
-        <FaFilter className='mr-2' /> Filters
-      </button>
+      <div className='lg:hidden px-6 mb-4'>
+        <button
+          onClick={toggleSidebar}
+          className='w-full border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 p-3 flex justify-center items-center rounded-xl text-xs uppercase tracking-[0.15em] font-medium cursor-pointer shadow-sm'
+        >
+          <FaFilter className='mr-2' /> Filters
+        </button>
+      </div>
 
       {/* Overlay */}
       {isSidebarOpen && (
@@ -78,12 +80,12 @@ const CollectionPage = () => {
         />
       )}
 
-      {/* Filter Sidebar */}
+      {/* Filter Sidebar (Using sticky positioning so it naturally anchors below the header without overlapping) */}
       <div
         ref={sidebarRef}
         className={`
-          fixed inset-y-0 z-50 left-0 w-72 bg-white dark:bg-stone-900 overflow-y-auto p-6 shadow-2xl border-r border-stone-200/80 dark:border-stone-800
-          lg:translate-x-0 lg:static lg:shadow-none lg:border-none lg:bg-transparent lg:dark:bg-transparent
+          fixed inset-y-0 z-50 left-0 w-80 bg-white dark:bg-stone-900 overflow-y-auto p-6 shadow-2xl border-r border-stone-200/80 dark:border-stone-800
+          lg:translate-x-0 lg:sticky lg:top-28 lg:h-[calc(100vh-120px)] lg:shadow-none lg:border-none lg:bg-transparent lg:dark:bg-transparent
           transition-transform duration-300
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         `}
@@ -91,28 +93,28 @@ const CollectionPage = () => {
         <FilterSidebar />
       </div>
 
-      <div className='flex-1 p-6 lg:p-8'>
-        <h2 className='text-2xl font-serif font-medium uppercase tracking-wide mb-6'>
+      <div className='flex-1 px-6 lg:px-12'>
+        <h2 className='text-2xl sm:text-3xl font-serif font-light uppercase tracking-wide mb-8'>
           {searchQuery 
             ? `Search Results for "${searchQuery}"`
             : collection === "all" || !collection 
-              ? "All Collection" 
+              ? "All Collections" 
               : `${collection} Collection`
           }
         </h2>
 
         {/* Sort Options */}
-        <div className="flex justify-end mb-6">
+        <div className="flex justify-end mb-8">
           <SortOptions />
         </div>
 
         {/* Product Grid */}
         {loading ? (
-          <div className="text-center py-20 text-stone-400 text-xs uppercase tracking-widest">Loading products...</div>
+          <div className="text-center py-32 text-stone-400 text-xs uppercase tracking-[0.2em] font-light">Loading products...</div>
         ) : products.length > 0 ? (
           <ProductGrid products={products} />
         ) : (
-          <div className="text-center py-20 text-stone-400 text-xs uppercase tracking-widest">
+          <div className="text-center py-32 text-stone-400 text-xs uppercase tracking-[0.2em] font-light">
             No products match your search or filters. Try clearing them!
           </div>
         )}

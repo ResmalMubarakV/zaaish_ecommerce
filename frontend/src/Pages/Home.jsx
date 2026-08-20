@@ -35,14 +35,20 @@ const Home = () => {
         <NewArrivals />
 
         {/* Best Seller */}
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <h2 className="text-3xl font-serif font-medium text-center mb-8">Best Sellers</h2>
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
+          <div className="text-center mb-12">
+            <span className="text-[10px] uppercase tracking-[0.3em] text-stone-400 dark:text-stone-500 font-medium block mb-2">Most Popular</span>
+            <h2 className="text-3xl sm:text-4xl font-serif font-light tracking-wide">Best Sellers</h2>
+          </div>
           <ProductGrid products={bestSellers} />
         </div>
 
         {/* Top Wears For Women */}
-        <div className="max-w-7xl mx-auto px-6 py-12">
-          <h2 className="text-3xl font-serif font-medium text-center mb-8">Top Wears For Women</h2>
+        <div className="max-w-7xl mx-auto px-6 lg:px-8 py-16">
+          <div className="text-center mb-12">
+            <span className="text-[10px] uppercase tracking-[0.3em] text-stone-400 dark:text-stone-500 font-medium block mb-2">Featured Category</span>
+            <h2 className="text-3xl sm:text-4xl font-serif font-light tracking-wide">Top Wears For Women</h2>
+          </div>
           <ProductGrid products={womenProducts} />
         </div>
 

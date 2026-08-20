@@ -34,36 +34,36 @@ const AdminLogin = () => {
     };
 
     return (
-        <div className='flex min-h-screen items-center justify-center bg-gray-900'>
-            <div className='w-full max-w-md bg-white p-8 rounded-lg shadow-lg'>
-                <div className='text-center mb-6'>
-                    <h2 className='text-2xl font-bold text-gray-900'>Zaaish Admin Portal</h2>
-                    <p className='text-sm text-gray-500 mt-1'>Restricted Access Only</p>
+        <div className='flex min-h-screen items-center justify-center bg-stone-950 text-stone-100 p-6'>
+            <div className='w-full max-w-md bg-stone-900 p-8 sm:p-10 rounded-3xl shadow-2xl border border-stone-800'>
+                <div className='text-center mb-8'>
+                    <h2 className='text-xl sm:text-2xl font-serif font-light tracking-[0.25em] uppercase text-white'>Zaaish Admin</h2>
+                    <p className='text-[10px] uppercase tracking-[0.2em] text-stone-500 mt-2'>Restricted Access Only</p>
                 </div>
                 <form onSubmit={handleAdminSubmit}>
-                    <div className='mb-4'>
-                        <label className='block text-sm font-semibold mb-2 text-gray-700'>Admin Email</label>
+                    <div className='mb-5'>
+                        <label className='block text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400 mb-2'>Admin Email</label>
                         <input 
                             type="email" 
                             value={email} 
                             onChange={(e) => setEmail(e.target.value)}
-                            className='w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black'
+                            className='w-full p-3.5 border border-stone-800 rounded-xl bg-stone-950 text-stone-100 text-sm font-light focus:outline-none focus:border-stone-500 transition-colors'
                             placeholder="admin@example.com"
                             required 
                         />
                     </div>
-                    <div className='mb-6'>
-                        <label className='block text-sm font-semibold mb-2 text-gray-700'>Password</label>
+                    <div className='mb-8'>
+                        <label className='block text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400 mb-2'>Password</label>
                         <input 
                             type="password" 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)} 
-                            className='w-full p-2.5 border rounded-lg focus:outline-none focus:ring-2 focus:ring-black'
+                            className='w-full p-3.5 border border-stone-800 rounded-xl bg-stone-950 text-stone-100 text-sm font-light focus:outline-none focus:border-stone-500 transition-colors'
                             placeholder="••••••••"
                             required 
                         />
                     </div>
-                    <button type='submit' className='w-full bg-black text-white p-3 rounded-lg font-semibold hover:bg-gray-800 transition'>
+                    <button type='submit' className='w-full bg-stone-100 text-stone-950 p-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-white transition-all cursor-pointer shadow-sm'>
                         Access Dashboard
                     </button>
                 </form>

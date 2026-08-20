@@ -51,40 +51,40 @@ const CartContents = ({ cart, onUpdateCart }) => {
     };
 
     if (!cart || cart.length === 0) {
-        return <div className="text-center py-12 text-stone-400 text-sm">Your cart is empty</div>;
+        return <div className="text-center py-16 text-stone-400 text-xs uppercase tracking-[0.2em] font-light">Your cart is empty</div>;
     }
 
     return (
-        <div className="divide-y divide-stone-100 dark:divide-stone-800">
+        <div className="divide-y divide-stone-100 dark:divide-stone-800/80">
             {cart.map((item) => {
                 const itemPrice = item.product?.currentPrice || item.product?.price || 0;
                 
                 return (
-                    <div key={item._id} className="flex items-start justify-between py-5">
+                    <div key={item._id} className="flex items-start justify-between py-6 group">
                         <div className="flex items-start">
                             {item.product?.images?.[0]?.url && (
-                                <img src={item.product.images[0].url} alt={item.product.name} className="w-20 h-24 object-cover mr-4 rounded-xl border border-stone-200 dark:border-stone-800" />
+                                <img src={item.product.images[0].url} alt={item.product.name} className="w-20 h-24 object-cover mr-4 rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm" />
                             )}
                             <div>
-                                <h3 className="font-serif font-medium text-stone-900 dark:text-stone-100">{item.product?.name || "Product"}</h3>
-                                <p className="text-xs text-stone-500 dark:text-stone-400 mt-0.5">
-                                    Size: {item.size} | Color: {item.color}
+                                <h3 className="font-serif font-medium text-stone-900 dark:text-stone-100 text-sm tracking-wide">{item.product?.name || "Product"}</h3>
+                                <p className="text-[11px] uppercase tracking-wider text-stone-500 dark:text-stone-400 mt-1">
+                                    Size: {item.size} &bull; Color: {item.color}
                                 </p>
-                                <div className="flex items-center mt-3">
+                                <div className="flex items-center mt-4">
                                     <button 
                                         onClick={() => handleQuantityChange(item._id, -1, item.quantity)}
-                                        className="border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 rounded-lg px-2.5 py-0.5 text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 transition cursor-pointer">-</button>
-                                    <span className="mx-3 text-sm font-medium text-stone-900 dark:text-stone-100">{item.quantity}</span>
+                                        className="border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/80 rounded-lg px-3 py-1 text-xs font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 transition cursor-pointer">-</button>
+                                    <span className="mx-3.5 text-xs font-semibold text-stone-900 dark:text-stone-100">{item.quantity}</span>
                                     <button 
                                         onClick={() => handleQuantityChange(item._id, 1, item.quantity)}
-                                        className="border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800 rounded-lg px-2.5 py-0.5 text-sm font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 transition cursor-pointer">+</button>
+                                        className="border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/80 rounded-lg px-3 py-1 text-xs font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 transition cursor-pointer">+</button>
                                 </div>
                             </div>
                         </div>
-                        <div className="text-right">
-                            <p className="font-medium text-stone-900 dark:text-stone-100 text-sm">$ {(itemPrice * item.quantity).toLocaleString()}</p>
-                            <button onClick={() => handleRemoveItem(item._id)} className="cursor-pointer">
-                                <RiDeleteBin3Line className="h-5 w-5 mt-3 text-rose-500 hover:text-rose-700 transition-colors"/>
+                        <div className="text-right flex flex-col justify-between h-full">
+                            <p className="font-medium text-stone-900 dark:text-stone-100 text-sm tracking-wide">$ {(itemPrice * item.quantity).toLocaleString()}</p>
+                            <button onClick={() => handleRemoveItem(item._id)} className="cursor-pointer self-end mt-6">
+                                <RiDeleteBin3Line className="h-4 w-4 text-rose-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"/>
                             </button>
                         </div>
                     </div>

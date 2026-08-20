@@ -17,13 +17,11 @@ const PayPalButton = ({ amount, onSuccess, onError }) => {
         style={{ layout: "vertical" }}
 
         createOrder={(data, actions) => {
-          console.log("Creating order:", amount);
-
           return actions.order.create({
             purchase_units: [
               {
                 amount: {
-                  value: amount.toString() // 🔥 IMPORTANT FIX
+                  value: amount.toString()
                 }
               }
             ]
@@ -31,10 +29,7 @@ const PayPalButton = ({ amount, onSuccess, onError }) => {
         }}
 
         onApprove={(data, actions) => {
-          console.log("Approved:", data);
-
           return actions.order.capture().then((details) => {
-            console.log("Captured:", details);
             onSuccess(details);
           });
         }}

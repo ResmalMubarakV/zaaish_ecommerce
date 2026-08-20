@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi"
 import { Link } from "react-router-dom"
 
@@ -48,7 +48,7 @@ const NewArrivals = () => {
     };
 
     const scroll = (direction) => {
-        const scrollAmount = direction === "left" ? -350 : 350;
+        const scrollAmount = direction === "left" ? -380 : 380;
         scrollRef.current.scrollBy({ left: scrollAmount, behavior: "smooth" });
     };
 
@@ -73,7 +73,7 @@ const NewArrivals = () => {
     }, [newArrivals]);
 
     if (loading) {
-        return <div className="text-center py-20 text-stone-400 text-xs uppercase tracking-widest">Loading new arrivals...</div>;
+        return <div className="text-center py-24 text-stone-400 text-xs uppercase tracking-[0.2em] font-light">Loading new arrivals...</div>;
     }
 
     if (newArrivals.length === 0) {
@@ -81,33 +81,33 @@ const NewArrivals = () => {
     }
 
   return (
-    <section className="py-20 px-6 lg:px-8 max-w-7xl mx-auto">
+    <section className="py-24 px-6 lg:px-8 max-w-7xl mx-auto">
         <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 relative">
             <div className="max-w-xl">
-                <span className="text-stone-400 dark:text-stone-400 text-xs uppercase tracking-[0.2em] font-medium block mb-2">Curated Collection</span>
-                <h2 className="text-3xl lg:text-4xl font-serif font-normal text-stone-900 dark:text-stone-100 tracking-tight mb-3">
+                <span className="text-stone-400 dark:text-stone-500 text-[10px] uppercase tracking-[0.3em] font-medium block mb-2">Curated Selection</span>
+                <h2 className="text-3xl sm:text-4xl font-serif font-light text-stone-900 dark:text-stone-100 tracking-wide mb-3">
                     Explore New Arrivals
                 </h2>
                 <p className="text-stone-500 dark:text-stone-400 text-sm font-light leading-relaxed">
-                    Discover the latest styles straight off the runway, freshly added to keep your wardrobe on the cutting edge of fashion.
+                    Discover the latest pieces freshly added to elevate your seasonal wardrobe.
                 </p>
             </div>
 
             {/* Scroll Navigation Buttons */}
-            <div className="hidden md:flex space-x-2 mt-4 md:mt-0">
+            <div className="hidden md:flex space-x-3 mt-4 md:mt-0">
                 <button
                   onClick={() => scroll("left")}  
                   disabled={!canScrollLeft}
-                  className={`p-3 rounded-xl border transition-colors cursor-pointer ${canScrollLeft ? "bg-white dark:bg-stone-900 border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100 hover:bg-stone-50 dark:hover:bg-stone-800"
-                  : "bg-stone-100 dark:bg-stone-800 border-stone-200 dark:border-stone-800 text-stone-300 dark:text-stone-600 cursor-not-allowed"}`}>
-                    <FiChevronLeft className="text-lg"/>
+                  className={`p-3.5 rounded-xl border transition-all cursor-pointer ${canScrollLeft ? "bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 hover:border-stone-400 dark:hover:border-stone-600 shadow-sm"
+                  : "bg-stone-50 dark:bg-stone-950 border-stone-100 dark:border-stone-900 text-stone-300 dark:text-stone-700 cursor-not-allowed"}`}>
+                    <FiChevronLeft className="text-base"/>
                 </button>
                 <button 
                   onClick={() => scroll("right")}
                   disabled={!canScrollRight}
-                  className={`p-3 rounded-xl border transition-colors cursor-pointer ${canScrollRight ? "bg-white dark:bg-stone-900 border-stone-300 dark:border-stone-700 text-stone-900 dark:text-stone-100 hover:bg-stone-50 dark:hover:bg-stone-800"
-                    : "bg-stone-100 dark:bg-stone-800 border-stone-200 dark:border-stone-800 text-stone-300 dark:text-stone-600 cursor-not-allowed"}`}>
-                    <FiChevronRight className="text-lg"/>
+                  className={`p-3.5 rounded-xl border transition-all cursor-pointer ${canScrollRight ? "bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 hover:border-stone-400 dark:hover:border-stone-600 shadow-sm"
+                    : "bg-stone-50 dark:bg-stone-950 border-stone-100 dark:border-stone-900 text-stone-300 dark:text-stone-700 cursor-not-allowed"}`}>
+                    <FiChevronRight className="text-base"/>
                 </button>
             </div>
         </div>
@@ -124,19 +124,19 @@ const NewArrivals = () => {
         >
             {newArrivals.map((product) => (
                 <div key={product._id} className="min-w-[85%] sm:min-w-[45%] lg:min-w-[30%] relative flex-shrink-0 group">
-                    <div className="overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-3">
+                    <div className="overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-4 shadow-sm">
                         <img 
                             src={product.images?.[0]?.url || "https://placehold.co/500x500"} 
                             alt={product.images?.[0]?.altText || product.name} 
-                            className="w-full h-[450px] object-cover rounded-2xl group-hover:scale-105 transition-transform duration-500 ease-out"
+                            className="w-full h-[480px] object-cover rounded-2xl group-hover:scale-105 transition-transform duration-700 ease-out"
                             draggable="false" 
                         />
                     </div>
 
                     <div className="flex justify-between items-start px-1">
                         <Link to={`/product/${product._id}`} className="block">
-                            <h4 className="font-serif text-stone-900 dark:text-stone-100 font-medium tracking-wide truncate hover:text-stone-600 dark:hover:text-stone-300 transition-colors">{product.name}</h4>
-                            <p className="mt-1 text-stone-500 dark:text-stone-400 text-sm font-light">${product.price.toFixed(2)}</p>
+                            <h4 className="font-serif text-stone-900 dark:text-stone-100 font-normal tracking-wide truncate hover:text-stone-500 dark:hover:text-stone-400 transition-colors text-sm">{product.name}</h4>
+                            <p className="mt-1 text-stone-500 dark:text-stone-400 text-xs tracking-wider font-light">${product.price.toFixed(2)}</p>
                         </Link>
                     </div>
                 </div>
