@@ -1,10 +1,18 @@
-import { Link } from "react-router-dom"
-import heroImg from "../../assets/homepage.jpg"
+import { Link } from "react-router-dom";
 
 const Hero = () => {
+  const optimizedHeroUrl = "https://images.unsplash.com/photo-1490481651871-ab68de25d43d?auto=format&fit=crop&w=1600&q=80";
+
   return (
-    <section className="relative overflow-hidden">
-       <img src={heroImg} alt="Zaaish Luxury Collection" className="w-full h-[450px] md:h-[650px] lg:h-[800px] object-cover brightness-[0.85] dark:brightness-75 transition-all transform hover:scale-105 duration-1000"/> 
+    <section className="relative overflow-hidden bg-stone-900">
+       <img 
+          src={optimizedHeroUrl} 
+          alt="Zaaish Luxury Collection" 
+          fetchPriority="high"
+          loading="eager"
+          decoding="async"
+          className="w-full h-[450px] md:h-[650px] lg:h-[800px] object-cover brightness-[0.85] dark:brightness-75 transition-all transform hover:scale-105 duration-1000"
+       /> 
        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/10 flex items-center justify-center">
             <div className="text-center text-white p-6 max-w-4xl mx-auto">
                 <span className="text-[10px] sm:text-xs uppercase tracking-[0.3em] font-light text-stone-300 block mb-3">Curated Collection</span>
@@ -20,7 +28,7 @@ const Hero = () => {
             </div>
        </div>
     </section>
-  )
-}
+  );
+};
 
-export default Hero
+export default Hero;
