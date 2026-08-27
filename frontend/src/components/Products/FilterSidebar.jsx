@@ -1,9 +1,17 @@
-import React, { useEffect, useState } from 'react'
-import { useNavigate, useSearchParams } from 'react-router-dom'
+import React, { useEffect, useState } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 
 const FilterSidebar = () => {
     const [searchParams, setSearchParams] = useSearchParams();
     const navigate = useNavigate();
+
+    const categories = ["Top Wear", "Bottom Wear", "Outerwear", "Accessories", "Footwear"];
+    const genders = ["Men", "Women", "Unisex"];
+    const colors = ["Black", "Charcoal", "Cream", "Ivory", "Navy", "Emerald", "Champagne", "Sand", "Olive"];
+    const sizes = ["XS", "S", "M", "L", "XL", "XXL", "30", "32", "34", "36", "40", "42"];
+    const materials = ["Mulberry Silk", "Cashmere Blend", "Egyptian Cotton", "Italian Leather", "Virgin Wool", "Merino Wool", "Irish Linen"];
+    const brands = ["Zaaish Reserve", "Zaaish Atelier", "Zaaish Collection"];
+
     const [filters, setFilters] = useState({
         category: "",
         gender: "",
@@ -12,21 +20,17 @@ const FilterSidebar = () => {
         material: [],
         brand: [],
         minPrice: 0,
-        maxPrice: 100,
+        maxPrice: 1000,
     });
 
-    const [priceRange, setPriceRange] = useState([0, 100]);
+    const [maxPriceInput, setMaxPriceInput] = useState(1000);
 
-    const categories = ["Top Wear", "Bottom Wear"];
-    const colors = ["Red", "Blue", "Black", "Green", "Yellow", "Gray", "White", "Pink", "Beige", "Navy"];
-    const sizes = ["XS", "S", "M", "L", "XL", "XXL"];
-    const materials = ["Cotton", "Wool", "Denim", "Polyster", "Silk", "Linen", "Viscose", "Fleece"];
-    const brands = ["Urban Threads", "Modern Fit", "Street Style", "Beach Breeze", "Fashionista", "ChicStyle"];
-    const genders = ["Men", "Women"];
-
+    // Sync initial state from URL parameters
     useEffect(() => {
         const params = Object.fromEntries([...searchParams]);
     
+        const parsedMaxPrice = params.maxPrice ? Number(params.maxPrice) : 1000;
+
         setFilters({
             category: params.category || "",
             gender: params.gender || "",
@@ -34,81 +38,111 @@ const FilterSidebar = () => {
             size: params.size ? params.size.split(",") : [],
             material: params.material ? params.material.split(",") : [],
             brand: params.brand ? params.brand.split(",") : [],
-            minPrice: params.minPrice || 0,
-            maxPrice: params.maxPrice || 100,
+            minPrice: params.minPrice ? Number(params.minPrice) : 0,
+            maxPrice: parsedMaxPrice,
         });
-        setPriceRange([0, params.maxPrice || 100]);
+
+        setMaxPriceInput(parsedMaxPrice);
     }, [searchParams]);
 
-    const handleFilterChange = (e) => {
-        const { name, value, checked, type } = e.target;
-        let newFilters = { ...filters };
-
-        if (type === "checkbox") {
-            if (checked) {
-                newFilters[name] = [...(newFilters[name] || []), value];
-            } else {
-                newFilters[name] = newFilters[name].filter((item) => item !== value);
-            }
-        } else {
-            if (newFilters[name] === value) {
-                newFilters[name] = "";
-            } else {
-                newFilters[name] = value;
-            }
-        }
-        setFilters(newFilters); 
-        updateURLParams(newFilters);   
-    };
-
-    const updateURLParams = (newFilters) => {
+    const updateURLParams = (updatedFilters) => {
         const params = new URLSearchParams();
+
+        // Preserve current search and sort queries
         const searchQuery = searchParams.get("search");
         if (searchQuery) params.set("search", searchQuery);
 
         const sortQuery = searchParams.get("sortBy");
         if (sortQuery) params.set("sortBy", sortQuery);
+
+        // Always reset to page 1 when filters change
+        params.set("page", "1");
+        params.set("limit", "12");
+
+        if (updatedFilters.category) params.set("category", updatedFilters.category);
+        if (updatedFilters.gender) params.set("gender", updatedFilters.gender);
+        if (updatedFilters.color) params.set("color", updatedFilters.color);
         
-        Object.keys(newFilters).forEach((key) => {
-            if (Array.isArray(newFilters[key]) && newFilters[key].length > 0) {
-                params.set(key, newFilters[key].join(","));
-            } else if (newFilters[key] && newFilters[key] !== 0) {
-                params.set(key, newFilters[key]);
-            } else {
-                params.delete(key);
-            }
-        });
-        
+        if (updatedFilters.size.length > 0) params.set("size", updatedFilters.size.join(","));
+        if (updatedFilters.material.length > 0) params.set("material", updatedFilters.material.join(","));
+        if (updatedFilters.brand.length > 0) params.set("brand", updatedFilters.brand.join(","));
+
+        if (updatedFilters.minPrice > 0) params.set("minPrice", updatedFilters.minPrice.toString());
+        if (updatedFilters.maxPrice < 1000) params.set("maxPrice", updatedFilters.maxPrice.toString());
+
         setSearchParams(params);
-        navigate(`?${params.toString()}`);
     };
 
-    const handlePriceChange = (e) => {
-        const newPrice = e.target.value;
-        setPriceRange([0, newPrice]);
-        const newFilters = { ...filters, minPrice: 0, maxPrice: newPrice };
+    const handleCategoryClick = (category) => {
+        const newCategory = filters.category === category ? "" : category;
+        const newFilters = { ...filters, category: newCategory };
+        setFilters(newFilters);
+        updateURLParams(newFilters);
+    };
+
+    const handleGenderClick = (gender) => {
+        const newGender = filters.gender === gender ? "" : gender;
+        const newFilters = { ...filters, gender: newGender };
+        setFilters(newFilters);
+        updateURLParams(newFilters);
+    };
+
+    const handleColorClick = (color) => {
+        const newColor = filters.color === color ? "" : color;
+        const newFilters = { ...filters, color: newColor };
+        setFilters(newFilters);
+        updateURLParams(newFilters);
+    };
+
+    const handleCheckboxToggle = (field, value) => {
+        const currentList = filters[field] || [];
+        const newList = currentList.includes(value)
+            ? currentList.filter(item => item !== value)
+            : [...currentList, value];
+
+        const newFilters = { ...filters, [field]: newList };
+        setFilters(newFilters);
+        updateURLParams(newFilters);
+    };
+
+    const handlePriceSliderChange = (e) => {
+        const val = Number(e.target.value);
+        setMaxPriceInput(val);
+        const newFilters = { ...filters, maxPrice: val };
+        setFilters(newFilters);
         updateURLParams(newFilters);
     };
 
     const handleResetFilters = () => {
-        const resetState = { category: "", gender: "", color: "", size: [], material: [], brand: [], minPrice: 0, maxPrice: 100 };
+        const resetState = {
+            category: "",
+            gender: "",
+            color: "",
+            size: [],
+            material: [],
+            brand: [],
+            minPrice: 0,
+            maxPrice: 1000
+        };
         setFilters(resetState);
-        setPriceRange([0, 100]);
-        
+        setMaxPriceInput(1000);
+
         const params = new URLSearchParams();
         const searchQuery = searchParams.get("search");
         if (searchQuery) params.set("search", searchQuery);
+        params.set("page", "1");
+        params.set("limit", "12");
+
         setSearchParams(params);
-        navigate(`?${params.toString()}`);
     };
 
     return (
-        <div className='p-6 sm:p-8 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/80 dark:border-stone-800 shadow-sm text-stone-900 dark:text-stone-100 transition-colors'>
+        <div className='p-6 sm:p-8 bg-white dark:bg-stone-900 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm text-stone-900 dark:text-stone-100 transition-colors'>
             <div className='flex justify-between items-center mb-6 pb-4 border-b border-stone-100 dark:border-stone-800'>
-                <h3 className='text-sm font-serif font-medium uppercase tracking-[0.2em] text-stone-900 dark:text-stone-100'>Filters</h3>
+                <h3 className='text-sm font-serif font-medium uppercase tracking-[0.2em] text-stone-900 dark:text-stone-100'>Refine Selection</h3>
                 <button 
                     onClick={handleResetFilters}
-                    className='text-[10px] uppercase tracking-[0.2em] bg-stone-100 dark:bg-stone-800 hover:bg-stone-950 hover:text-white dark:hover:bg-stone-100 dark:hover:text-stone-950 text-stone-700 dark:text-stone-300 px-3 py-1.5 rounded-lg transition cursor-pointer'
+                    className='text-[10px] uppercase tracking-[0.2em] bg-stone-100 dark:bg-stone-800 hover:bg-stone-950 hover:text-white dark:hover:bg-stone-100 dark:hover:text-stone-950 text-stone-700 dark:text-stone-300 px-3 py-1.5 rounded-lg transition cursor-pointer font-medium'
                 >
                     Reset All
                 </button>
@@ -117,66 +151,84 @@ const FilterSidebar = () => {
             {/* Category filter */}
             <div className='mb-6'>
                 <label className='block text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3'>Category</label>
-                {categories.map((category) => (
-                  <div key={category} className='flex items-center mb-2.5 cursor-pointer' onClick={() => {
-                      const newVal = filters.category === category ? "" : category;
-                      const newFilters = { ...filters, category: newVal };
-                      setFilters(newFilters);
-                      updateURLParams(newFilters);
-                  }}>
-                    <input type="radio" 
-                    name="category" 
-                    value={category}
-                    onChange={handleFilterChange}
-                    checked={filters.category === category}
-                    className='mr-3 h-4 w-4 text-stone-900 dark:text-stone-100 focus:ring-stone-500 border-stone-300 dark:border-stone-700 cursor-pointer' />
-                    <span className='text-stone-600 dark:text-stone-300 text-xs tracking-wide cursor-pointer'>{category}</span>
-                  </div>
-                ))}
+                <div className="space-y-2">
+                    {categories.map((category) => (
+                        <button
+                            key={category}
+                            type="button"
+                            onClick={() => handleCategoryClick(category)}
+                            className={`w-full text-left px-3 py-2 rounded-xl text-xs tracking-wide transition-all flex items-center justify-between cursor-pointer ${
+                                filters.category === category
+                                    ? "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 font-medium shadow-sm"
+                                    : "hover:bg-stone-100 dark:hover:bg-stone-800/60 text-stone-700 dark:text-stone-300"
+                            }`}
+                        >
+                            <span>{category}</span>
+                            {filters.category === category && <span className="text-[10px]">✓</span>}
+                        </button>
+                    ))}
+                </div>
             </div>
 
             {/* Gender filter */}
             <div className='mb-6'>
                 <label className='block text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3'>Gender</label>
-                {genders.map((gender) => (
-                  <div key={gender} className='flex items-center mb-2.5 cursor-pointer' onClick={() => {
-                      const newVal = filters.gender === gender ? "" : gender;
-                      const newFilters = { ...filters, gender: newVal };
-                      setFilters(newFilters);
-                      updateURLParams(newFilters);
-                  }}>
-                    <input type="radio" 
-                    name="gender"
-                    value={gender}
-                    onChange={handleFilterChange} 
-                    checked={filters.gender === gender}
-                    className='mr-3 h-4 w-4 text-stone-900 dark:text-stone-100 focus:ring-stone-500 border-stone-300 dark:border-stone-700 cursor-pointer' />
-                    <span className='text-stone-600 dark:text-stone-300 text-xs tracking-wide cursor-pointer'>{gender}</span>
-                  </div>
-                ))}
+                <div className="grid grid-cols-3 gap-2">
+                    {genders.map((gender) => (
+                        <button
+                            key={gender}
+                            type="button"
+                            onClick={() => handleGenderClick(gender)}
+                            className={`py-2 rounded-xl text-xs tracking-wider uppercase font-medium transition-all text-center cursor-pointer ${
+                                filters.gender === gender
+                                    ? "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 shadow-sm"
+                                    : "border border-stone-200 dark:border-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-800"
+                            }`}
+                        >
+                            {gender}
+                        </button>
+                    ))}
+                </div>
+            </div>
+
+            {/* Price Range Filter */}
+            <div className='mb-6'>
+                <div className="flex justify-between items-center mb-2">
+                    <label className='text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em]'>Max Price</label>
+                    <span className="text-xs font-serif font-medium text-stone-900 dark:text-stone-100">${maxPriceInput}</span>
+                </div>
+                <input 
+                    type="range"
+                    min={0}
+                    max={1000}
+                    step={25}
+                    value={maxPriceInput}
+                    onChange={handlePriceSliderChange}
+                    className='w-full h-1.5 bg-stone-200 dark:bg-stone-800 rounded-lg appearance-none cursor-pointer accent-stone-950 dark:accent-stone-100' 
+                />
+                <div className='flex justify-between text-stone-400 text-[10px] mt-2 font-light'>
+                    <span>$0</span>
+                    <span>$1000</span>
+                </div>
             </div>
 
             {/* Color filter */}
             <div className='mb-6'>
-                <label className='block text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3'>Color</label>
-                <div className='flex flex-wrap gap-2.5'>
+                <label className='block text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3'>Color Palette</label>
+                <div className='flex flex-wrap gap-2'>
                     {colors.map((color) => (
                         <button
                             key={color} 
                             type="button"
-                            name="color"
-                            value={color}
-                            onClick={() => {
-                                const newColor = filters.color === color ? "" : color;
-                                const newFilters = { ...filters, color: newColor };
-                                setFilters(newFilters);
-                                updateURLParams(newFilters);
-                            }}
-                            className={`w-7 h-7 rounded-full border border-stone-300 dark:border-stone-700 cursor-pointer transition-transform
-                            hover:scale-110 ${filters.color === color ? "ring-2 ring-stone-950 dark:ring-stone-100 ring-offset-2 dark:ring-offset-stone-900" : ""}`}
-                            style={{ backgroundColor: color.toLowerCase() }}
-                            title={color}
-                        ></button>
+                            onClick={() => handleColorClick(color)}
+                            className={`px-3 py-1.5 rounded-xl border text-xs tracking-wider transition-all cursor-pointer ${
+                                filters.color === color
+                                    ? "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 border-stone-950 dark:border-stone-100 font-medium shadow-sm"
+                                    : "border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800"
+                            }`}
+                        >
+                            {color}
+                        </button>
                     ))}
                 </div>
             </div>
@@ -184,66 +236,59 @@ const FilterSidebar = () => {
             {/* Size Filter */}  
             <div className='mb-6'>
                 <label className='block text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3'>Size</label>
-                {sizes.map((size) => (
-                    <div key={size} className='flex items-center mb-2.5 cursor-pointer'>
-                        <input type="checkbox"
-                        name="size"
-                        value={size}
-                        onChange={handleFilterChange}
-                        checked={filters.size.includes(size)}
-                        className='mr-3 h-4 w-4 text-stone-900 dark:text-stone-100 focus:ring-stone-500 border-stone-300 dark:border-stone-700 rounded cursor-pointer' />
-                        <span className='text-stone-600 dark:text-stone-300 text-xs tracking-wide cursor-pointer'>{size}</span>
-                    </div>
-                ))}
+                <div className="grid grid-cols-4 gap-2">
+                    {sizes.map((size) => (
+                        <button
+                            key={size}
+                            type="button"
+                            onClick={() => handleCheckboxToggle("size", size)}
+                            className={`py-2 rounded-xl text-xs font-mono transition-all text-center cursor-pointer ${
+                                filters.size.includes(size)
+                                    ? "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 font-semibold shadow-sm"
+                                    : "border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800"
+                            }`}
+                        >
+                            {size}
+                        </button>
+                    ))}
+                </div>
             </div>       
 
             {/* Material Filter */}  
             <div className='mb-6'>
-                <label className='block text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3'>Material</label> 
-                {materials.map((material) => (
-                    <div key={material} className='flex items-center mb-2.5 cursor-pointer'>
-                        <input type="checkbox"
-                        name="material"
-                        value={material}
-                        onChange={handleFilterChange}
-                        checked={filters.material.includes(material)}
-                        className='mr-3 h-4 w-4 text-stone-900 dark:text-stone-100 focus:ring-stone-500 border-stone-300 dark:border-stone-700 rounded cursor-pointer' />
-                        <span className='text-stone-600 dark:text-stone-300 text-xs tracking-wide cursor-pointer'>{material}</span>
-                    </div>
-                ))}
+                <label className='block text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3'>Material Craft</label> 
+                <div className="space-y-2">
+                    {materials.map((material) => (
+                        <label key={material} className='flex items-center space-x-3 cursor-pointer text-xs group'>
+                            <input 
+                                type="checkbox"
+                                checked={filters.material.includes(material)}
+                                onChange={() => handleCheckboxToggle("material", material)}
+                                className='h-4 w-4 rounded text-stone-950 dark:text-stone-100 focus:ring-stone-500 border-stone-300 dark:border-stone-700 cursor-pointer' 
+                            />
+                            <span className={`tracking-wide transition-colors ${filters.material.includes(material) ? "text-stone-950 dark:text-stone-100 font-medium" : "text-stone-600 dark:text-stone-400 group-hover:text-stone-900 dark:group-hover:text-stone-200"}`}>{material}</span>
+                        </label>
+                    ))}
+                </div>
             </div> 
 
             {/* Brands Filter */}  
-            <div className='mb-6'>
-                <label className='block text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3'>Brand</label> 
-                {brands.map((brand) => (
-                    <div key={brand} className='flex items-center mb-2.5 cursor-pointer'>
-                        <input type="checkbox"
-                        name="brand"
-                        value={brand}
-                        onChange={handleFilterChange}
-                        checked={filters.brand.includes(brand)}
-                        className='mr-3 h-4 w-4 text-stone-900 dark:text-stone-100 focus:ring-stone-500 border-stone-300 dark:border-stone-700 rounded cursor-pointer' />
-                        <span className='text-stone-600 dark:text-stone-300 text-xs tracking-wide cursor-pointer'>{brand}</span>
-                    </div>
-                ))}
-            </div> 
-
-            {/* Price Range Filter */}
             <div className='mb-2'>
-                <label className='block text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3'>Max Price</label>
-                <input type="range"
-                name="priceRange" 
-                min={0}
-                max={100}
-                value={priceRange[1]}
-                onChange={handlePriceChange}
-                className='w-full h-1.5 bg-stone-200 dark:bg-stone-800 rounded-lg appearance-none cursor-pointer accent-stone-950 dark:accent-stone-100' />
-                <div className='flex justify-between text-stone-500 dark:text-stone-400 text-xs mt-3 font-medium'>
-                    <span>$0</span>
-                    <span>${priceRange[1]}</span>
+                <label className='block text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3'>Brand Atelier</label> 
+                <div className="space-y-2">
+                    {brands.map((brand) => (
+                        <label key={brand} className='flex items-center space-x-3 cursor-pointer text-xs group'>
+                            <input 
+                                type="checkbox"
+                                checked={filters.brand.includes(brand)}
+                                onChange={() => handleCheckboxToggle("brand", brand)}
+                                className='h-4 w-4 rounded text-stone-950 dark:text-stone-100 focus:ring-stone-500 border-stone-300 dark:border-stone-700 cursor-pointer' 
+                            />
+                            <span className={`tracking-wide transition-colors ${filters.brand.includes(brand) ? "text-stone-950 dark:text-stone-100 font-medium" : "text-stone-600 dark:text-stone-400 group-hover:text-stone-900 dark:group-hover:text-stone-200"}`}>{brand}</span>
+                        </label>
+                    ))}
                 </div>
-            </div>
+            </div> 
         </div>
     );
 };

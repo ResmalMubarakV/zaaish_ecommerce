@@ -1,7 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
-import { useNavigate, useParams } from 'react-router-dom'
-import { toast } from "sonner"
-import ProductGrid from "./ProductGrid"
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+import { toast } from "sonner";
+import { FiStar, FiUploadCloud, FiTrash2, FiUserCheck } from "react-icons/fi";
+import ProductGrid from "./ProductGrid";
 
 const ProductDetails = () => {
     const { id } = useParams();
@@ -15,41 +16,48 @@ const ProductDetails = () => {
     const [quantity, setQuantity] = useState(1);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
-    useEffect(() => {
-        const fetchProductDetails = async () => {
-            try {
-                setLoading(true);
-                const response = await fetch(`/api/products/id/${id}`);
-                const data = await response.json();
+    // Review Form state
+    const [newRating, setNewRating] = useState(5);
+    const [newComment, setNewComment] = useState("");
+    const [reviewImages, setReviewImages] = useState([]);
+    const [uploadingReviewImg, setUploadingReviewImg] = useState(false);
+    const [submittingReview, setSubmittingReview] = useState(false);
 
-                if (response.ok) {
-                    setProduct(data.product);
-                    setMainImage(data.product.images?.[0]?.url || "");
-                    
-                    if (data.product.category) {
-                        const simResponse = await fetch(`/api/products?category=${data.product.category}&limit=4`);
-                        const simData = await simResponse.json();
-                        if (simResponse.ok) {
-                            setSimilarProducts((simData.products || []).filter(p => p._id !== id));
-                        }
+    const fetchProductDetails = async () => {
+        try {
+            setLoading(true);
+            const response = await fetch(`/api/products/id/${id}`);
+            const data = await response.json();
+
+            if (response.ok) {
+                setProduct(data.product);
+                setMainImage(data.product.images?.[0]?.url || "");
+                
+                if (data.product.category) {
+                    const simResponse = await fetch(`/api/products?category=${data.product.category}&limit=4`);
+                    const simData = await simResponse.json();
+                    if (simResponse.ok) {
+                        setSimilarProducts((simData.products || []).filter(p => p._id !== id));
                     }
-                } else {
-                    console.error("Failed to fetch product:", data.message);
                 }
-            } catch (error) {
-                console.error("Error loading product details:", error);
-            } finally {
-                setLoading(false);
+            } else {
+                console.error("Failed to fetch product:", data.message);
             }
-        };
+        } catch (error) {
+            console.error("Error loading product details:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         fetchProductDetails();
     }, [id]);
 
     const handleQuantityChange = (action) => {
         if(action === "plus") setQuantity((prev) => prev + 1);
         if(action === "minus" && quantity > 1) setQuantity((prev) => prev - 1);
-    }
+    };
 
     const handleAddToCart = async () => {
         const token = localStorage.getItem("token");
@@ -110,6 +118,87 @@ const ProductDetails = () => {
         }
     };
 
+    // Review Image Upload Handler
+    const handleReviewImageUpload = async (e) => {
+        const files = e.target.files;
+        if (!files || files.length === 0) return;
+
+        const formData = new FormData();
+        for (let i = 0; i < files.length; i++) {
+            formData.append("images", files[i]);
+        }
+
+        try {
+            setUploadingReviewImg(true);
+            const token = localStorage.getItem("token");
+            const response = await fetch('/api/products/upload', {
+                method: "POST",
+                headers: { Authorization: `Bearer ${token}` },
+                body: formData
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setReviewImages((prev) => [...prev, ...(data.images || [])]);
+                toast.success("Photo attached to review!");
+            } else {
+                toast.error(data.message || "Image upload failed");
+            }
+        } catch (err) {
+            console.error("Review upload error:", err);
+            toast.error("Error uploading review image");
+        } finally {
+            setUploadingReviewImg(false);
+        }
+    };
+
+    // Submit Review Handler
+    const handleSubmitReview = async (e) => {
+        e.preventDefault();
+        const token = localStorage.getItem("token");
+
+        if (!token) {
+            toast.error("Please login to submit a product review");
+            navigate("/login");
+            return;
+        }
+
+        if (!newComment.trim()) {
+            toast.error("Please enter a review comment");
+            return;
+        }
+
+        try {
+            setSubmittingReview(true);
+            const response = await fetch(`/api/products/${id}/reviews`, {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    rating: newRating,
+                    comment: newComment,
+                    images: reviewImages
+                })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                toast.success("Thank you! Review submitted successfully.");
+                setNewComment("");
+                setReviewImages([]);
+                fetchProductDetails();
+            } else {
+                toast.error(data.message || "Failed to submit review");
+            }
+        } catch (err) {
+            console.error("Review submission error:", err);
+            toast.error("Server error submitting review");
+        } finally {
+            setSubmittingReview(false);
+        }
+    };
+
     if (loading) {
         return <div className="text-center py-32 text-stone-400 text-xs uppercase tracking-[0.2em] font-light">Loading product details...</div>;
     }
@@ -136,6 +225,7 @@ const ProductDetails = () => {
                         />
                     ))}
                 </div>
+
                 {/* Main Image */}
                 <div className="md:w-1/2">
                     <div className="overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-800 shadow-sm">
@@ -143,6 +233,7 @@ const ProductDetails = () => {
                         className="w-full h-[500px] sm:h-[600px] object-cover" />
                     </div>
                 </div>
+
                 {/* Mobile Thumbnails */}
                 <div className="md:hidden flex overflow-x-auto space-x-4 pb-2 scrollbar-none">
                     {product.images?.map((image, index) => (
@@ -162,9 +253,22 @@ const ProductDetails = () => {
                     <h1 className="text-2xl sm:text-3xl font-serif font-light tracking-wide mb-3 text-stone-900 dark:text-stone-100">
                         {product.name}
                     </h1>
-                    <p className="text-xs text-stone-400 dark:text-stone-500 mb-1 line-through">
-                        {product.originalPrice && `$${product.originalPrice}`}
-                    </p>
+
+                    {/* Rating Badge Header */}
+                    <div className="flex items-center space-x-2 mb-4">
+                        <div className="flex text-amber-400">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <FiStar 
+                                    key={star} 
+                                    className={`w-4 h-4 ${star <= Math.round(product.rating || 5) ? "fill-amber-400 text-amber-400" : "text-stone-300"}`} 
+                                />
+                            ))}
+                        </div>
+                        <span className="text-xs text-stone-500 font-medium">
+                            {(product.rating || 5.0).toFixed(1)} ({product.numReviews || product.reviews?.length || 0} reviews)
+                        </span>
+                    </div>
+
                     <p className="text-2xl font-serif font-medium text-stone-900 dark:text-stone-100 mb-6">
                         $ {product.currentPrice || product.price}
                     </p>
@@ -237,15 +341,140 @@ const ProductDetails = () => {
                             <tbody>
                                 <tr>
                                     <td className="py-2 font-medium uppercase tracking-[0.15em] text-[10px] text-stone-400">Brand</td>
-                                    <td className="py-2 font-light">{product.brand || "Zaaish Exclusive"}</td>
+                                    <td className="py-2 font-light">{product.brand || "Zaaish Reserve"}</td>
                                 </tr>
                                 <tr>
                                     <td className="py-2 font-medium uppercase tracking-[0.15em] text-[10px] text-stone-400">Material</td>
-                                    <td className="py-2 font-light">{product.material || "Premium Blend"}</td>
+                                    <td className="py-2 font-light">{product.material || "Premium Cashmere"}</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
+                </div>
+            </div>
+
+            {/* CUSTOMER REVIEWS SECTION */}
+            <div className="mt-20 border-t border-stone-100 dark:border-stone-800 pt-16">
+                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+                    <div>
+                        <span className="text-[10px] uppercase tracking-[0.25em] text-stone-400 font-medium block mb-1">Customer Feedback</span>
+                        <h2 className="text-2xl sm:text-3xl font-serif font-light tracking-wide">Product Reviews ({product.reviews?.length || 0})</h2>
+                    </div>
+
+                    <div className="flex items-center space-x-3 bg-stone-50 dark:bg-stone-950 px-5 py-3 rounded-2xl border border-stone-200/80 dark:border-stone-800">
+                        <span className="text-2xl font-serif font-medium text-stone-900 dark:text-stone-100">{(product.rating || 5.0).toFixed(1)}</span>
+                        <div>
+                            <div className="flex text-amber-400">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <FiStar key={star} className={`w-3.5 h-3.5 ${star <= Math.round(product.rating || 5) ? "fill-amber-400 text-amber-400" : "text-stone-300"}`} />
+                                ))}
+                            </div>
+                            <span className="text-[10px] uppercase tracking-wider text-stone-400">Verified Ratings</span>
+                        </div>
+                    </div>
+                </div>
+
+                {/* Review Form */}
+                <form onSubmit={handleSubmitReview} className="mb-12 bg-stone-50/70 dark:bg-stone-950/70 p-6 sm:p-8 rounded-3xl border border-stone-200/80 dark:border-stone-800 space-y-5">
+                    <h3 className="text-sm font-serif font-medium uppercase tracking-[0.15em] text-stone-900 dark:text-stone-100">Write a Customer Review</h3>
+
+                    <div>
+                        <label className="block text-[10px] uppercase tracking-[0.2em] text-stone-400 mb-2">Select Your Rating</label>
+                        <div className="flex space-x-2">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <button
+                                    key={star}
+                                    type="button"
+                                    onClick={() => setNewRating(star)}
+                                    className="p-1 cursor-pointer transition-transform hover:scale-110"
+                                >
+                                    <FiStar className={`w-6 h-6 ${star <= newRating ? "fill-amber-400 text-amber-400" : "text-stone-300"}`} />
+                                </button>
+                            ))}
+                        </div>
+                    </div>
+
+                    <div>
+                        <label className="block text-[10px] uppercase tracking-[0.2em] text-stone-400 mb-2">Your Feedback *</label>
+                        <textarea
+                            rows={3}
+                            value={newComment}
+                            onChange={(e) => setNewComment(e.target.value)}
+                            required
+                            placeholder="Share your thoughts on craftsmanship, fit, fabric texture..."
+                            className="w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl p-4 text-xs tracking-wide focus:outline-none focus:border-stone-900 dark:focus:border-stone-100"
+                        />
+                    </div>
+
+                    {/* Customer Photo Upload via Cloudinary */}
+                    <div>
+                        <label className="block text-[10px] uppercase tracking-[0.2em] text-stone-400 mb-2">Attach Customer Photos (Optional Cloudinary Upload)</label>
+                        <div className="flex flex-wrap gap-3">
+                            {reviewImages.map((img, idx) => (
+                                <div key={idx} className="relative w-16 h-16 rounded-xl overflow-hidden border border-stone-200 dark:border-stone-800">
+                                    <img src={img.url} alt="Review" className="w-full h-full object-cover" />
+                                </div>
+                            ))}
+
+                            <label className="w-16 h-16 border-2 border-dashed border-stone-300 dark:border-stone-700 hover:border-stone-950 rounded-xl flex flex-col items-center justify-center cursor-pointer p-1">
+                                <FiUploadCloud className="w-5 h-5 text-stone-400 mb-1" />
+                                <span className="text-[9px] uppercase tracking-wider text-stone-500 font-medium">
+                                    {uploadingReviewImg ? "..." : "Photo"}
+                                </span>
+                                <input type="file" multiple accept="image/*" onChange={handleReviewImageUpload} className="hidden" disabled={uploadingReviewImg} />
+                            </label>
+                        </div>
+                    </div>
+
+                    <div className="flex justify-end pt-2">
+                        <button
+                            type="submit"
+                            disabled={submittingReview}
+                            className="bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 px-8 py-3 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 transition cursor-pointer shadow-sm disabled:opacity-50"
+                        >
+                            {submittingReview ? "Submitting..." : "Submit Review"}
+                        </button>
+                    </div>
+                </form>
+
+                {/* Review List */}
+                <div className="space-y-6">
+                    {product.reviews && product.reviews.length > 0 ? (
+                        product.reviews.map((rev, idx) => (
+                            <div key={idx} className="p-6 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 space-y-3">
+                                <div className="flex justify-between items-start">
+                                    <div className="flex items-center space-x-3">
+                                        <div className="w-8 h-8 rounded-full bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 flex items-center justify-center text-xs font-serif font-light">
+                                            {rev.name?.charAt(0).toUpperCase() || "C"}
+                                        </div>
+                                        <div>
+                                            <span className="font-serif font-medium text-xs text-stone-900 dark:text-stone-100 block">{rev.name}</span>
+                                            <span className="text-[10px] text-stone-400 font-light">{new Date(rev.createdAt || Date.now()).toLocaleDateString()}</span>
+                                        </div>
+                                    </div>
+                                    <div className="flex text-amber-400">
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                            <FiStar key={star} className={`w-3.5 h-3.5 ${star <= rev.rating ? "fill-amber-400 text-amber-400" : "text-stone-300"}`} />
+                                        ))}
+                                    </div>
+                                </div>
+
+                                <p className="text-stone-600 dark:text-stone-300 text-xs font-light leading-relaxed">{rev.comment}</p>
+
+                                {rev.images && rev.images.length > 0 && (
+                                    <div className="flex gap-2 pt-2">
+                                        {rev.images.map((img, i) => (
+                                            <img key={i} src={img.url} alt="Review attachment" className="w-14 h-14 object-cover rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm" />
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    ) : (
+                        <p className="text-center py-12 text-stone-400 text-xs uppercase tracking-[0.2em] font-light">
+                            No reviews submitted yet. Be the first to share your experience!
+                        </p>
+                    )}
                 </div>
             </div>
 
@@ -260,7 +489,7 @@ const ProductDetails = () => {
             )}
         </div>
     </div>
-  )
-}
+  );
+};
 
 export default ProductDetails;

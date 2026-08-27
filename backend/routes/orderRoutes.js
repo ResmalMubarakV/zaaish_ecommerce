@@ -82,6 +82,34 @@ router.get("/my-orders", protect, async (req, res, next) => {
     }
 });
 
+// @route   GET /api/orders/export-csv
+// @desc    Export all sales orders as a downloadable CSV file (Admin)
+// @access  Private/Admin
+router.get("/export-csv", protect, admin, async (req, res, next) => {
+    try {
+        const orders = await Order.find({}).populate("user", "name email").sort({ createdAt: -1 });
+
+        let csvHeader = "Order ID,Customer Name,Customer Email,Date,Total Amount ($),Payment Status,Fulfillment Status,Payment Method,Items Count\n";
+        let csvRows = orders.map(order => {
+            const customerName = `"${order.shippingAddress?.firstName || order.user?.name || 'Guest'} ${order.shippingAddress?.lastName || ''}"`.trim();
+            const email = order.user?.email || "N/A";
+            const date = new Date(order.createdAt).toISOString().split('T')[0];
+            const amount = (order.totalPrice || 0).toFixed(2);
+            const isPaid = order.isPaid ? "Paid" : "Pending";
+            const status = order.status || "Processing";
+            const method = order.paymentMethod || "PayPal";
+            const itemsCount = order.orderItems ? order.orderItems.length : 0;
+            return `"${order._id}",${customerName},"${email}",${date},${amount},${isPaid},${status},"${method}",${itemsCount}`;
+        }).join("\n");
+
+        res.setHeader("Content-Type", "text/csv");
+        res.setHeader("Content-Disposition", `attachment; filename=zaaish_sales_report_${Date.now()}.csv`);
+        res.status(200).send(csvHeader + csvRows);
+    } catch (error) {
+        next(error);
+    }
+});
+
 // @route   GET /api/orders/:id
 // @desc    Get order by ID
 // @access  Private
@@ -104,10 +132,12 @@ router.get("/:id", protect, async (req, res, next) => {
     }
 });
 
+
 // @route   GET /api/orders
 // @desc    Get all orders (Admin)
 // @access  Private/Admin
 router.get("/", protect, admin, async (req, res, next) => {
+
     try {
         const orders = await Order.find({}).populate("user", "name email").sort({ createdAt: -1 });
         res.json({ success: true, count: orders.length, orders });

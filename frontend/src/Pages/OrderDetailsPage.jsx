@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom'
-import { FiArrowLeft, FiDownload } from 'react-icons/fi'
+import { FiArrowLeft, FiDownload, FiCheck, FiPackage, FiTruck, FiCheckCircle } from 'react-icons/fi'
 
 const OrderDetailsPage = () => {
     const { id } = useParams();
@@ -144,6 +144,96 @@ const OrderDetailsPage = () => {
                             </span>
                         </div>
                     </div>
+
+                    {/* Visual Order Tracking Timeline Stepper */}
+                    <div className="mb-10 p-6 sm:p-8 bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200/80 dark:border-stone-800 no-print">
+                        <h4 className="font-serif font-light text-xs uppercase tracking-[0.2em] text-stone-400 mb-8 text-center sm:text-left">
+                            Fulfillment Pipeline Timeline
+                        </h4>
+
+                        <div className="relative flex items-center justify-between max-w-2xl mx-auto px-4 sm:px-8">
+                            {/* Connecting Progress Lines */}
+                            <div className="absolute top-5 left-12 right-12 h-0.5 bg-stone-200 dark:bg-stone-800 -translate-y-1/2 z-0" />
+                            <div 
+                                className="absolute top-5 left-12 h-0.5 bg-stone-950 dark:bg-stone-100 -translate-y-1/2 z-0 transition-all duration-700 ease-out"
+                                style={{
+                                    width: orderDetails.status === "Delivered" 
+                                        ? "calc(100% - 6rem)" 
+                                        : orderDetails.status === "Shipped" 
+                                        ? "50%" 
+                                        : "0%"
+                                }}
+                            />
+
+                            {/* Step 1: Processing */}
+                            <div className="relative z-10 flex flex-col items-center">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-500 ${
+                                    orderDetails.status === "Processing" || orderDetails.status === "Shipped" || orderDetails.status === "Delivered"
+                                        ? "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 shadow-md ring-4 ring-stone-950/10 dark:ring-stone-100/10"
+                                        : "bg-stone-200 dark:bg-stone-800 text-stone-500 dark:text-stone-400"
+                                }`}>
+                                    {orderDetails.status === "Shipped" || orderDetails.status === "Delivered" ? (
+                                        <FiCheck className="w-5 h-5 stroke-[2.5]" />
+                                    ) : (
+                                        <FiPackage className="w-5 h-5" />
+                                    )}
+                                </div>
+                                <span className="mt-3 text-xs font-medium uppercase tracking-wider text-stone-900 dark:text-stone-100">
+                                    Processing
+                                </span>
+                                <span className="text-[10px] text-stone-400 font-light mt-0.5">
+                                    {new Date(orderDetails.createdAt).toLocaleDateString()}
+                                </span>
+                            </div>
+
+                            {/* Step 2: Shipped */}
+                            <div className="relative z-10 flex flex-col items-center">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-500 ${
+                                    orderDetails.status === "Shipped" || orderDetails.status === "Delivered"
+                                        ? "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 shadow-md ring-4 ring-stone-950/10 dark:ring-stone-100/10"
+                                        : "bg-stone-200 dark:bg-stone-800 text-stone-400 dark:text-stone-500"
+                                }`}>
+                                    {orderDetails.status === "Delivered" ? (
+                                        <FiCheck className="w-5 h-5 stroke-[2.5]" />
+                                    ) : (
+                                        <FiTruck className="w-5 h-5" />
+                                    )}
+                                </div>
+                                <span className={`mt-3 text-xs font-medium uppercase tracking-wider ${
+                                    orderDetails.status === "Shipped" || orderDetails.status === "Delivered"
+                                        ? "text-stone-900 dark:text-stone-100"
+                                        : "text-stone-400 dark:text-stone-500"
+                                }`}>
+                                    Shipped
+                                </span>
+                                <span className="text-[10px] text-stone-400 font-light mt-0.5">
+                                    {orderDetails.shippedAt ? new Date(orderDetails.shippedAt).toLocaleDateString() : (orderDetails.status === "Shipped" || orderDetails.status === "Delivered" ? "In Transit" : "Pending")}
+                                </span>
+                            </div>
+
+                            {/* Step 3: Delivered */}
+                            <div className="relative z-10 flex flex-col items-center">
+                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-500 ${
+                                    orderDetails.status === "Delivered"
+                                        ? "bg-emerald-600 dark:bg-emerald-400 text-white dark:text-stone-950 shadow-md ring-4 ring-emerald-500/20"
+                                        : "bg-stone-200 dark:bg-stone-800 text-stone-400 dark:text-stone-500"
+                                }`}>
+                                    <FiCheckCircle className="w-5 h-5" />
+                                </div>
+                                <span className={`mt-3 text-xs font-medium uppercase tracking-wider ${
+                                    orderDetails.status === "Delivered"
+                                        ? "text-emerald-700 dark:text-emerald-400"
+                                        : "text-stone-400 dark:text-stone-500"
+                                }`}>
+                                    Delivered
+                                </span>
+                                <span className="text-[10px] text-stone-400 font-light mt-0.5">
+                                    {orderDetails.deliveredAt ? new Date(orderDetails.deliveredAt).toLocaleDateString() : (orderDetails.status === "Delivered" ? "Completed" : "Expected")}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
 
                     <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-8 text-xs font-light'>
                         <div className='bg-stone-50 dark:bg-stone-950 p-5 rounded-2xl border border-stone-200/80 dark:border-stone-800'>

@@ -1,5 +1,5 @@
 import { Link, useNavigate } from "react-router-dom"
-import { HiOutlineUser, HiOutlineShoppingBag, HiBars3BottomRight } from "react-icons/hi2"
+import { HiOutlineUser, HiOutlineShoppingBag, HiBars3BottomRight, HiOutlineHeart } from "react-icons/hi2"
 import { HiOutlineSun, HiOutlineMoon } from "react-icons/hi2"
 import SearchBar from "./SearchBar"
 import CartDrawer from "../Layout/CartDrawer"
@@ -100,6 +100,16 @@ const Navbar = () => {
         }
     };
 
+    const handleWishlistClick = () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            toast.error("Please login to view your wishlist", { duration: 1500 });
+            navigate("/login");
+        } else {
+            navigate("/wishlist");
+        }
+    };
+
   return (
     <>
         <nav className={`w-full transition-all duration-300 bg-white/90 dark:bg-stone-950/90 backdrop-blur-xl ${isScrolled ? "border-b border-stone-200/80 dark:border-stone-800/80 shadow-sm py-4" : "border-b border-stone-100 dark:border-stone-900 py-6"}`}>
@@ -129,6 +139,10 @@ const Navbar = () => {
                         {darkMode ? <HiOutlineSun className="h-5 w-5 stroke-[1.5]" /> : <HiOutlineMoon className="h-5 w-5 stroke-[1.5]" />}
                     </button>
 
+                    <button onClick={handleWishlistClick} className="text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white transition-transform hover:scale-110 p-1 cursor-pointer" title="Wishlist">
+                        <HiOutlineHeart className="h-5 w-5 stroke-[1.5]" />
+                    </button>
+
                     <button onClick={handleProfileClick} className="text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white transition-transform hover:scale-110 p-1 cursor-pointer" title="Profile">
                         <HiOutlineUser className="h-5 w-5 stroke-[1.5]" /> 
                     </button>   
@@ -141,6 +155,7 @@ const Navbar = () => {
                             </span>
                         )}
                     </button> 
+ 
 
                     <button onClick={toggleNavDrawer} className="md:hidden text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white p-1 cursor-pointer" title="Open Menu">
                         <HiBars3BottomRight className="h-6 w-6 stroke-[1.5]"/>

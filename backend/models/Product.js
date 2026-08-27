@@ -52,7 +52,20 @@ const dimensionsSchema = new mongoose.Schema(
   }
 );
 
+const reviewSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    rating: { type: Number, required: true, min: 1, max: 5 },
+    comment: { type: String, required: true },
+    user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+    images: { type: [imageSchema], default: [] }
+  },
+  { timestamps: true }
+);
+
 const productSchema = new mongoose.Schema(
+
+
   {
     name: {
       type: String,
@@ -187,6 +200,9 @@ const productSchema = new mongoose.Schema(
         message: "Review count must be a whole number"
       }
     },
+    reviews: [reviewSchema],
+
+
     tags: {
       type: [String],
       default: []
@@ -244,6 +260,8 @@ const productSchema = new mongoose.Schema(
 productSchema.index({ name: "text", description: "text", category: "text", brand: "text", tags: "text" });
 productSchema.index({ isPublished: 1, category: 1, subCategory: 1 });
 productSchema.index({ isPublished: 1, gender: 1, collections: 1 });
+productSchema.index({ category: 1, gender: 1, collections: 1, price: 1 });
+productSchema.index({ isPublished: 1, price: 1, createdAt: -1 });
 
 productSchema.virtual("currentPrice").get(function currentPrice() {
   return this.discountPrice !== null && this.discountPrice !== undefined

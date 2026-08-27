@@ -152,10 +152,17 @@ const userSchema = new mongoose.Schema(
       type: [cartItemSchema],
       default: []
     },
+    wishlist: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Product"
+      }
+    ],
     isActive: {
       type: Boolean,
       default: true
     }
+
   },
   {
     timestamps: true,

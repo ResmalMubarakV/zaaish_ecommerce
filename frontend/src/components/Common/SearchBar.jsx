@@ -1,15 +1,25 @@
-import { useState } from "react"
+import { useState, useEffect } from "react";
 import { HiMagnifyingGlass, HiMiniXMark } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const SearchBar = () => {
     const [searchTerm, setSearchTerm] = useState("");
     const [isOpen, setIsOpen] = useState(false);
+    const debouncedSearchTerm = useDebounce(searchTerm, 450);
     const navigate = useNavigate();
 
     const handleSearchToggle = () => {
         setIsOpen(!isOpen);
+        setSearchTerm("");
     };
+
+    // Automatically navigate on debounced input change when open & non-empty
+    useEffect(() => {
+        if (isOpen && debouncedSearchTerm.trim()) {
+            navigate(`/collections?search=${encodeURIComponent(debouncedSearchTerm.trim())}`);
+        }
+    }, [debouncedSearchTerm, isOpen, navigate]);
 
     const handleSearch = (e) => {
         e.preventDefault();
