@@ -1,5 +1,5 @@
 const products = [
-  // ==================== MEN TOP WEAR (1-10) ====================
+  // ==================== MEN PRODUCTS (1-15) ====================
   {
     name: "Architectural Cashmere Sweater",
     description: "Handcrafted from 100% Mongolian cashmere, offering uncompromised softness and a structured modern silhouette designed for contemporary elegance.",
@@ -10,13 +10,14 @@ const products = [
     category: "Top Wear",
     subCategory: "Sweaters",
     brand: "Zaaish Reserve",
-    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    sizes: ["S", "M", "L", "XL", "XXL"],
     colors: ["Charcoal", "Cream", "Black", "Navy"],
     collections: "Men",
     material: "Cashmere Blend",
     gender: "Men",
     images: [
-      { url: "https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=800&q=80", altText: "Cashmere Sweater Front" }
+      { url: "https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=800&q=80", altText: "Men Cashmere Sweater Front" },
+      { url: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80", altText: "Men Cashmere Sweater Style" }
     ],
     isFeatured: true,
     isPublished: true,
@@ -39,7 +40,8 @@ const products = [
     material: "Egyptian Cotton",
     gender: "Men",
     images: [
-      { url: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=800&q=80", altText: "Poplin Shirt Front" }
+      { url: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=800&q=80", altText: "Men Poplin Shirt Front" },
+      { url: "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=800&q=80", altText: "Men Shirt Detail" }
     ],
     isFeatured: true,
     isPublished: true,
@@ -47,22 +49,46 @@ const products = [
     numReviews: 24
   },
   {
+    name: "Double-Breasted Italian Wool Overcoat",
+    description: "Tailored in a relaxed silhouette from heavyweight Italian virgin wool with silk lining and clean horn buttons.",
+    price: 680,
+    discountPrice: 590,
+    countInStock: 12,
+    sku: "ZSH-MEN-003",
+    category: "Outerwear",
+    subCategory: "Coats",
+    brand: "Zaaish Reserve",
+    sizes: ["M", "L", "XL", "XXL"],
+    colors: ["Black", "Charcoal", "Olive"],
+    collections: "Men",
+    material: "Virgin Wool",
+    gender: "Men",
+    images: [
+      { url: "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=800&q=80", altText: "Men Overcoat Front" },
+      { url: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80", altText: "Men Tailored Coat" }
+    ],
+    isFeatured: true,
+    isPublished: true,
+    rating: 5.0,
+    numReviews: 14
+  },
+  {
     name: "Silk Blend Cuban Collar Shirt",
     description: "Fluid silk-viscose weave engineered for humid evenings and relaxed luxury lounging. Features subtle micro-ribbed cuffs.",
     price: 185,
     discountPrice: 160,
     countInStock: 30,
-    sku: "ZSH-MEN-003",
+    sku: "ZSH-MEN-004",
     category: "Top Wear",
     subCategory: "Shirts",
     brand: "Zaaish Collection",
-    sizes: ["XS", "S", "M", "L", "XL"],
+    sizes: ["S", "M", "L", "XL"],
     colors: ["Sand", "Olive", "Champagne"],
     collections: "Men",
     material: "Mulberry Silk",
     gender: "Men",
     images: [
-      { url: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80", altText: "Cuban Shirt Front" }
+      { url: "https://images.unsplash.com/photo-1596755094514-f87e34085b2c?auto=format&fit=crop&w=800&q=80", altText: "Men Silk Shirt" }
     ],
     isFeatured: false,
     isPublished: true,
@@ -75,17 +101,17 @@ const products = [
     price: 245,
     discountPrice: 215,
     countInStock: 18,
-    sku: "ZSH-MEN-004",
+    sku: "ZSH-MEN-005",
     category: "Top Wear",
     subCategory: "Sweaters",
     brand: "Zaaish Reserve",
     sizes: ["S", "M", "L", "XL", "XXL"],
-    colors: ["Ivory", "Black", "Charcoal", "Emerald"],
+    colors: ["Ivory", "Black", "Charcoal"],
     collections: "Men",
     material: "Merino Wool",
     gender: "Men",
     images: [
-      { url: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=800&q=80", altText: "Merino Turtleneck" }
+      { url: "https://images.unsplash.com/photo-1620799140408-edc6dcb6d633?auto=format&fit=crop&w=800&q=80", altText: "Men Merino Turtleneck" }
     ],
     isFeatured: false,
     isPublished: true,
@@ -93,99 +119,122 @@ const products = [
     numReviews: 16
   },
   {
-    name: "Heavyweight Organic Essential Tee",
-    description: "300 GSM combed organic cotton t-shirt with reinforced crew neck and an understated draped hemline.",
-    price: 85,
+    name: "Italian Suede Safari Jacket",
+    description: "Crafted from velvety goat suede leather with concealed horn snaps, four utility pockets, and a drawcord waist.",
+    price: 750,
     discountPrice: null,
-    countInStock: 50,
-    sku: "ZSH-MEN-005",
-    category: "Top Wear",
-    subCategory: "T-Shirts",
-    brand: "Zaaish Collection",
-    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
-    colors: ["Ivory", "Black", "Cream", "Charcoal"],
-    collections: "Top Wear",
-    material: "Egyptian Cotton",
-    gender: "Unisex",
-    images: [
-      { url: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80", altText: "Heavyweight Tee" }
-    ],
-    isFeatured: false,
-    isPublished: true,
-    rating: 4.6,
-    numReviews: 42
-  },
-  {
-    name: "Pure Irish Linen Utility Shirt",
-    description: "Pre-washed breathable Irish linen overshirt styled with chest utility pockets and horn buttons.",
-    price: 195,
-    discountPrice: 175,
-    countInStock: 22,
+    countInStock: 8,
     sku: "ZSH-MEN-006",
-    category: "Top Wear",
-    subCategory: "Shirts",
-    brand: "Zaaish Atelier",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Olive", "Sand", "Cream"],
-    collections: "Top Wear",
-    material: "Irish Linen",
-    gender: "Men",
-    images: [
-      { url: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80", altText: "Linen Utility Shirt" }
-    ],
-    isFeatured: false,
-    isPublished: true,
-    rating: 4.8,
-    numReviews: 15
-  },
-  {
-    name: "Hand-Knitted Cable Knit Cardigan",
-    description: "Chunky cable knit cardigan spun from un-dyed virgin wool with genuine leather knot buttons.",
-    price: 390,
-    discountPrice: 345,
-    countInStock: 15,
-    sku: "ZSH-MEN-007",
-    category: "Top Wear",
-    subCategory: "Sweaters",
+    category: "Outerwear",
+    subCategory: "Jackets",
     brand: "Zaaish Reserve",
     sizes: ["M", "L", "XL"],
-    colors: ["Cream", "Charcoal", "Sand"],
+    colors: ["Sand", "Olive", "Charcoal"],
     collections: "Men",
-    material: "Virgin Wool",
+    material: "Italian Leather",
     gender: "Men",
     images: [
-      { url: "https://images.unsplash.com/photo-1516826957135-700dedea698c?auto=format&fit=crop&w=800&q=80", altText: "Cable Cardigan" }
+      { url: "https://images.unsplash.com/photo-1495105787522-5334e3ffa0ef?auto=format&fit=crop&w=800&q=80", altText: "Men Suede Safari Jacket" }
     ],
     isFeatured: true,
     isPublished: true,
     rating: 4.9,
-    numReviews: 12
+    numReviews: 11
   },
   {
-    name: "Luxury Silk Knit Polo",
-    description: "Fine gauge Mulberry silk-blend knitted polo shirt with ribbed open collar and seamless shoulders.",
-    price: 220,
-    discountPrice: null,
-    countInStock: 28,
-    sku: "ZSH-MEN-008",
-    category: "Top Wear",
-    subCategory: "T-Shirts",
+    name: "Pleated Wide-Leg Wool Trousers",
+    description: "High-waisted double-pleated wool trousers cut with a dramatic wide leg and deep side pockets.",
+    price: 280,
+    discountPrice: 240,
+    countInStock: 20,
+    sku: "ZSH-MEN-007",
+    category: "Bottom Wear",
+    subCategory: "Trousers",
     brand: "Zaaish Atelier",
-    sizes: ["XS", "S", "M", "L", "XL"],
-    colors: ["Champagne", "Navy", "Black"],
-    collections: "Top Wear",
-    material: "Mulberry Silk",
+    sizes: ["30", "32", "34", "36"],
+    colors: ["Charcoal", "Sand", "Black"],
+    collections: "Men",
+    material: "Virgin Wool",
     gender: "Men",
     images: [
-      { url: "https://images.unsplash.com/photo-1625910513413-7a96163351d5?auto=format&fit=crop&w=800&q=80", altText: "Silk Knit Polo" }
+      { url: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80", altText: "Men Pleated Trousers" }
+    ],
+    isFeatured: true,
+    isPublished: true,
+    rating: 4.8,
+    numReviews: 22
+  },
+  {
+    name: "Tapered Merino Wool Joggers",
+    description: "Luxe athletic joggers spun from merino wool with silver-tipped drawstrings and ribbed ankle cuffs.",
+    price: 210,
+    discountPrice: 185,
+    countInStock: 22,
+    sku: "ZSH-MEN-008",
+    category: "Bottom Wear",
+    subCategory: "Joggers",
+    brand: "Zaaish Collection",
+    sizes: ["S", "M", "L", "XL", "XXL"],
+    colors: ["Charcoal", "Black"],
+    collections: "Men",
+    material: "Merino Wool",
+    gender: "Men",
+    images: [
+      { url: "https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=800&q=80", altText: "Men Wool Joggers" }
     ],
     isFeatured: false,
     isPublished: true,
     rating: 4.7,
-    numReviews: 19
+    numReviews: 21
+  },
+  {
+    name: "Handmade Italian Chelsea Boots",
+    description: "Blake-stitched Italian calfskin Chelsea boots with elastic side gussets and Goodyear welted leather sole.",
+    price: 450,
+    discountPrice: 395,
+    countInStock: 14,
+    sku: "ZSH-MEN-009",
+    category: "Footwear",
+    subCategory: "Boots",
+    brand: "Zaaish Reserve",
+    sizes: ["40", "42"],
+    colors: ["Black", "Charcoal"],
+    collections: "Men",
+    material: "Italian Leather",
+    gender: "Men",
+    images: [
+      { url: "https://images.unsplash.com/photo-1638247025967-b4e38f787b76?auto=format&fit=crop&w=800&q=80", altText: "Men Handmade Boots" }
+    ],
+    isFeatured: true,
+    isPublished: true,
+    rating: 5.0,
+    numReviews: 38
+  },
+  {
+    name: "Polished Classic Penny Loafers",
+    description: "Classic penny loafers constructed from polished binder leather with hand-sewn apron detail.",
+    price: 360,
+    discountPrice: 320,
+    countInStock: 22,
+    sku: "ZSH-MEN-010",
+    category: "Footwear",
+    subCategory: "Loafers",
+    brand: "Zaaish Atelier",
+    sizes: ["40", "42"],
+    colors: ["Charcoal", "Black"],
+    collections: "Men",
+    material: "Italian Leather",
+    gender: "Men",
+    images: [
+      { url: "https://images.unsplash.com/photo-1614252369475-531eda835eb1?auto=format&fit=crop&w=800&q=80", altText: "Men Loafers" }
+    ],
+    isFeatured: false,
+    isPublished: true,
+    rating: 4.9,
+    numReviews: 26
   },
 
-  // ==================== WOMEN TOP WEAR (11-18) ====================
+  // ==================== WOMEN PRODUCTS (16-30) ====================
   {
     name: "Silk Charmeuse Draped Blouse",
     description: "100% 19-momme Mulberry silk drape blouse featuring a high cowl neck and subtle French cuffs.",
@@ -202,7 +251,8 @@ const products = [
     material: "Mulberry Silk",
     gender: "Women",
     images: [
-      { url: "https://images.unsplash.com/photo-1564257631407-4deb1f99d992?auto=format&fit=crop&w=800&q=80", altText: "Silk Blouse Front" }
+      { url: "https://images.unsplash.com/photo-1564257631407-4deb1f99d992?auto=format&fit=crop&w=800&q=80", altText: "Women Silk Blouse" },
+      { url: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80", altText: "Women Silk Detail" }
     ],
     isFeatured: true,
     isPublished: true,
@@ -210,106 +260,12 @@ const products = [
     numReviews: 28
   },
   {
-    name: "Oversized Cashmere Knit Sweater",
-    description: "Relaxed slouchy sweater knitted from grade-A cashmere yarns with ribbed collar and wrist cuffs.",
-    price: 360,
-    discountPrice: 320,
-    countInStock: 22,
-    sku: "ZSH-WMN-002",
-    category: "Top Wear",
-    subCategory: "Sweaters",
-    brand: "Zaaish Reserve",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Cream", "Sand", "Olive", "Ivory"],
-    collections: "Women",
-    material: "Cashmere Blend",
-    gender: "Women",
-    images: [
-      { url: "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?auto=format&fit=crop&w=800&q=80", altText: "Cashmere Knit" }
-    ],
-    isFeatured: false,
-    isPublished: true,
-    rating: 4.8,
-    numReviews: 20
-  },
-  {
-    name: "Linen Drawstring Resort Shirt",
-    description: "Relaxed sheer linen shirt with cinched hemline drawstrings for adjustable summer styling.",
-    price: 170,
-    discountPrice: null,
-    countInStock: 35,
-    sku: "ZSH-WMN-003",
-    category: "Top Wear",
-    subCategory: "Shirts",
-    brand: "Zaaish Collection",
-    sizes: ["XS", "S", "M", "L"],
-    colors: ["Ivory", "Olive", "Champagne"],
-    collections: "Top Wear",
-    material: "Irish Linen",
-    gender: "Women",
-    images: [
-      { url: "https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?auto=format&fit=crop&w=800&q=80", altText: "Linen Drawstring Shirt" }
-    ],
-    isFeatured: false,
-    isPublished: true,
-    rating: 4.6,
-    numReviews: 14
-  },
-  {
-    name: "Asymmetric Draped Jersey Top",
-    description: "Avant-garde draped top with asymmetric hem and gathered shoulder detailing in fluid Japanese jersey.",
-    price: 195,
-    discountPrice: 165,
-    countInStock: 28,
-    sku: "ZSH-WMN-004",
-    category: "Top Wear",
-    subCategory: "Blouses",
-    brand: "Zaaish Collection",
-    sizes: ["XS", "S", "M"],
-    colors: ["Black", "Sand", "Emerald"],
-    collections: "Women",
-    material: "Egyptian Cotton",
-    gender: "Women",
-    images: [
-      { url: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=800&q=80", altText: "Asymmetric Top" }
-    ],
-    isFeatured: false,
-    isPublished: true,
-    rating: 4.7,
-    numReviews: 12
-  },
-
-  // ==================== OUTERWEAR (19-26) ====================
-  {
-    name: "Double-Breasted Italian Wool Overcoat",
-    description: "Tailored in a relaxed silhouette from heavyweight Italian virgin wool with silk lining and clean horn buttons.",
-    price: 680,
-    discountPrice: 590,
-    countInStock: 12,
-    sku: "ZSH-OUT-001",
-    category: "Outerwear",
-    subCategory: "Coats",
-    brand: "Zaaish Reserve",
-    sizes: ["M", "L", "XL", "XXL"],
-    colors: ["Black", "Charcoal", "Olive"],
-    collections: "Men",
-    material: "Virgin Wool",
-    gender: "Men",
-    images: [
-      { url: "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=800&q=80", altText: "Wool Overcoat Front" }
-    ],
-    isFeatured: true,
-    isPublished: true,
-    rating: 5.0,
-    numReviews: 14
-  },
-  {
     name: "Sculpted Tailored Hourglass Blazer",
     description: "Hourglass tailored blazer in Italian virgin wool with sharp lapels and satin interior lining.",
     price: 540,
     discountPrice: 480,
     countInStock: 16,
-    sku: "ZSH-OUT-002",
+    sku: "ZSH-WMN-002",
     category: "Outerwear",
     subCategory: "Blazers",
     brand: "Zaaish Reserve",
@@ -319,7 +275,7 @@ const products = [
     material: "Virgin Wool",
     gender: "Women",
     images: [
-      { url: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80", altText: "Tailored Blazer" }
+      { url: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80", altText: "Women Blazer Front" }
     ],
     isFeatured: true,
     isPublished: true,
@@ -327,12 +283,35 @@ const products = [
     numReviews: 31
   },
   {
+    name: "Oversized Cashmere Knit Sweater",
+    description: "Relaxed slouchy sweater knitted from grade-A cashmere yarns with ribbed collar and wrist cuffs.",
+    price: 360,
+    discountPrice: 320,
+    countInStock: 22,
+    sku: "ZSH-WMN-003",
+    category: "Top Wear",
+    subCategory: "Sweaters",
+    brand: "Zaaish Reserve",
+    sizes: ["XS", "S", "M", "L"],
+    colors: ["Cream", "Sand", "Olive", "Ivory"],
+    collections: "Women",
+    material: "Cashmere Blend",
+    gender: "Women",
+    images: [
+      { url: "https://images.unsplash.com/photo-1576995853123-5a10305d93c0?auto=format&fit=crop&w=800&q=80", altText: "Women Cashmere Sweater" }
+    ],
+    isFeatured: false,
+    isPublished: true,
+    rating: 4.8,
+    numReviews: 20
+  },
+  {
     name: "Water-Resistant Belted Trench Coat",
     description: "Water-resistant cotton gabardine trench coat featuring classic shoulder epaulettes and storm flaps.",
     price: 620,
     discountPrice: 550,
     countInStock: 10,
-    sku: "ZSH-OUT-003",
+    sku: "ZSH-WMN-004",
     category: "Outerwear",
     subCategory: "Coats",
     brand: "Zaaish Atelier",
@@ -342,7 +321,7 @@ const products = [
     material: "Egyptian Cotton",
     gender: "Women",
     images: [
-      { url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80", altText: "Belted Trench Coat" }
+      { url: "https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80", altText: "Women Trench Coat" }
     ],
     isFeatured: true,
     isPublished: true,
@@ -350,27 +329,27 @@ const products = [
     numReviews: 35
   },
   {
-    name: "Italian Suede Safari Jacket",
-    description: "Crafted from velvety goat suede leather with concealed horn snaps, four utility pockets, and a drawcord waist.",
-    price: 750,
-    discountPrice: null,
-    countInStock: 8,
-    sku: "ZSH-OUT-004",
-    category: "Outerwear",
-    subCategory: "Jackets",
-    brand: "Zaaish Reserve",
-    sizes: ["M", "L", "XL"],
-    colors: ["Sand", "Olive", "Charcoal"],
-    collections: "Men",
-    material: "Italian Leather",
-    gender: "Men",
+    name: "Silk Satin Bias-Cut Slip Skirt",
+    description: "Bias-cut silk satin skirt draping elegantly to mid-calf with a comfortable elastic waistband.",
+    price: 240,
+    discountPrice: 205,
+    countInStock: 25,
+    sku: "ZSH-WMN-005",
+    category: "Bottom Wear",
+    subCategory: "Skirts",
+    brand: "Zaaish Atelier",
+    sizes: ["XS", "S", "M", "L"],
+    colors: ["Emerald", "Champagne", "Black"],
+    collections: "Women",
+    material: "Mulberry Silk",
+    gender: "Women",
     images: [
-      { url: "https://images.unsplash.com/photo-1495105787522-5334e3ffa0ef?auto=format&fit=crop&w=800&q=80", altText: "Suede Safari Jacket" }
+      { url: "https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?auto=format&fit=crop&w=800&q=80", altText: "Women Silk Skirt" }
     ],
     isFeatured: true,
     isPublished: true,
     rating: 4.9,
-    numReviews: 11
+    numReviews: 29
   },
   {
     name: "Cropped Nappa Leather Biker Jacket",
@@ -378,7 +357,7 @@ const products = [
     price: 690,
     discountPrice: 610,
     countInStock: 9,
-    sku: "ZSH-OUT-005",
+    sku: "ZSH-WMN-006",
     category: "Outerwear",
     subCategory: "Jackets",
     brand: "Zaaish Reserve",
@@ -388,139 +367,20 @@ const products = [
     material: "Italian Leather",
     gender: "Women",
     images: [
-      { url: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&q=80", altText: "Cropped Leather Jacket" }
+      { url: "https://images.unsplash.com/photo-1551028719-00167b16eac5?auto=format&fit=crop&w=800&q=80", altText: "Women Biker Jacket" }
     ],
     isFeatured: true,
     isPublished: true,
     rating: 4.9,
     numReviews: 23
   },
-
-  // ==================== BOTTOM WEAR (27-36) ====================
-  {
-    name: "Pleated Wide-Leg Wool Trousers",
-    description: "High-waisted double-pleated wool trousers cut with a dramatic wide leg and deep side pockets.",
-    price: 280,
-    discountPrice: 240,
-    countInStock: 20,
-    sku: "ZSH-BTM-001",
-    category: "Bottom Wear",
-    subCategory: "Trousers",
-    brand: "Zaaish Atelier",
-    sizes: ["30", "32", "34", "36"],
-    colors: ["Charcoal", "Sand", "Black"],
-    collections: "Bottom Wear",
-    material: "Virgin Wool",
-    gender: "Men",
-    images: [
-      { url: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=800&q=80", altText: "Pleated Trousers" }
-    ],
-    isFeatured: true,
-    isPublished: true,
-    rating: 4.8,
-    numReviews: 22
-  },
-  {
-    name: "Silk Satin Bias-Cut Slip Skirt",
-    description: "Bias-cut silk satin skirt draping elegantly to mid-calf with a comfortable elastic waistband.",
-    price: 240,
-    discountPrice: 205,
-    countInStock: 25,
-    sku: "ZSH-BTM-002",
-    category: "Bottom Wear",
-    subCategory: "Skirts",
-    brand: "Zaaish Atelier",
-    sizes: ["XS", "S", "M", "L"],
-    colors: ["Emerald", "Champagne", "Black"],
-    collections: "Bottom Wear",
-    material: "Mulberry Silk",
-    gender: "Women",
-    images: [
-      { url: "https://images.unsplash.com/photo-1583496661160-fb5886a0aaaa?auto=format&fit=crop&w=800&q=80", altText: "Silk Slip Skirt" }
-    ],
-    isFeatured: true,
-    isPublished: true,
-    rating: 4.9,
-    numReviews: 29
-  },
-  {
-    name: "Relaxed Linen Drawstring Pants",
-    description: "Breezy pure linen drawstring trousers tailored with tapered legs for relaxed elegance.",
-    price: 190,
-    discountPrice: null,
-    countInStock: 30,
-    sku: "ZSH-BTM-003",
-    category: "Bottom Wear",
-    subCategory: "Trousers",
-    brand: "Zaaish Collection",
-    sizes: ["S", "M", "L", "XL"],
-    colors: ["Sand", "Navy", "Cream"],
-    collections: "Bottom Wear",
-    material: "Irish Linen",
-    gender: "Unisex",
-    images: [
-      { url: "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?auto=format&fit=crop&w=800&q=80", altText: "Relaxed Linen Trousers" }
-    ],
-    isFeatured: false,
-    isPublished: true,
-    rating: 4.6,
-    numReviews: 18
-  },
-  {
-    name: "Tapered Merino Wool Joggers",
-    description: "Luxe athletic joggers spun from merino wool with silver-tipped drawstrings and ribbed ankle cuffs.",
-    price: 210,
-    discountPrice: 185,
-    countInStock: 22,
-    sku: "ZSH-BTM-004",
-    category: "Bottom Wear",
-    subCategory: "Joggers",
-    brand: "Zaaish Collection",
-    sizes: ["S", "M", "L", "XL", "XXL"],
-    colors: ["Charcoal", "Black"],
-    collections: "Bottom Wear",
-    material: "Merino Wool",
-    gender: "Men",
-    images: [
-      { url: "https://images.unsplash.com/photo-1552902865-b72c031ac5ea?auto=format&fit=crop&w=800&q=80", altText: "Wool Joggers" }
-    ],
-    isFeatured: false,
-    isPublished: true,
-    rating: 4.7,
-    numReviews: 21
-  },
-  {
-    name: "High-Rise Tailored Wool Culottes",
-    description: "Cropped wide-leg wool blend culottes styled with clean front darts and concealed zip fastening.",
-    price: 230,
-    discountPrice: 195,
-    countInStock: 18,
-    sku: "ZSH-BTM-005",
-    category: "Bottom Wear",
-    subCategory: "Trousers",
-    brand: "Zaaish Reserve",
-    sizes: ["XS", "S", "M", "L"],
-    colors: ["Black", "Cream", "Navy"],
-    collections: "Bottom Wear",
-    material: "Virgin Wool",
-    gender: "Women",
-    images: [
-      { url: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=800&q=80", altText: "Tailored Culottes" }
-    ],
-    isFeatured: false,
-    isPublished: true,
-    rating: 4.8,
-    numReviews: 16
-  },
-
-  // ==================== ACCESSORIES (37-44) ====================
   {
     name: "Artisanal Calfskin Tote Bag",
     description: "Handcrafted in Florence from full-grain vegetable-tanned leather. Includes removable zip pouch.",
     price: 520,
     discountPrice: 460,
     countInStock: 12,
-    sku: "ZSH-ACC-001",
+    sku: "ZSH-WMN-007",
     category: "Accessories",
     subCategory: "Bags",
     brand: "Zaaish Reserve",
@@ -530,7 +390,7 @@ const products = [
     material: "Italian Leather",
     gender: "Women",
     images: [
-      { url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80", altText: "Calfskin Tote" }
+      { url: "https://images.unsplash.com/photo-1584917865442-de89df76afd3?auto=format&fit=crop&w=800&q=80", altText: "Women Leather Tote" }
     ],
     isFeatured: true,
     isPublished: true,
@@ -538,27 +398,98 @@ const products = [
     numReviews: 33
   },
   {
-    name: "Pure Silk Twill Square Scarf",
-    description: "Square silk scarf featuring hand-rolled edges and a hand-painted abstract geometric motif.",
-    price: 160,
-    discountPrice: null,
-    countInStock: 40,
-    sku: "ZSH-ACC-002",
-    category: "Accessories",
-    subCategory: "Scarves",
-    brand: "Zaaish Atelier",
-    sizes: ["S", "M"],
-    colors: ["Emerald", "Champagne", "Ivory"],
+    name: "Pointed Architectural Leather Mules",
+    description: "Architectural slip-on leather mules with sculpted low heel and cushioned leather footbed.",
+    price: 280,
+    discountPrice: 245,
+    countInStock: 16,
+    sku: "ZSH-WMN-008",
+    category: "Footwear",
+    subCategory: "Mules",
+    brand: "Zaaish Reserve",
+    sizes: ["36", "40"],
+    colors: ["Black", "Cream", "Emerald"],
     collections: "Women",
-    material: "Mulberry Silk",
+    material: "Italian Leather",
     gender: "Women",
     images: [
-      { url: "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?auto=format&fit=crop&w=800&q=80", altText: "Silk Scarf" }
+      { url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=800&q=80", altText: "Women Leather Mules" }
     ],
     isFeatured: false,
     isPublished: true,
+    rating: 4.8,
+    numReviews: 19
+  },
+
+  // ==================== UNISEX ACCESSORIES & FOOTWEAR (31-40) ====================
+  {
+    name: "Minimalist Nappa Leather Sneakers",
+    description: "Low-top leather sneakers crafted with Italian nappa leather uppers and durable Vibram rubber soles.",
+    price: 240,
+    discountPrice: null,
+    countInStock: 40,
+    sku: "ZSH-UNI-001",
+    category: "Footwear",
+    subCategory: "Sneakers",
+    brand: "Zaaish Atelier",
+    sizes: ["40", "42"],
+    colors: ["Ivory", "Black", "Cream"],
+    collections: "Men",
+    material: "Italian Leather",
+    gender: "Unisex",
+    images: [
+      { url: "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=800&q=80", altText: "Unisex Leather Sneakers" }
+    ],
+    isFeatured: true,
+    isPublished: true,
     rating: 4.9,
-    numReviews: 15
+    numReviews: 45
+  },
+  {
+    name: "Heavyweight Organic Essential Tee",
+    description: "300 GSM combed organic cotton t-shirt with reinforced crew neck and an understated draped hemline.",
+    price: 85,
+    discountPrice: null,
+    countInStock: 50,
+    sku: "ZSH-UNI-002",
+    category: "Top Wear",
+    subCategory: "T-Shirts",
+    brand: "Zaaish Collection",
+    sizes: ["XS", "S", "M", "L", "XL", "XXL"],
+    colors: ["Ivory", "Black", "Cream", "Charcoal"],
+    collections: "Top Wear",
+    material: "Egyptian Cotton",
+    gender: "Unisex",
+    images: [
+      { url: "https://images.unsplash.com/photo-1521572267360-ee0c2909d518?auto=format&fit=crop&w=800&q=80", altText: "Unisex Tee" }
+    ],
+    isFeatured: false,
+    isPublished: true,
+    rating: 4.6,
+    numReviews: 42
+  },
+  {
+    name: "Relaxed Linen Drawstring Pants",
+    description: "Breezy pure linen drawstring trousers tailored with tapered legs for relaxed elegance.",
+    price: 190,
+    discountPrice: null,
+    countInStock: 30,
+    sku: "ZSH-UNI-003",
+    category: "Bottom Wear",
+    subCategory: "Trousers",
+    brand: "Zaaish Collection",
+    sizes: ["S", "M", "L", "XL"],
+    colors: ["Sand", "Navy", "Cream"],
+    collections: "Bottom Wear",
+    material: "Irish Linen",
+    gender: "Unisex",
+    images: [
+      { url: "https://images.unsplash.com/photo-1506629082955-511b1aa562c8?auto=format&fit=crop&w=800&q=80", altText: "Unisex Linen Pants" }
+    ],
+    isFeatured: false,
+    isPublished: true,
+    rating: 4.6,
+    numReviews: 18
   },
   {
     name: "Minimalist Italian Leather Cardholder",
@@ -566,7 +497,7 @@ const products = [
     price: 85,
     discountPrice: null,
     countInStock: 60,
-    sku: "ZSH-ACC-003",
+    sku: "ZSH-UNI-004",
     category: "Accessories",
     subCategory: "Wallets",
     brand: "Zaaish Collection",
@@ -582,123 +513,6 @@ const products = [
     isPublished: true,
     rating: 4.8,
     numReviews: 50
-  },
-  {
-    name: "Braided Leather Dress Belt",
-    description: "Hand-woven full-grain calfskin leather belt with custom brushed solid brass buckle.",
-    price: 130,
-    discountPrice: 110,
-    countInStock: 35,
-    sku: "ZSH-ACC-004",
-    category: "Accessories",
-    subCategory: "Belts",
-    brand: "Zaaish Collection",
-    sizes: ["30", "32", "34", "36"],
-    colors: ["Charcoal", "Black", "Sand"],
-    collections: "Men",
-    material: "Italian Leather",
-    gender: "Men",
-    images: [
-      { url: "https://images.unsplash.com/photo-1624222247344-550fb60583dc?auto=format&fit=crop&w=800&q=80", altText: "Braided Belt" }
-    ],
-    isFeatured: false,
-    isPublished: true,
-    rating: 4.7,
-    numReviews: 22
-  },
-
-  // ==================== FOOTWEAR (45-50) ====================
-  {
-    name: "Handmade Italian Chelsea Boots",
-    description: "Blake-stitched Italian calfskin Chelsea boots with elastic side gussets and Goodyear welted leather sole.",
-    price: 450,
-    discountPrice: 395,
-    countInStock: 14,
-    sku: "ZSH-FTW-001",
-    category: "Footwear",
-    subCategory: "Boots",
-    brand: "Zaaish Reserve",
-    sizes: ["40", "42"],
-    colors: ["Black", "Charcoal"],
-    collections: "Men",
-    material: "Italian Leather",
-    gender: "Men",
-    images: [
-      { url: "https://images.unsplash.com/photo-1638247025967-b4e38f787b76?auto=format&fit=crop&w=800&q=80", altText: "Handmade Chelsea Boots" }
-    ],
-    isFeatured: true,
-    isPublished: true,
-    rating: 5.0,
-    numReviews: 38
-  },
-  {
-    name: "Minimalist Nappa Leather Sneakers",
-    description: "Low-top leather sneakers crafted with Italian nappa leather uppers and durable Vibram rubber soles.",
-    price: 240,
-    discountPrice: null,
-    countInStock: 40,
-    sku: "ZSH-FTW-002",
-    category: "Footwear",
-    subCategory: "Sneakers",
-    brand: "Zaaish Atelier",
-    sizes: ["40", "42"],
-    colors: ["Ivory", "Black", "Cream"],
-    collections: "Men",
-    material: "Italian Leather",
-    gender: "Unisex",
-    images: [
-      { url: "https://images.unsplash.com/photo-1549298916-b41d501d3772?auto=format&fit=crop&w=800&q=80", altText: "Minimalist Leather Sneakers" }
-    ],
-    isFeatured: true,
-    isPublished: true,
-    rating: 4.9,
-    numReviews: 45
-  },
-  {
-    name: "Pointed Architectural Leather Mules",
-    description: "Architectural slip-on leather mules with sculpted low heel and cushioned leather footbed.",
-    price: 280,
-    discountPrice: 245,
-    countInStock: 16,
-    sku: "ZSH-FTW-003",
-    category: "Footwear",
-    subCategory: "Mules",
-    brand: "Zaaish Reserve",
-    sizes: ["36", "40"],
-    colors: ["Black", "Cream", "Emerald"],
-    collections: "Women",
-    material: "Italian Leather",
-    gender: "Women",
-    images: [
-      { url: "https://images.unsplash.com/photo-1543163521-1bf539c55dd2?auto=format&fit=crop&w=800&q=80", altText: "Pointed Leather Mules" }
-    ],
-    isFeatured: false,
-    isPublished: true,
-    rating: 4.8,
-    numReviews: 19
-  },
-  {
-    name: "Polished Classic Penny Loafers",
-    description: "Classic penny loafers constructed from polished binder leather with hand-sewn apron detail.",
-    price: 360,
-    discountPrice: 320,
-    countInStock: 22,
-    sku: "ZSH-FTW-004",
-    category: "Footwear",
-    subCategory: "Loafers",
-    brand: "Zaaish Atelier",
-    sizes: ["40", "42"],
-    colors: ["Charcoal", "Black"],
-    collections: "Men",
-    material: "Italian Leather",
-    gender: "Men",
-    images: [
-      { url: "https://images.unsplash.com/photo-1614252369475-531eda835eb1?auto=format&fit=crop&w=800&q=80", altText: "Penny Loafers" }
-    ],
-    isFeatured: false,
-    isPublished: true,
-    rating: 4.9,
-    numReviews: 26
   }
 ];
 

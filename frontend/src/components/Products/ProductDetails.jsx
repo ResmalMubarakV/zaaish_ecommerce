@@ -4,6 +4,26 @@ import { toast } from "sonner";
 import { FiStar, FiUploadCloud, FiTrash2, FiUserCheck } from "react-icons/fi";
 import ProductGrid from "./ProductGrid";
 
+const getColorHex = (colorName) => {
+    if (!colorName) return "#000000";
+    const map = {
+        Black: "#18181B",
+        Charcoal: "#3F3F46",
+        Cream: "#FBF7EE",
+        Ivory: "#FFFFF0",
+        Navy: "#1E293B",
+        Emerald: "#065F46",
+        Champagne: "#F7E6BD",
+        Sand: "#D4B996",
+        Olive: "#556B2F",
+        White: "#FFFFFF",
+        Red: "#991B1B",
+        Blue: "#2563EB",
+        Gray: "#6B7280"
+    };
+    return map[colorName] || colorName.toLowerCase();
+};
+
 const ProductDetails = () => {
     const { id } = useParams();
     const navigate = useNavigate();
@@ -30,11 +50,14 @@ const ProductDetails = () => {
             const data = await response.json();
 
             if (response.ok) {
-                setProduct(data.product);
-                setMainImage(data.product.images?.[0]?.url || "");
+                const prod = data.product;
+                setProduct(prod);
+                setMainImage(prod.images?.[0]?.url || "");
+                if (prod.sizes && prod.sizes.length > 0) setSelectedSize(prod.sizes[0]);
+                if (prod.colors && prod.colors.length > 0) setSelectedColor(prod.colors[0]);
                 
-                if (data.product.category) {
-                    const simResponse = await fetch(`/api/products?category=${data.product.category}&limit=4`);
+                if (prod.category) {
+                    const simResponse = await fetch(`/api/products?category=${prod.category}&limit=4`);
                     const simData = await simResponse.json();
                     if (simResponse.ok) {
                         setSimilarProducts((simData.products || []).filter(p => p._id !== id));
@@ -229,7 +252,7 @@ const ProductDetails = () => {
                 {/* Main Image */}
                 <div className="md:w-1/2">
                     <div className="overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-800 shadow-sm">
-                        <img src={mainImage} alt="Main Product" 
+                        <img src={mainImage} alt={product.name} 
                         className="w-full h-[500px] sm:h-[600px] object-cover" />
                     </div>
                 </div>
@@ -250,6 +273,10 @@ const ProductDetails = () => {
 
                 {/* Right Section */}
                 <div className="md:w-1/2 flex flex-col justify-center">
+                    <span className="text-[10px] uppercase tracking-[0.25em] text-stone-400 font-medium block mb-1">
+                        {product.brand || "Zaaish Reserve"} &bull; {product.category}
+                    </span>
+
                     <h1 className="text-2xl sm:text-3xl font-serif font-light tracking-wide mb-3 text-stone-900 dark:text-stone-100">
                         {product.name}
                     </h1>
@@ -276,24 +303,33 @@ const ProductDetails = () => {
                         {product.description}
                     </p>
                     
-                    {/* Colors */}
+                    {/* AVAILABLE COLORS SWATCHES */}
                     <div className="mb-6">
-                        <p className="text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3">Color</p>
-                        <div className="flex gap-3">
+                        <p className="text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3">
+                            Color: <span className="text-stone-900 dark:text-stone-100 font-semibold">{selectedColor || "Select Color"}</span>
+                        </p>
+                        <div className="flex flex-wrap gap-3">
                             {product.colors?.map((color) => (
                                 <button key={color}
-                                onClick={() => setSelectedColor(color)}
-                                className={`w-8 h-8 rounded-full border cursor-pointer transition-transform hover:scale-110
-                                    ${selectedColor === color ? "border-2 border-stone-950 dark:border-stone-100 ring-2 ring-offset-2 ring-stone-950 dark:ring-stone-100" : "border-stone-300 dark:border-stone-700"}`}
-                                style={{backgroundColor: color.toLowerCase()}}
-                                title={color}></button>
+                                    onClick={() => setSelectedColor(color)}
+                                    className={`relative w-8 h-8 rounded-full border cursor-pointer transition-transform hover:scale-110 flex items-center justify-center
+                                        ${selectedColor === color ? "border-2 border-stone-950 dark:border-stone-100 ring-2 ring-offset-2 ring-stone-950 dark:ring-stone-100 shadow-sm" : "border-stone-300 dark:border-stone-700 opacity-80 hover:opacity-100"}`}
+                                    style={{ backgroundColor: getColorHex(color) }}
+                                    title={color}
+                                >
+                                    {selectedColor === color && (
+                                        <span className={`w-2 h-2 rounded-full ${["Cream", "Ivory", "Champagne", "White", "Sand"].includes(color) ? "bg-stone-950" : "bg-white"}`} />
+                                    )}
+                                </button>
                             ))}
                         </div>
                     </div>
 
-                    {/* Sizes */}
+                    {/* AVAILABLE SIZES */}
                     <div className="mb-6">
-                        <p className="text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3">Size</p>
+                        <p className="text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3">
+                            Size: <span className="text-stone-900 dark:text-stone-100 font-semibold">{selectedSize || "Select Size"}</span>
+                        </p>
                         <div className="flex flex-wrap gap-2.5">
                             {product.sizes?.map((size) => (
                                 <button key={size} 
@@ -340,12 +376,20 @@ const ProductDetails = () => {
                         <table className="w-full text-left text-xs text-stone-600 dark:text-stone-400">
                             <tbody>
                                 <tr>
-                                    <td className="py-2 font-medium uppercase tracking-[0.15em] text-[10px] text-stone-400">Brand</td>
+                                    <td className="py-2 font-medium uppercase tracking-[0.15em] text-[10px] text-stone-400">SKU Code</td>
+                                    <td className="py-2 font-mono text-stone-500">{product.sku}</td>
+                                </tr>
+                                <tr>
+                                    <td className="py-2 font-medium uppercase tracking-[0.15em] text-[10px] text-stone-400">Brand Atelier</td>
                                     <td className="py-2 font-light">{product.brand || "Zaaish Reserve"}</td>
                                 </tr>
                                 <tr>
-                                    <td className="py-2 font-medium uppercase tracking-[0.15em] text-[10px] text-stone-400">Material</td>
+                                    <td className="py-2 font-medium uppercase tracking-[0.15em] text-[10px] text-stone-400">Material Craft</td>
                                     <td className="py-2 font-light">{product.material || "Premium Cashmere"}</td>
+                                </tr>
+                                <tr>
+                                    <td className="py-2 font-medium uppercase tracking-[0.15em] text-[10px] text-stone-400">Gender Target</td>
+                                    <td className="py-2 font-light">{product.gender}</td>
                                 </tr>
                             </tbody>
                         </table>
