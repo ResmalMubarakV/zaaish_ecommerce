@@ -1,5 +1,5 @@
 const products = [
-  // ==================== MEN PRODUCTS (1-15) ====================
+  // ==================== MEN PRODUCTS (1-10) ====================
   {
     name: "Architectural Cashmere Sweater",
     description: "Handcrafted from 100% Mongolian cashmere, offering uncompromised softness and a structured modern silhouette designed for contemporary elegance.",
@@ -16,8 +16,7 @@ const products = [
     material: "Cashmere Blend",
     gender: "Men",
     images: [
-      { url: "https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=800&q=80", altText: "Men Cashmere Sweater Front" },
-      { url: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80", altText: "Men Cashmere Sweater Style" }
+      { url: "https://images.unsplash.com/photo-1617137984095-74e4e5e3613f?auto=format&fit=crop&w=800&q=80", altText: "Men Cashmere Sweater Front" }
     ],
     isFeatured: true,
     isPublished: true,
@@ -40,8 +39,7 @@ const products = [
     material: "Egyptian Cotton",
     gender: "Men",
     images: [
-      { url: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=800&q=80", altText: "Men Poplin Shirt Front" },
-      { url: "https://images.unsplash.com/photo-1598033129183-c4f50c736f10?auto=format&fit=crop&w=800&q=80", altText: "Men Shirt Detail" }
+      { url: "https://images.unsplash.com/photo-1602810318383-e386cc2a3ccf?auto=format&fit=crop&w=800&q=80", altText: "Men Poplin Shirt Front" }
     ],
     isFeatured: true,
     isPublished: true,
@@ -64,8 +62,7 @@ const products = [
     material: "Virgin Wool",
     gender: "Men",
     images: [
-      { url: "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=800&q=80", altText: "Men Overcoat Front" },
-      { url: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80", altText: "Men Tailored Coat" }
+      { url: "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=800&q=80", altText: "Men Overcoat Front" }
     ],
     isFeatured: true,
     isPublished: true,
@@ -234,7 +231,7 @@ const products = [
     numReviews: 26
   },
 
-  // ==================== WOMEN PRODUCTS (16-30) ====================
+  // ==================== WOMEN PRODUCTS (11-20) ====================
   {
     name: "Silk Charmeuse Draped Blouse",
     description: "100% 19-momme Mulberry silk drape blouse featuring a high cowl neck and subtle French cuffs.",
@@ -251,8 +248,7 @@ const products = [
     material: "Mulberry Silk",
     gender: "Women",
     images: [
-      { url: "https://images.unsplash.com/photo-1564257631407-4deb1f99d992?auto=format&fit=crop&w=800&q=80", altText: "Women Silk Blouse" },
-      { url: "https://images.unsplash.com/photo-1539109136881-3be0616acf4b?auto=format&fit=crop&w=800&q=80", altText: "Women Silk Detail" }
+      { url: "https://images.unsplash.com/photo-1564257631407-4deb1f99d992?auto=format&fit=crop&w=800&q=80", altText: "Women Silk Blouse" }
     ],
     isFeatured: true,
     isPublished: true,
@@ -420,8 +416,54 @@ const products = [
     rating: 4.8,
     numReviews: 19
   },
+  {
+    name: "Linen Drawstring Resort Shirt",
+    description: "Relaxed sheer linen shirt with cinched hemline drawstrings for adjustable summer styling.",
+    price: 170,
+    discountPrice: null,
+    countInStock: 35,
+    sku: "ZSH-WMN-009",
+    category: "Top Wear",
+    subCategory: "Shirts",
+    brand: "Zaaish Collection",
+    sizes: ["XS", "S", "M", "L"],
+    colors: ["Ivory", "Olive", "Champagne"],
+    collections: "Women",
+    material: "Irish Linen",
+    gender: "Women",
+    images: [
+      { url: "https://images.unsplash.com/photo-1485230895905-ec40ba36b9bc?auto=format&fit=crop&w=800&q=80", altText: "Women Linen Shirt" }
+    ],
+    isFeatured: false,
+    isPublished: true,
+    rating: 4.6,
+    numReviews: 14
+  },
+  {
+    name: "High-Rise Tailored Wool Culottes",
+    description: "Cropped wide-leg wool blend culottes styled with clean front darts and concealed zip fastening.",
+    price: 230,
+    discountPrice: 195,
+    countInStock: 18,
+    sku: "ZSH-WMN-010",
+    category: "Bottom Wear",
+    subCategory: "Trousers",
+    brand: "Zaaish Reserve",
+    sizes: ["XS", "S", "M", "L"],
+    colors: ["Black", "Cream", "Navy"],
+    collections: "Women",
+    material: "Virgin Wool",
+    gender: "Women",
+    images: [
+      { url: "https://images.unsplash.com/photo-1594633312681-425c7b97ccd1?auto=format&fit=crop&w=800&q=80", altText: "Women Culottes" }
+    ],
+    isFeatured: false,
+    isPublished: true,
+    rating: 4.8,
+    numReviews: 16
+  },
 
-  // ==================== UNISEX ACCESSORIES & FOOTWEAR (31-40) ====================
+  // ==================== UNISEX & ACCESSORIES (21-30) ====================
   {
     name: "Minimalist Nappa Leather Sneakers",
     description: "Low-top leather sneakers crafted with Italian nappa leather uppers and durable Vibram rubber soles.",
@@ -513,6 +555,144 @@ const products = [
     isPublished: true,
     rating: 4.8,
     numReviews: 50
+  },
+  {
+    name: "Pure Silk Twill Square Scarf",
+    description: "Square silk scarf featuring hand-rolled edges and a hand-painted abstract geometric motif.",
+    price: 160,
+    discountPrice: null,
+    countInStock: 40,
+    sku: "ZSH-UNI-005",
+    category: "Accessories",
+    subCategory: "Scarves",
+    brand: "Zaaish Atelier",
+    sizes: ["S", "M"],
+    colors: ["Emerald", "Champagne", "Ivory"],
+    collections: "Women",
+    material: "Mulberry Silk",
+    gender: "Unisex",
+    images: [
+      { url: "https://images.unsplash.com/photo-1601924994987-69e26d50dc26?auto=format&fit=crop&w=800&q=80", altText: "Silk Scarf" }
+    ],
+    isFeatured: false,
+    isPublished: true,
+    rating: 4.9,
+    numReviews: 15
+  },
+  {
+    name: "Braided Leather Dress Belt",
+    description: "Hand-woven full-grain calfskin leather belt with custom brushed solid brass buckle.",
+    price: 130,
+    discountPrice: 110,
+    countInStock: 35,
+    sku: "ZSH-UNI-006",
+    category: "Accessories",
+    subCategory: "Belts",
+    brand: "Zaaish Collection",
+    sizes: ["30", "32", "34", "36"],
+    colors: ["Charcoal", "Black", "Sand"],
+    collections: "Men",
+    material: "Italian Leather",
+    gender: "Unisex",
+    images: [
+      { url: "https://images.unsplash.com/photo-1624222247344-550fb60583dc?auto=format&fit=crop&w=800&q=80", altText: "Braided Belt" }
+    ],
+    isFeatured: false,
+    isPublished: true,
+    rating: 4.7,
+    numReviews: 22
+  },
+  {
+    name: "Hand-Knitted Cable Knit Cardigan",
+    description: "Chunky cable knit cardigan spun from un-dyed virgin wool with genuine leather knot buttons.",
+    price: 390,
+    discountPrice: 345,
+    countInStock: 15,
+    sku: "ZSH-UNI-007",
+    category: "Top Wear",
+    subCategory: "Sweaters",
+    brand: "Zaaish Reserve",
+    sizes: ["M", "L", "XL"],
+    colors: ["Cream", "Charcoal", "Sand"],
+    collections: "Men",
+    material: "Virgin Wool",
+    gender: "Unisex",
+    images: [
+      { url: "https://images.unsplash.com/photo-1516826957135-700dedea698c?auto=format&fit=crop&w=800&q=80", altText: "Cable Cardigan" }
+    ],
+    isFeatured: true,
+    isPublished: true,
+    rating: 4.9,
+    numReviews: 12
+  },
+  {
+    name: "Luxury Silk Knit Polo Shirt",
+    description: "Fine gauge Mulberry silk-blend knitted polo shirt with ribbed open collar and seamless shoulders.",
+    price: 220,
+    discountPrice: null,
+    countInStock: 28,
+    sku: "ZSH-UNI-008",
+    category: "Top Wear",
+    subCategory: "T-Shirts",
+    brand: "Zaaish Atelier",
+    sizes: ["XS", "S", "M", "L", "XL"],
+    colors: ["Champagne", "Navy", "Black"],
+    collections: "Top Wear",
+    material: "Mulberry Silk",
+    gender: "Unisex",
+    images: [
+      { url: "https://images.unsplash.com/photo-1625910513413-7a96163351d5?auto=format&fit=crop&w=800&q=80", altText: "Silk Knit Polo" }
+    ],
+    isFeatured: false,
+    isPublished: true,
+    rating: 4.7,
+    numReviews: 19
+  },
+  {
+    name: "Pure Irish Linen Utility Shirt",
+    description: "Pre-washed breathable Irish linen overshirt styled with chest utility pockets and horn buttons.",
+    price: 195,
+    discountPrice: 175,
+    countInStock: 22,
+    sku: "ZSH-UNI-009",
+    category: "Top Wear",
+    subCategory: "Shirts",
+    brand: "Zaaish Atelier",
+    sizes: ["S", "M", "L", "XL"],
+    colors: ["Olive", "Sand", "Cream"],
+    collections: "Top Wear",
+    material: "Irish Linen",
+    gender: "Unisex",
+    images: [
+      { url: "https://images.unsplash.com/photo-1507679799987-c73779587ccf?auto=format&fit=crop&w=800&q=80", altText: "Linen Utility Shirt" }
+    ],
+    isFeatured: false,
+    isPublished: true,
+    rating: 4.8,
+    numReviews: 15
+  },
+  {
+    name: "Asymmetric Draped Jersey Top",
+    description: "Avant-garde draped top with asymmetric hem and gathered shoulder detailing in fluid Japanese jersey.",
+    price: 195,
+    discountPrice: 165,
+    countInStock: 28,
+    sku: "ZSH-UNI-010",
+    category: "Top Wear",
+    subCategory: "Blouses",
+    brand: "Zaaish Collection",
+    sizes: ["XS", "S", "M"],
+    colors: ["Black", "Sand", "Emerald"],
+    collections: "Women",
+    material: "Egyptian Cotton",
+    gender: "Unisex",
+    images: [
+      { url: "https://images.unsplash.com/photo-1503342217505-b0a15ec3261c?auto=format&fit=crop&w=800&q=80", altText: "Asymmetric Top" }
+    ],
+    isFeatured: false,
+    isPublished: true,
+    rating: 4.7,
+    numReviews: 12
   }
 ];
 
