@@ -57,12 +57,22 @@ const ProductDetails = () => {
                 if (prod.colors && prod.colors.length > 0) setSelectedColor(prod.colors[0]);
                 
                 if (prod.category) {
-                    const simResponse = await fetch(`/api/products?category=${prod.category}&limit=4`);
+                    const simResponse = await fetch(`/api/products?category=${prod.category}&limit=6`);
                     const simData = await simResponse.json();
                     if (simResponse.ok) {
-                        setSimilarProducts((simData.products || []).filter(p => p._id !== id));
+                        let simList = (simData.products || []).filter(p => p._id !== id);
+                        if (simList.length < 4) {
+                            const fallbackRes = await fetch(`/api/products?limit=6`);
+                            const fallbackData = await fallbackRes.json();
+                            if (fallbackRes.ok) {
+                                const extras = (fallbackData.products || []).filter(p => p._id !== id && !simList.some(item => item._id === p._id));
+                                simList = [...simList, ...extras];
+                            }
+                        }
+                        setSimilarProducts(simList.slice(0, 4));
                     }
                 }
+
             } else {
                 console.error("Failed to fetch product:", data.message);
             }
