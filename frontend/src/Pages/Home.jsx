@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import Hero from "../components/Layout/Hero";
 import FeaturedCollection from "../components/Products/FeaturedCollection";
 import FeaturesSection from "../components/Products/FeaturesSection";
@@ -46,6 +46,28 @@ const Home = () => {
   const [loadingBest, setLoadingBest] = useState(!cached?.bestSellers?.length);
   const [loadingWomen, setLoadingWomen] = useState(!cached?.womenProducts?.length);
 
+  // Lazy loading observers state & refs
+  const [loadBestTriggered, setLoadBestTriggered] = useState(false);
+  const [loadWomenTriggered, setLoadWomenTriggered] = useState(false);
+  const bestSellersRef = useRef(null);
+  const womenProductsRef = useRef(null);
+
+  const fetchSection = async (url, setter, setLoading, variant) => {
+    try {
+      const response = await fetch(url);
+      const data = await response.json();
+      if (response.ok) {
+        const products = data.products || [];
+        setter(products);
+        preloadProductImages(products, { variant, count: 8 });
+      }
+    } catch (error) {
+      console.error(`Error loading home products from ${url}:`, error);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     if (cached) {
       preloadProductImages(cached.newArrivals, { variant: "carousel", count: 4 });
@@ -53,28 +75,65 @@ const Home = () => {
       preloadProductImages(cached.womenProducts, { variant: "grid", count: 4 });
     }
 
-    const fetchSection = async (url, setter, setLoading, variant) => {
-      try {
-        const response = await fetch(url);
-        const data = await response.json();
-        if (response.ok) {
-          const products = data.products || [];
-          setter(products);
-          preloadProductImages(products, { variant, count: 8 });
-        }
-      } catch (error) {
-        console.error(`Error loading home products from ${url}:`, error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    Promise.all([
-      fetchSection('/api/products?limit=8&sortBy=newest', setNewArrivals, setLoadingNew, "carousel"),
-      fetchSection('/api/products?sortBy=popularity&limit=4', setBestSellers, setLoadingBest, "grid"),
-      fetchSection('/api/products?gender=Women&limit=4', setWomenProducts, setLoadingWomen, "grid"),
-    ]);
+    // Always fetch New Arrivals immediately (above the fold)
+    fetchSection('/api/products?limit=8&sortBy=newest', setNewArrivals, setLoadingNew, "carousel");
   }, [cached]);
+
+  // Observer for Best Sellers
+  useEffect(() => {
+    if (bestSellers.length > 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setLoadBestTriggered(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "250px" }
+    );
+
+    if (bestSellersRef.current) {
+      observer.observe(bestSellersRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [bestSellers]);
+
+  // Fetch Best Sellers when visible
+  useEffect(() => {
+    if (loadBestTriggered && bestSellers.length === 0) {
+      fetchSection('/api/products?sortBy=popularity&limit=4', setBestSellers, setLoadingBest, "grid");
+    }
+  }, [loadBestTriggered, bestSellers]);
+
+  // Observer for Women's Products
+  useEffect(() => {
+    if (womenProducts.length > 0) return;
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting) {
+          setLoadWomenTriggered(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "250px" }
+    );
+
+    if (womenProductsRef.current) {
+      observer.observe(womenProductsRef.current);
+    }
+
+    return () => observer.disconnect();
+  }, [womenProducts]);
+
+  // Fetch Women's Products when visible
+  useEffect(() => {
+    if (loadWomenTriggered && womenProducts.length === 0) {
+      fetchSection('/api/products?gender=Women&limit=4', setWomenProducts, setLoadingWomen, "grid");
+    }
+  }, [loadWomenTriggered, womenProducts]);
 
   useEffect(() => {
     if (!loadingNew && !loadingBest && !loadingWomen) {
@@ -89,7 +148,7 @@ const Home = () => {
 
         <NewArrivals products={newArrivals} loading={loadingNew} />
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div ref={bestSellersRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           <div className="text-center mb-8 sm:mb-12">
             <span className="text-[10px] uppercase tracking-[0.3em] text-stone-400 dark:text-stone-500 font-medium block mb-2">Most Popular</span>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-light tracking-wide">Best Sellers</h2>
@@ -101,7 +160,7 @@ const Home = () => {
           )}
         </div>
 
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
+        <div ref={womenProductsRef} className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 sm:py-16">
           <div className="text-center mb-8 sm:mb-12">
             <span className="text-[10px] uppercase tracking-[0.3em] text-stone-400 dark:text-stone-500 font-medium block mb-2">Featured Category</span>
             <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-light tracking-wide">Top Wears For Women</h2>

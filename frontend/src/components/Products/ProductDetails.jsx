@@ -42,6 +42,13 @@ const ProductDetails = () => {
     const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
     const [zoomStyle, setZoomStyle] = useState({ transform: 'scale(1)', transformOrigin: 'center' });
 
+    const getEstimatedDeliveryDate = () => {
+        const date = new Date();
+        date.setDate(date.getDate() + 3);
+        const options = { weekday: 'short', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+    };
+
     // Wishlist state and handlers
     const [isWishlisted, setIsWishlisted] = useState(false);
 
@@ -522,6 +529,13 @@ const ProductDetails = () => {
                         </div>
                     ) : null}
 
+                    {product.countInStock > 0 && product.countInStock <= 5 && (
+                        <div className="mb-4 flex items-center gap-2 p-3 bg-rose-50 dark:bg-rose-955/20 text-rose-600 dark:text-rose-400 rounded-xl border border-rose-100 dark:border-rose-950/30 text-xs font-medium tracking-wide animate-pulse">
+                            <span className="h-1.5 w-1.5 rounded-full bg-rose-500 animate-ping"></span>
+                            Only {product.countInStock} items left in stock — order soon!
+                        </div>
+                    )}
+
                     {/* Actions row: Add to Cart (if stock > 0), Wishlist, and Share */}
                     <div className="flex flex-col sm:flex-row gap-3.5 mb-8">
                         {product.countInStock > 0 && (
@@ -557,6 +571,15 @@ const ProductDetails = () => {
                                 <FiShare2 className="w-5 h-5 text-stone-700 dark:text-stone-300 transition-transform hover:scale-110 active:scale-95" />
                                 {product.countInStock === 0 && <span className="ml-2 text-xs font-medium uppercase tracking-[0.15em] text-stone-700 dark:text-stone-300">Share</span>}
                             </button>
+                        </div>
+                    </div>
+
+                    {/* Estimated Delivery Information */}
+                    <div className="mb-6 p-4 bg-stone-50 dark:bg-stone-900/40 rounded-2xl border border-stone-200/80 dark:border-stone-800 text-xs font-light text-stone-600 dark:text-stone-300 flex items-center gap-3">
+                        <span className="text-lg">🚚</span>
+                        <div>
+                            <p className="font-semibold text-stone-900 dark:text-stone-100">Estimated Delivery</p>
+                            <p>Arrives by <span className="font-bold text-stone-950 dark:text-white">{getEstimatedDeliveryDate()}</span> (Complimentary Express Shipping)</p>
                         </div>
                     </div>
 

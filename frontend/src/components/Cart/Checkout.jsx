@@ -9,6 +9,13 @@ const Checkout = () => {
     const [loading, setLoading] = useState(true);
     const [checkoutId, setCheckoutId] = useState(null);
     const [userInfo, setUserInfo] = useState(null);
+
+    const getEstimatedDeliveryDate = () => {
+        const date = new Date();
+        date.setDate(date.getDate() + 3);
+        const options = { weekday: 'short', month: 'short', day: 'numeric' };
+        return date.toLocaleDateString('en-US', options);
+    };
     
     const [shippingAddress, setShippingAddress] = useState({
         firstName: "",
@@ -20,6 +27,9 @@ const Checkout = () => {
         country: "",
         phone: "",
     })
+
+    const [savedAddresses, setSavedAddresses] = useState([]);
+    const [showSavedSelector, setShowSavedSelector] = useState(false);
 
     // Promo Code and Credit Card states
     const [promoCode, setPromoCode] = useState("");
@@ -103,6 +113,29 @@ const Checkout = () => {
                         products: formattedProducts,
                         totalPrice: total
                     });
+                }
+
+                // Fetch profile to get saved shipping destinations
+                const profileResponse = await fetch('/api/users/profile', {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const profileData = await profileResponse.json();
+                if (profileResponse.ok && profileData.user) {
+                    setSavedAddresses(profileData.user.shippingAddresses || []);
+                    // Autofill if default is present
+                    const defaultAddress = (profileData.user.shippingAddresses || []).find(addr => addr.isDefault);
+                    if (defaultAddress) {
+                        setShippingAddress({
+                            firstName: defaultAddress.firstName || "",
+                            lastName: defaultAddress.lastName || "",
+                            address: defaultAddress.address || "",
+                            city: defaultAddress.city || "",
+                            state: defaultAddress.state || "",
+                            postalCode: defaultAddress.postalCode || "",
+                            country: defaultAddress.country || "",
+                            phone: defaultAddress.phone || ""
+                        });
+                    }
                 }
             } catch (error) {
                 console.error("Error fetching checkout data:", error);
@@ -221,7 +254,7 @@ const Checkout = () => {
                                 )}
                                 <div className="flex justify-between">
                                     <span>Shipping</span>
-                                    <span className="font-medium text-stone-850 dark:text-stone-200">Free</span>
+                                    <span className="font-medium text-stone-855 dark:text-stone-150">Free (Est. delivery: {getEstimatedDeliveryDate()})</span>
                                 </div>
                             </div>
                         </div>
@@ -241,7 +274,64 @@ const Checkout = () => {
                         disabled />
                     </div>
 
-                    <h3 className='text-[11px] uppercase tracking-[0.2em] font-medium mb-4 text-stone-400 dark:text-stone-500'>Delivery Address</h3>
+                    <div className="flex justify-between items-center mb-4 border-b border-stone-100 dark:border-stone-800 pb-2">
+                        <h3 className='text-[11px] uppercase tracking-[0.2em] font-medium text-stone-400 dark:text-stone-500'>Delivery Address</h3>
+                        {savedAddresses.length > 0 && (
+                            <button
+                                type="button"
+                                onClick={() => setShowSavedSelector(!showSavedSelector)}
+                                className="text-[10px] uppercase tracking-wider font-semibold text-stone-900 dark:text-stone-100 hover:underline cursor-pointer"
+                            >
+                                {showSavedSelector ? "Hide Saved" : "Choose From Saved Address"}
+                            </button>
+                        )}
+                    </div>
+
+                    {showSavedSelector && savedAddresses.length > 0 && (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6 p-4 bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200 dark:border-stone-800 animate-in fade-in duration-200">
+                            {savedAddresses.map((addr) => (
+                                <div 
+                                    key={addr._id}
+                                    onClick={() => {
+                                        setShippingAddress({
+                                            firstName: addr.firstName || "",
+                                            lastName: addr.lastName || "",
+                                            address: addr.address || "",
+                                            city: addr.city || "",
+                                            state: addr.state || "",
+                                            postalCode: addr.postalCode || "",
+                                            country: addr.country || "",
+                                            phone: addr.phone || ""
+                                        });
+                                        setShowSavedSelector(false);
+                                        toast.success(`Autofilled: "${addr.label}" Address`);
+                                    }}
+                                    className="p-3 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl hover:border-stone-950 dark:hover:border-stone-100 cursor-pointer transition text-left animate-in zoom-in-95 duration-150"
+                                >
+                                    <div className="flex justify-between items-center mb-1">
+                                        <span className="text-[10px] font-black uppercase tracking-wider bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 px-2 py-0.5 rounded">
+                                            {addr.label}
+                                        </span>
+                                        {addr.isDefault && (
+                                            <span className="text-[8px] font-bold text-stone-450 dark:text-stone-500 uppercase tracking-widest">
+                                                DEFAULT
+                                            </span>
+                                        )}
+                                    </div>
+                                    <p className="text-xs font-bold text-stone-900 dark:text-stone-100 mt-1">
+                                        {addr.firstName} {addr.lastName}
+                                    </p>
+                                    <p className="text-[11px] text-stone-500 dark:text-stone-400 mt-0.5 line-clamp-1">
+                                        {addr.address}, {addr.city}
+                                    </p>
+                                    <p className="text-[10px] text-stone-400 mt-0.5">
+                                        TEL: {addr.phone}
+                                    </p>
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                     <div className='mb-5 grid grid-cols-1 sm:grid-cols-2 gap-5'>
                         <div>
                             <label className='block text-stone-600 dark:text-stone-300 text-[11px] font-medium uppercase tracking-[0.15em] mb-2'>First Name</label>
@@ -506,6 +596,29 @@ const Checkout = () => {
                     </div>
                     {promoError && <p className='text-rose-500 text-[10px] mt-2 font-medium tracking-wide'>{promoError}</p>}
                     {appliedCode && <p className='text-emerald-600 dark:text-emerald-400 text-[10px] mt-2 font-medium tracking-wide'>🎉 Code {appliedCode} applied (10% discount)</p>}
+                    
+                    {!appliedCode && (
+                        <div className="mt-3 flex items-center gap-2 overflow-x-auto scrollbar-none py-1">
+                            <span className="text-[10px] text-stone-400 uppercase tracking-widest font-semibold shrink-0">Offers:</span>
+                            {["ZAAISH10", "WELCOME10", "LUXURY"].map((code) => (
+                                <button
+                                    key={code}
+                                    type="button"
+                                    onClick={() => {
+                                        setPromoCode(code);
+                                        const discountAmount = cart.totalPrice * 0.1;
+                                        setDiscount(discountAmount);
+                                        setAppliedCode(code);
+                                        setPromoError("");
+                                        toast.success(`Promo code ${code} applied successfully!`);
+                                    }}
+                                    className="p-1.5 px-3 border border-stone-200 dark:border-stone-800 bg-stone-100/50 dark:bg-stone-900 rounded-lg text-[9px] font-black uppercase tracking-wider text-stone-700 dark:text-stone-300 hover:border-stone-950 dark:hover:border-stone-100 transition cursor-pointer"
+                                >
+                                    {code} (10%)
+                                </button>
+                            ))}
+                        </div>
+                    )}
                 </div>
 
                 <div className='flex justify-between items-center text-xs uppercase tracking-[0.15em] mb-3 text-stone-500 dark:text-stone-400 font-light'>
@@ -520,7 +633,7 @@ const Checkout = () => {
                 )}
                 <div className='flex justify-between items-center text-xs uppercase tracking-[0.15em] mb-6 text-stone-500 dark:text-stone-400 font-light'>
                     <span>Shipping</span>
-                    <span>Free</span>
+                    <span className="font-semibold text-stone-700 dark:text-stone-300">Free (Est. delivery: {getEstimatedDeliveryDate()})</span>
                 </div>
                 <div className='flex justify-between items-center text-lg font-serif font-light tracking-wide border-t border-stone-200 dark:border-stone-800 pt-6 text-stone-900 dark:text-stone-100'>
                     <span>Total</span>

@@ -109,6 +109,17 @@ const Navbar = () => {
         return () => window.removeEventListener("openCart", handleOpenCart);
     }, []);
 
+    useEffect(() => {
+        if (navDrawerOpen || drawerOpen) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [navDrawerOpen, drawerOpen]);
+
     const openDrawer = () => setNavDrawerOpen(true);
     const closeDrawer = () => setNavDrawerOpen(false);
 

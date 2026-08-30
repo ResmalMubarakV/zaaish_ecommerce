@@ -62,6 +62,31 @@ router.post("/", protect, async (req, res, next) => {
 
         // Clear user's cart upon successful order placement
         req.user.cart = [];
+        
+        // Save shipping address to user's saved list if not already present
+        const user = req.user;
+        if (user) {
+            const alreadyExists = (user.shippingAddresses || []).some(
+                addr => 
+                    addr.address.toLowerCase().trim() === shippingAddress.address.toLowerCase().trim() &&
+                    addr.city.toLowerCase().trim() === shippingAddress.city.toLowerCase().trim() &&
+                    addr.postalCode.toLowerCase().trim() === shippingAddress.postalCode.toLowerCase().trim()
+            );
+            if (!alreadyExists) {
+                user.shippingAddresses.push({
+                    label: user.shippingAddresses.length === 0 ? "Default" : `Address ${user.shippingAddresses.length + 1}`,
+                    firstName: shippingAddress.firstName,
+                    lastName: shippingAddress.lastName,
+                    phone: shippingAddress.phone,
+                    address: shippingAddress.address,
+                    city: shippingAddress.city,
+                    state: shippingAddress.state || "",
+                    postalCode: shippingAddress.postalCode,
+                    country: shippingAddress.country,
+                    isDefault: user.shippingAddresses.length === 0
+                });
+            }
+        }
         await req.user.save();
 
         res.status(201).json({ success: true, order: createdOrder });
