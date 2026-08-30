@@ -229,13 +229,13 @@ const Checkout = () => {
                                     <p className='text-stone-500 dark:text-stone-400 text-xs mt-0.5'>Qty: {product.quantity}</p>
                                 </div>
                             </div>
-                            <p className='font-medium text-stone-900 dark:text-stone-100 text-sm'>${(product.price * product.quantity).toLocaleString()}</p>
+                            <p className='font-medium text-stone-900 dark:text-stone-100 text-sm'>₹{(product.price * product.quantity).toLocaleString()}</p>
                         </div>
                      ))}
                 </div>
                 <div className='flex justify-between items-center text-xs uppercase tracking-[0.15em] mb-3 text-stone-500 dark:text-stone-400 font-light'>
                     <span>Subtotal</span>
-                    <span>${cart.totalPrice.toLocaleString()}</span>
+                    <span>₹{cart.totalPrice.toLocaleString()}</span>
                 </div>
                 <div className='flex justify-between items-center text-xs uppercase tracking-[0.15em] mb-6 text-stone-500 dark:text-stone-400 font-light'>
                     <span>Shipping</span>
@@ -243,7 +243,7 @@ const Checkout = () => {
                 </div>
                 <div className='flex justify-between items-center text-lg font-serif font-light tracking-wide border-t border-stone-200 dark:border-stone-800 pt-6 text-stone-900 dark:text-stone-100'>
                     <span>Total</span>
-                    <span className='font-medium'>${cart.totalPrice.toLocaleString()}</span>
+                    <span className='font-medium'>₹{cart.totalPrice.toLocaleString()}</span>
                 </div>
             </div>
 

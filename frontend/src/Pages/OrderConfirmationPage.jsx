@@ -112,8 +112,8 @@ const OrderConfirmationPage = () => {
                                               <p className='text-[10px] text-stone-400 uppercase tracking-wider'>{item.color} &bull; {item.size}</p>
                                           </td>
                                           <td className='py-3 text-center text-stone-600 dark:text-stone-400'>{item.quantity}</td>
-                                          <td className='py-3 text-right text-stone-600 dark:text-stone-400'>${item.price.toFixed(2)}</td>
-                                          <td className='py-3 text-right font-medium text-stone-900 dark:text-stone-100'>${(item.price * item.quantity).toFixed(2)}</td>
+                                          <td className='py-3 text-right text-stone-600 dark:text-stone-400'>₹{item.price.toFixed(2)}</td>
+                                          <td className='py-3 text-right font-medium text-stone-900 dark:text-stone-100'>₹{(item.price * item.quantity).toFixed(2)}</td>
                                       </tr>
                                   ))}
                               </tbody>
@@ -123,15 +123,15 @@ const OrderConfirmationPage = () => {
                       <div className='border-t border-stone-200 dark:border-stone-800 pt-4 space-y-2 text-xs font-light'>
                           <div className='flex justify-between text-stone-600 dark:text-stone-400'>
                               <span>Subtotal</span>
-                              <span>${order.totalPrice.toFixed(2)}</span>
+                              <span>₹{order.totalPrice.toFixed(2)}</span>
                           </div>
                           <div className='flex justify-between text-stone-600 dark:text-stone-400'>
                               <span>Shipping</span>
-                              <span>$0.00</span>
+                              <span>₹0.00</span>
                           </div>
                           <div className='flex justify-between text-stone-900 dark:text-stone-100 font-serif font-medium text-sm border-t border-stone-200 dark:border-stone-800 pt-3'>
                               <span>Total Amount</span>
-                              <span>${order.totalPrice.toFixed(2)}</span>
+                              <span>₹{order.totalPrice.toFixed(2)}</span>
                           </div>
                       </div>
 

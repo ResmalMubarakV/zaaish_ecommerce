@@ -94,7 +94,7 @@ const AdminHomePage = () => {
                             <span className="text-[10px] uppercase tracking-[0.2em] font-medium">Total Revenue</span>
                             <FiTrendingUp className="text-emerald-500 text-lg" />
                         </div>
-                        <p className="text-3xl font-serif font-light text-stone-900 dark:text-stone-100 mt-3">${stats.totalRevenue.toFixed(2)}</p>
+                        <p className="text-3xl font-serif font-light text-stone-900 dark:text-stone-100 mt-3">₹{stats.totalRevenue.toFixed(2)}</p>
                     </div>
                     <div className="mt-6 pt-4 border-t border-stone-100 dark:border-stone-800 text-xs text-emerald-600 dark:text-emerald-400 font-light">
                         <span>Verified Earnings</span>
@@ -208,7 +208,7 @@ const AdminHomePage = () => {
                                             #{order._id.substring(order._id.length - 8)}
                                         </td>
                                         <td className='py-4 px-6 font-medium text-stone-800 dark:text-stone-200 text-sm'>{order.user ? order.user.name : "Guest User"}</td>
-                                        <td className='py-4 px-6 font-semibold text-stone-900 dark:text-stone-100 text-sm'>${(order.totalPrice || 0).toFixed(2)}</td>
+                                        <td className='py-4 px-6 font-semibold text-stone-900 dark:text-stone-100 text-sm'>₹{(order.totalPrice || 0).toFixed(2)}</td>
                                         <td className='py-4 px-6'>
                                             <span className={`px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider ${
                                                 order.status === "Delivered" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" :

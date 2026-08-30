@@ -207,12 +207,12 @@ const AddProductPage = () => {
                     </div>
 
                     <div>
-                        <label className="block text-xs uppercase tracking-[0.15em] text-stone-400 font-medium mb-2">Regular Price ($) *</label>
+                        <label className="block text-xs uppercase tracking-[0.15em] text-stone-400 font-medium mb-2">Regular Price (₹) *</label>
                         <input type="number" name="price" value={productData.price} onChange={handleChange} required min="0" step="0.01" className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-stone-900 dark:focus:border-stone-100" placeholder="290.00" />
                     </div>
 
                     <div>
-                        <label className="block text-xs uppercase tracking-[0.15em] text-stone-400 font-medium mb-2">Discount Price ($)</label>
+                        <label className="block text-xs uppercase tracking-[0.15em] text-stone-400 font-medium mb-2">Discount Price (₹)</label>
                         <input type="number" name="discountPrice" value={productData.discountPrice} onChange={handleChange} min="0" step="0.01" className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-stone-900 dark:focus:border-stone-100" placeholder="Optional" />
                     </div>
 

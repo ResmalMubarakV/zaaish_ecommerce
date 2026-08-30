@@ -257,7 +257,7 @@ const ProductDetails = () => {
                         key={index}
                         src={image.url} 
                         alt={image.altText || `Thumbnail ${index}`} 
-                        className={`w-20 h-24 object-cover rounded-xl cursor-pointer border transition-all ${mainImage ===
+                        className={`w-20 h-24 object-contain p-1 rounded-xl cursor-pointer border transition-all ${mainImage ===
                             image.url ? "border-stone-950 dark:border-stone-100 ring-2 ring-stone-950/20 dark:ring-stone-100/20" : "border-stone-200 dark:border-stone-800 opacity-70 hover:opacity-100"
                         }`}
                         onClick={() => setMainImage(image.url)}
@@ -267,9 +267,9 @@ const ProductDetails = () => {
 
                 {/* Main Image */}
                 <div className="min-w-0">
-                    <div className="aspect-[4/5] overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-sm lg:h-[620px] lg:aspect-auto dark:border-stone-800 dark:bg-stone-800">
+                    <div className="aspect-[4/5] overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-sm lg:h-[620px] lg:aspect-auto dark:border-stone-800 dark:bg-stone-800 flex items-center justify-center p-4">
                         <img src={mainImage} alt={product.name} 
-                        className="h-full w-full object-cover" />
+                        className="h-full w-full object-contain" />
                     </div>
                 </div>
 
@@ -280,7 +280,7 @@ const ProductDetails = () => {
                         key={index}
                         src={image.url} 
                         alt={image.altText || `Thumbnail ${index}`} 
-                        className={`w-20 h-24 object-cover rounded-xl cursor-pointer border flex-shrink-0 ${mainImage ===
+                        className={`w-20 h-24 object-contain p-1 rounded-xl cursor-pointer border flex-shrink-0 ${mainImage ===
                             image.url ? "border-stone-950 dark:border-stone-100" : "border-stone-200 dark:border-stone-800 opacity-70"
                         }`}
                         onClick={() => setMainImage(image.url)}/>

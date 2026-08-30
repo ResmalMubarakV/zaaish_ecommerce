@@ -201,7 +201,7 @@ const Profile = () => {
                           </td>
                           <td className='py-4 px-4 font-mono text-xs font-medium text-stone-900 dark:text-stone-100'>#{order._id.substring(order._id.length - 8)}</td>
                           <td className='py-4 px-4 text-stone-500 dark:text-stone-400 font-light'>{new Date(order.createdAt).toLocaleDateString()}</td>
-                          <td className='py-4 px-4 text-right font-medium text-stone-900 dark:text-stone-100'>${(order.totalPrice || 0).toFixed(2)}</td>
+                          <td className='py-4 px-4 text-right font-medium text-stone-900 dark:text-stone-100'>₹{(order.totalPrice || 0).toFixed(2)}</td>
                           <td className='py-4 px-4 text-center'>
                             <span className='px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200'>
                               {order.status || "Processing"}

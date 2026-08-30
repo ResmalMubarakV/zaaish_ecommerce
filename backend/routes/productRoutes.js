@@ -187,11 +187,23 @@ router.get("/filter-options", async (req, res, next) => {
         const query = {};
 
         if (collection && collection.toLowerCase() !== "all") {
-            query.$or = [
-                { collections: { $regex: collection, $options: "i" } },
-                { gender: { $regex: collection, $options: "i" } },
-                { category: { $regex: collection, $options: "i" } }
+            const isMen = collection.toLowerCase() === "men";
+            const isWomen = collection.toLowerCase() === "women";
+            
+            const orConditions = [
+                { collections: { $regex: `^${collection}$`, $options: "i" } },
+                { category: { $regex: `^${collection}$`, $options: "i" } }
             ];
+            
+            if (isMen) {
+                orConditions.push({ gender: { $in: ["Men", "Unisex"] } });
+            } else if (isWomen) {
+                orConditions.push({ gender: { $in: ["Women", "Unisex"] } });
+            } else {
+                orConditions.push({ gender: { $regex: `^${collection}$`, $options: "i" } });
+            }
+            
+            query.$or = orConditions;
         }
 
         const products = await Product.find(query)
@@ -314,13 +326,23 @@ router.get("/", async (req, res, next) => {
 
         // Flexible Filter logic for collections and genders
         if (collection && collection.toLowerCase() !== "all") {
-            conditions.push({
-                $or: [
-                    { collections: { $regex: collection, $options: "i" } },
-                    { gender: { $regex: collection, $options: "i" } },
-                    { category: { $regex: collection, $options: "i" } }
-                ]
-            });
+            const isMen = collection.toLowerCase() === "men";
+            const isWomen = collection.toLowerCase() === "women";
+            
+            const orConditions = [
+                { collections: { $regex: `^${collection}$`, $options: "i" } },
+                { category: { $regex: `^${collection}$`, $options: "i" } }
+            ];
+            
+            if (isMen) {
+                orConditions.push({ gender: { $in: ["Men", "Unisex"] } });
+            } else if (isWomen) {
+                orConditions.push({ gender: { $in: ["Women", "Unisex"] } });
+            } else {
+                orConditions.push({ gender: { $regex: `^${collection}$`, $options: "i" } });
+            }
+            
+            conditions.push({ $or: orConditions });
         }
 
         if (category && category.toLowerCase() !== "all") {
@@ -347,7 +369,7 @@ router.get("/", async (req, res, next) => {
         }
 
         if (gender && gender.toLowerCase() !== "all") {
-            query.gender = { $regex: gender, $options: "i" };
+            query.gender = { $regex: `^${gender}$`, $options: "i" };
         }
 
         if (minPrice || maxPrice) {

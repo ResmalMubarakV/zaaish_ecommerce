@@ -1,9 +1,9 @@
 import { Link } from "react-router-dom";
 import { HiHeart, HiOutlineHeart } from "react-icons/hi2";
-import { getOptimizedImageUrl } from "../../utils/cloudinaryHelper";
+import { getProductCardImageUrl } from "../../utils/cloudinaryHelper";
 import ProductSkeleton from "./ProductSkeleton";
 
-const ProductGrid = ({ products, loading = false, wishlist = [], onToggleWishlist }) => {
+const ProductGrid = ({ products, loading = false, wishlist = [], onToggleWishlist, priorityCount = 0 }) => {
   if (loading) {
     return <ProductSkeleton count={8} />;
   }
@@ -18,13 +18,14 @@ const ProductGrid = ({ products, loading = false, wishlist = [], onToggleWishlis
 
   return (
     <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 sm:gap-5 lg:gap-8">
-      {products.map((product) => {
+      {products.map((product, index) => {
         const isWishlisted = Array.isArray(wishlist) && wishlist.some(
           (item) => (typeof item === "string" ? item : item?._id) === product._id
         );
 
         const rawImageUrl = product.images?.[0]?.url || "https://picsum.photos/600/600";
-        const optimizedUrl = getOptimizedImageUrl(rawImageUrl, { width: 600, height: 750, crop: "fill" });
+        const optimizedUrl = getProductCardImageUrl(rawImageUrl, "grid");
+        const isPriority = index < priorityCount;
 
         return (
           <div key={product._id} className="group relative flex flex-col">
@@ -34,8 +35,10 @@ const ProductGrid = ({ products, loading = false, wishlist = [], onToggleWishlis
                 <img
                   src={optimizedUrl}
                   alt={product.images?.[0]?.altText || product.name}
-                  loading="lazy"
-                  className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                  loading={isPriority ? "eager" : "lazy"}
+                  fetchPriority={isPriority ? "high" : "auto"}
+                  decoding="async"
+                  className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-700 ease-out"
                 />
               </Link>
 

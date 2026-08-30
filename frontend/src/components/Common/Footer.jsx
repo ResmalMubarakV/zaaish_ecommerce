@@ -5,13 +5,13 @@ import { Link } from "react-router-dom"
 
 const Footer = () => {
   return (
-    <footer className="bg-stone-900 dark:bg-stone-950 text-stone-300 dark:text-stone-400 py-16 border-t border-stone-800 dark:border-stone-900/80 transition-colors">
-      <div className="max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 px-6 lg:px-8">
+    <footer className="bg-stone-900 dark:bg-stone-950 text-stone-300 dark:text-stone-400 py-10 md:py-16 border-t border-stone-800 dark:border-stone-900/80 transition-colors">
+      <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-8 md:gap-12 px-6 lg:px-8">
         
         {/* Brand & Socials */}
-        <div className="space-y-4 text-center md:text-left">
-            <h3 className="text-white font-serif text-lg tracking-[0.25em] uppercase font-light">Zaaish</h3>
-            <p className="text-stone-400 dark:text-stone-500 text-xs tracking-wide max-w-xs mx-auto md:mx-0 font-light leading-relaxed">
+        <div className="space-y-3 md:space-y-4 text-center md:text-left">
+            <h3 className="text-white font-serif text-base md:text-lg tracking-[0.25em] uppercase font-light">Zaaish</h3>
+            <p className="text-stone-400 dark:text-stone-500 text-[11px] md:text-xs tracking-wide max-w-xs mx-auto md:mx-0 font-light leading-relaxed">
               Curated luxury apparel designed for the modern minimalist wardrobe.
             </p>
             <div className="flex justify-center md:justify-start items-center space-x-5 pt-2 text-stone-400">
@@ -29,7 +29,7 @@ const Footer = () => {
 
         {/* Shop Links */}
         <div className="text-center md:text-left">
-            <h4 className="text-white text-[11px] uppercase tracking-[0.2em] font-medium mb-4">Collections</h4>
+            <h4 className="text-white text-[11px] uppercase tracking-[0.2em] font-medium mb-2.5 md:mb-4">Collections</h4>
             <ul className="space-y-2.5 text-xs font-light text-stone-400">
                 <li><Link to="/collections/Men" className="hover:text-white transition-colors cursor-pointer inline-block py-0.5">Men's Apparel</Link></li>
                 <li><Link to="/collections/Women" className="hover:text-white transition-colors cursor-pointer inline-block py-0.5">Women's Apparel</Link></li>
@@ -40,7 +40,7 @@ const Footer = () => {
 
         {/* Support Links */}
         <div className="text-center md:text-left">
-            <h4 className="text-white text-[11px] uppercase tracking-[0.2em] font-medium mb-4">Client Services</h4>
+            <h4 className="text-white text-[11px] uppercase tracking-[0.2em] font-medium mb-2.5 md:mb-4">Client Services</h4>
             <ul className="space-y-2.5 text-xs font-light text-stone-400">
                 <li><Link to="#" className="hover:text-white transition-colors cursor-pointer inline-block py-0.5">Contact Us</Link></li>
                 <li><Link to="#" className="hover:text-white transition-colors cursor-pointer inline-block py-0.5">About Our Brand</Link></li>
@@ -51,8 +51,8 @@ const Footer = () => {
         
         {/* Newsletter Form */}
         <div className="text-center md:text-left">
-            <h4 className="text-white text-[11px] uppercase tracking-[0.2em] font-medium mb-4">Newsletter</h4>
-            <p className="text-stone-400 text-xs font-light mb-4 leading-relaxed">Subscribe to receive updates, access to exclusive releases, and 10% off.</p>
+            <h4 className="text-white text-[11px] uppercase tracking-[0.2em] font-medium mb-2.5 md:mb-4">Newsletter</h4>
+            <p className="text-stone-400 text-[11px] md:text-xs font-light mb-3 md:mb-4 leading-relaxed">Subscribe to receive updates, access to exclusive releases, and 10% off.</p>
             <form className="flex max-w-sm mx-auto md:mx-0 shadow-sm">
                 <input 
                     type="email" 
@@ -71,7 +71,7 @@ const Footer = () => {
       </div>
 
       {/* Bottom Copyright */}
-      <div className="max-w-7xl mx-auto mt-14 px-6 lg:px-8 border-t border-stone-800/60 dark:border-stone-900 pt-8 text-center flex flex-col sm:flex-row justify-between items-center text-stone-500 text-[11px] tracking-widest uppercase">
+      <div className="max-w-7xl mx-auto mt-10 md:mt-14 px-6 lg:px-8 border-t border-stone-800/60 dark:border-stone-900 pt-6 md:pt-8 text-center flex flex-col sm:flex-row justify-between items-center text-stone-500 text-[10px] md:text-[11px] tracking-widest uppercase">
           <p>&copy; {new Date().getFullYear()} ZAAISH. All Rights Reserved.</p>
           <div className="mt-4 sm:mt-0 space-x-6">
               <span className="hover:text-stone-400 transition-colors cursor-pointer">Privacy Policy</span>

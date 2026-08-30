@@ -129,7 +129,7 @@ const ProductManagement = () => {
                                         </td>
                                         <td className="py-4 px-6 font-mono text-xs text-stone-500 dark:text-stone-400">{product.sku || "N/A"}</td>
                                         <td className="py-4 px-6 font-semibold text-stone-900 dark:text-stone-100 text-sm">
-                                            ${(product.currentPrice || product.price || 0).toFixed(2)}
+                                            ₹{(product.currentPrice || product.price || 0).toFixed(2)}
                                         </td>
                                         <td className="py-4 px-6">
                                             <span className={`px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider ${product.countInStock > 0 ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" : "bg-rose-50 dark:bg-rose-950/50 text-rose-700 dark:text-rose-400 border border-rose-200 dark:border-rose-800"}`}>

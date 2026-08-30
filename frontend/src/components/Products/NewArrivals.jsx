@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi"
 import { Link } from "react-router-dom"
+import { getProductCardImageUrl } from "../../utils/cloudinaryHelper"
 
 // When `products` and `loading` props are provided (from Home.jsx),
 // the internal fetch is skipped to avoid redundant API calls.
@@ -150,15 +151,25 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
                 onMouseUp={handleMouseUpOrLeave}
                 onMouseLeave={handleMouseUpOrLeave}
             >
-                {newArrivals.map((product) => (
+                {newArrivals.map((product, index) => {
+                    const rawImageUrl = product.images?.[0]?.url || "https://placehold.co/500x600";
+                    const optimizedUrl = getProductCardImageUrl(rawImageUrl, "carousel");
+                    const isPriority = index < 3;
+
+                    return (
                     <div key={product._id} className="min-w-[80%] sm:min-w-[42%] lg:min-w-[28%] relative flex-shrink-0 group">
                         <div className="overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-4 shadow-sm">
-                            <img
-                                src={product.images?.[0]?.url || "https://placehold.co/500x600"}
-                                alt={product.images?.[0]?.altText || product.name}
-                                className="w-full h-[380px] sm:h-[440px] lg:h-[480px] object-cover rounded-2xl group-hover:scale-105 transition-transform duration-700 ease-out"
-                                draggable="false"
-                            />
+                            <Link to={`/product/${product._id}`} className="block w-full h-full">
+                                <img
+                                    src={optimizedUrl}
+                                    alt={product.images?.[0]?.altText || product.name}
+                                    loading={isPriority ? "eager" : "lazy"}
+                                    fetchPriority={isPriority ? "high" : "auto"}
+                                    decoding="async"
+                                    className="w-full h-[380px] sm:h-[440px] lg:h-[480px] object-contain p-3 rounded-2xl group-hover:scale-105 transition-transform duration-700 ease-out"
+                                    draggable="false"
+                                />
+                            </Link>
                         </div>
 
                         <div className="flex justify-between items-start px-1">
@@ -172,7 +183,8 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
                             </Link>
                         </div>
                     </div>
-                ))}
+                    );
+                })}
             </div>
         </section>
     );

@@ -126,7 +126,7 @@ const MyOrdersPage = () => {
                         {order.orderItems.reduce((acc, item) => acc + item.quantity, 0)}
                       </td>
                       <td className='py-4 px-4 text-right font-medium text-stone-900 dark:text-stone-100'>
-                        ${order.totalPrice.toFixed(2)}
+                        ₹{order.totalPrice.toFixed(2)}
                       </td>
                       <td className='py-4 px-4 text-center'>
                         <span className={`px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider ${order.isPaid ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" : "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"}`}>

@@ -266,9 +266,9 @@ const OrderDetailsPage = () => {
                                             <img src={item.image} alt={item.name} className='w-10 h-12 object-cover rounded-xl mr-4 border border-stone-200 dark:border-stone-800 no-print shadow-sm'/>
                                             <span className='text-stone-900 dark:text-stone-100 print:text-stone-900 font-serif font-medium'>{item.name}</span>
                                         </td> 
-                                        <td className="py-4 px-4">${item.price.toFixed(2)}</td>   
+                                        <td className="py-4 px-4">₹{item.price.toFixed(2)}</td>   
                                         <td className="py-4 px-4">{item.quantity}</td>   
-                                        <td className="py-4 px-4 font-medium text-stone-900 dark:text-stone-100 print:text-stone-900">${(item.price * item.quantity).toFixed(2)}</td>   
+                                        <td className="py-4 px-4 font-medium text-stone-900 dark:text-stone-100 print:text-stone-900">₹{(item.price * item.quantity).toFixed(2)}</td>   
                                     </tr>
                                 ))}
                             </tbody>
@@ -279,15 +279,15 @@ const OrderDetailsPage = () => {
                     <div className='border-t border-stone-200 dark:border-stone-800 print:border-stone-200 mt-8 pt-6 max-w-xs ml-auto space-y-2 text-xs font-light'>
                         <div className='flex justify-between text-stone-600 dark:text-stone-400 print:text-stone-600'>
                             <span>Subtotal</span>
-                            <span>${orderDetails.totalPrice.toFixed(2)}</span>
+                            <span>₹{orderDetails.totalPrice.toFixed(2)}</span>
                         </div>
                         <div className='flex justify-between text-stone-600 dark:text-stone-400 print:text-stone-600'>
                             <span>Shipping</span>
-                            <span>$0.00</span>
+                            <span>₹0.00</span>
                         </div>
                         <div className='flex justify-between text-stone-900 dark:text-stone-100 print:text-stone-900 font-serif font-medium text-base border-t border-stone-200 dark:border-stone-800 print:border-stone-200 pt-3'>
                             <span>Total</span>
-                            <span>${orderDetails.totalPrice.toFixed(2)}</span>
+                            <span>₹{orderDetails.totalPrice.toFixed(2)}</span>
                         </div>
                     </div>
 

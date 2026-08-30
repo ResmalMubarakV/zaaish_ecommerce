@@ -180,7 +180,7 @@ const OrderManagement = () => {
                                             {order.shippingAddress?.firstName ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}` : (order.user?.name || "Guest")}
                                         </td>
                                         <td className="py-4 px-6 font-semibold text-stone-900 dark:text-stone-100 text-sm">
-                                            ${(order.totalPrice || 0).toFixed(2)}
+                                            ₹{(order.totalPrice || 0).toFixed(2)}
                                         </td>
                                         <td className="py-4 px-6">
                                             <span className={`px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider ${order.isPaid ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" : "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"}`}>
@@ -275,14 +275,14 @@ const OrderManagement = () => {
                                             <p className="text-[11px] text-stone-500 font-light mt-0.5">Size: {item.size} &bull; Color: {item.color} &bull; Qty: {item.quantity}</p>
                                         </div>
                                     </div>
-                                    <p className="text-xs sm:text-sm font-medium text-stone-900 dark:text-stone-100 whitespace-nowrap ml-2">${(item.price * item.quantity).toFixed(2)}</p>
+                                    <p className="text-xs sm:text-sm font-medium text-stone-900 dark:text-stone-100 whitespace-nowrap ml-2">₹{(item.price * item.quantity).toFixed(2)}</p>
                                 </div>
                             ))}
                         </div>
 
                         <div className="border-t border-stone-100 dark:border-stone-800 pt-5 flex justify-between items-center">
                             <span className="font-serif font-light text-base tracking-wide">Total Order Amount</span>
-                            <span className="text-lg sm:text-xl font-serif font-medium">${selectedOrder.totalPrice.toFixed(2)}</span>
+                            <span className="text-lg sm:text-xl font-serif font-medium">₹{selectedOrder.totalPrice.toFixed(2)}</span>
                         </div>
 
                         <div className="mt-8 flex flex-col sm:flex-row gap-3 justify-end">
@@ -357,7 +357,7 @@ const OrderManagement = () => {
                         </div>
                         <div className="border-r-2 border-black pr-2">
                             <span className="text-[10px] font-bold uppercase block">DECLARED VALUE</span>
-                            <span className="text-sm font-extrabold">${printConsignmentOrder.totalPrice?.toFixed(2)}</span>
+                            <span className="text-sm font-extrabold">₹{printConsignmentOrder.totalPrice?.toFixed(2)}</span>
                         </div>
                         <div>
                             <span className="text-[10px] font-bold uppercase block">PACKAGE COUNT</span>
