@@ -8,10 +8,15 @@ const Register = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [acceptTerms, setAcceptTerms] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+        if (!acceptTerms) {
+            alert("Please accept the Terms & Conditions and Privacy Policy to register.");
+            return;
+        }
         try {
             const response = await fetch("/api/users/register", {
                 method: "POST",
@@ -59,10 +64,10 @@ const Register = () => {
     };
 
   return (
-    <div className='flex min-h-[calc(100dvh-73px)] w-full bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors'>
+    <div className='flex h-[calc(100vh-73px)] w-full bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors overflow-hidden'>
       
       {/* Left Side: Form Container */}
-      <div className='w-full md:w-1/2 flex flex-col justify-center items-center p-4 sm:p-8 lg:p-10'>
+      <div className='w-full md:w-1/2 flex flex-col justify-center items-center p-4 sm:p-8 lg:p-10 h-full overflow-y-auto'>
         <form onSubmit={handleSubmit} className='my-6 w-full max-w-md bg-white dark:bg-stone-900 p-6 sm:p-10 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm'>
           
           <div className='flex justify-center mb-6'>
@@ -116,6 +121,20 @@ const Register = () => {
             </div>
           </div>
 
+          <div className='mb-6 flex items-start gap-2.5 select-none'>
+            <input 
+              type="checkbox" 
+              id="acceptTerms"
+              checked={acceptTerms}
+              onChange={(e) => setAcceptTerms(e.target.checked)}
+              className="mt-0.5 h-4 w-4 border border-stone-200 dark:border-stone-800 rounded bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 focus:ring-0 cursor-pointer"
+              required 
+            />
+            <label htmlFor="acceptTerms" className="text-xs font-light text-stone-500 dark:text-stone-400 leading-normal">
+              I agree to the <span className="text-stone-900 dark:text-stone-100 font-medium underline underline-offset-2 cursor-pointer">Terms &amp; Conditions</span> and <span className="text-stone-900 dark:text-stone-100 font-medium underline underline-offset-2 cursor-pointer">Privacy Policy</span>
+            </label>
+          </div>
+
           <button type='submit' className='w-full bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 p-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition-all cursor-pointer shadow-sm'>
             Sign Up
           </button>
@@ -128,7 +147,7 @@ const Register = () => {
       </div>
 
       {/* Right Side: Image Banner */}
-      <div className='hidden md:block w-1/2 h-full bg-stone-900'>
+      <div className='hidden md:block w-1/2 h-full bg-stone-900 overflow-hidden'>
         <img src={registerImg} alt="Register Account" className='h-full w-full object-cover brightness-[0.85]'/>
       </div>
       

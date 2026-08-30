@@ -197,16 +197,6 @@ const CollectionPage = () => {
 
   return (
     <div className='flex flex-col lg:flex-row relative min-h-screen bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors pt-4 sm:pt-6 lg:pt-8 pb-12 sm:pb-16'>
-      {/* Mobile Filter Button */}
-      <div className='lg:hidden px-4 sm:px-6 mb-4'>
-        <button
-          onClick={toggleSidebar}
-          className='w-full border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 p-3 flex justify-center items-center rounded-xl text-xs uppercase tracking-[0.15em] font-medium cursor-pointer shadow-sm'
-        >
-          <FaFilter className='mr-2' /> Filters
-        </button>
-      </div>
-
       {/* Overlay */}
       {isSidebarOpen && (
         <div
@@ -255,8 +245,16 @@ const CollectionPage = () => {
             </h2>
           </div>
 
-          <div className="w-full md:w-auto flex items-center gap-4">
-            <SortOptions />
+          <div className="w-full md:w-auto flex items-center gap-3">
+            <button
+              onClick={toggleSidebar}
+              className='lg:hidden border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 px-4 py-2.5 flex items-center justify-center rounded-xl text-xs uppercase tracking-[0.15em] font-medium cursor-pointer shadow-sm flex-1 sm:flex-initial'
+            >
+              <FaFilter className='mr-2 text-[10px]' /> Filters
+            </button>
+            <div className="flex-1 sm:flex-initial">
+              <SortOptions />
+            </div>
           </div>
         </div>
 

@@ -160,7 +160,7 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
 
                     return (
                     <div key={product._id} className="min-w-[80%] sm:min-w-[42%] lg:min-w-[28%] relative flex-shrink-0 group">
-                        <div className="overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-4 shadow-sm relative h-[380px] sm:h-[440px] lg:h-[480px]">
+                        <div className="overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-4 shadow-sm relative aspect-[3/4]">
                             <Link to={`/product/${product._id}`} className="block w-full h-full relative">
                                 <img
                                     src={optimizedUrl}

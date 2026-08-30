@@ -31,8 +31,8 @@ const ProductGrid = ({ products, loading = false, wishlist = [], onToggleWishlis
 
         return (
           <div key={product._id} className="group relative flex flex-col">
-            {/* Image container — compact on mobile, taller on desktop */}
-            <div className="w-full h-[200px] sm:h-[300px] lg:h-[380px] xl:h-[420px] mb-2 sm:mb-4 overflow-hidden rounded-xl sm:rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 relative shadow-sm">
+            {/* Image container — responsive aspect ratio to ensure no empty space or bad crops */}
+            <div className="w-full aspect-[3/4] mb-2 sm:mb-4 overflow-hidden rounded-xl sm:rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 relative shadow-sm">
               <Link to={`/product/${product._id}`} className="block w-full h-full relative">
                 <img
                   src={optimizedUrl}

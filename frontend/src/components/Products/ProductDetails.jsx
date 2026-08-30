@@ -365,7 +365,7 @@ const ProductDetails = () => {
                 {/* Main Image */}
                 <div className="min-w-0">
                     <div 
-                        className="aspect-[4/5] overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-sm lg:h-[620px] lg:aspect-auto dark:border-stone-800 dark:bg-stone-800 cursor-zoom-in relative"
+                        className="aspect-[4/5] overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-sm lg:h-[620px] dark:border-stone-800 dark:bg-stone-800 cursor-zoom-in relative mx-auto lg:w-[496px]"
                         onMouseMove={handleMouseMove}
                         onMouseLeave={handleMouseLeave}
                     >
