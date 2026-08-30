@@ -1,9 +1,12 @@
 import { useEffect } from "react"
-import { Outlet } from "react-router-dom"
+import { Outlet, useLocation } from "react-router-dom"
 import Footer from "../Common/Footer"
 import Header from "../Common/Header"
 
 const UserLayout = () => {
+  const location = useLocation();
+  const shouldHideFooter = ["/login", "/register"].includes(location.pathname);
+
   useEffect(() => {
     const shouldOpenCart = sessionStorage.getItem("openCartAfterLogin");
     if (shouldOpenCart === "true") {
@@ -23,7 +26,7 @@ const UserLayout = () => {
               <Outlet />
             </main>
         </div>
-        <Footer />
+        {!shouldHideFooter && <Footer />}
     </div>
   )
 }
