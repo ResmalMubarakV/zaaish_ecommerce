@@ -224,6 +224,41 @@ router.get("/filter-options", async (req, res, next) => {
 
         const prices = products.map((product) => product.price).filter(Number.isFinite);
 
+        const categoryCounts = {};
+        const genderCounts = {};
+        const colorCounts = {};
+        const sizeCounts = {};
+        const materialCounts = {};
+        const brandCounts = {};
+
+        products.forEach((p) => {
+            const cat = String(p.category || "").trim();
+            if (cat) categoryCounts[cat] = (categoryCounts[cat] || 0) + 1;
+
+            const gen = String(p.gender || "").trim();
+            if (gen) genderCounts[gen] = (genderCounts[gen] || 0) + 1;
+
+            const mat = String(p.material || "").trim();
+            if (mat) materialCounts[mat] = (materialCounts[mat] || 0) + 1;
+
+            const brd = String(p.brand || "").trim();
+            if (brd) brandCounts[brd] = (brandCounts[brd] || 0) + 1;
+
+            if (Array.isArray(p.colors)) {
+                p.colors.forEach((c) => {
+                    const col = String(c || "").trim();
+                    if (col) colorCounts[col] = (colorCounts[col] || 0) + 1;
+                });
+            }
+
+            if (Array.isArray(p.sizes)) {
+                p.sizes.forEach((s) => {
+                    const sz = String(s || "").trim();
+                    if (sz) sizeCounts[sz] = (sizeCounts[sz] || 0) + 1;
+                });
+            }
+        });
+
         res.json({
             success: true,
             options: {
@@ -236,6 +271,14 @@ router.get("/filter-options", async (req, res, next) => {
                 priceRange: {
                     min: prices.length ? Math.min(...prices) : 0,
                     max: prices.length ? Math.max(...prices) : 0
+                },
+                counts: {
+                    categories: categoryCounts,
+                    genders: genderCounts,
+                    colors: colorCounts,
+                    sizes: sizeCounts,
+                    materials: materialCounts,
+                    brands: brandCounts
                 }
             }
         });

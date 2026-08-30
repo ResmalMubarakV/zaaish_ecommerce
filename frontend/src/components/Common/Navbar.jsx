@@ -71,6 +71,12 @@ const Navbar = () => {
         return () => window.removeEventListener("cartUpdated", handleCartUpdate);
     }, []);
 
+    useEffect(() => {
+        const handleOpenCart = () => setDrawerOpen(true);
+        window.addEventListener("openCart", handleOpenCart);
+        return () => window.removeEventListener("openCart", handleOpenCart);
+    }, []);
+
     const openDrawer = () => setNavDrawerOpen(true);
     const closeDrawer = () => setNavDrawerOpen(false);
 

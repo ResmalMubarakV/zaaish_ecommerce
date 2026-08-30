@@ -67,6 +67,26 @@ const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
                     </button>
                 </div>
 
+                {/* Free Shipping Tracker */}
+                {cart && cart.length > 0 && (
+                    <div className="px-6 py-4 bg-stone-50 dark:bg-stone-900/60 border-b border-stone-100 dark:border-stone-800 text-xs">
+                        <div className="flex justify-between font-medium mb-1.5">
+                            <span className="text-stone-600 dark:text-stone-400">
+                                {totalPrice >= 3000 
+                                    ? "🎉 You've unlocked FREE shipping!" 
+                                    : `Spend ₹${(3000 - totalPrice).toLocaleString(undefined, {minimumFractionDigits: 2})} more for FREE shipping!`
+                                }
+                            </span>
+                        </div>
+                        <div className="w-full bg-stone-200 dark:bg-stone-800 h-1.5 rounded-full overflow-hidden">
+                            <div 
+                                className="bg-stone-950 dark:bg-stone-100 h-full rounded-full transition-all duration-500 ease-out" 
+                                style={{ width: `${Math.min((totalPrice / 3000) * 100, 100)}%` }}
+                            />
+                        </div>
+                    </div>
+                )}
+
                 <div className="grow p-6 sm:p-8 overflow-y-auto">
                     {loading ? (
                         <p className="text-stone-400 text-xs py-16 text-center uppercase tracking-[0.2em] font-light">Loading cart items...</p>

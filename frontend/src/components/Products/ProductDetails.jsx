@@ -37,6 +37,24 @@ const ProductDetails = () => {
     const [quantity, setQuantity] = useState(1);
     const [isButtonDisabled, setIsButtonDisabled] = useState(false);
 
+    // Zoom and Size Guide state
+    const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
+    const [zoomStyle, setZoomStyle] = useState({ transform: 'scale(1)', transformOrigin: 'center' });
+
+    const handleMouseMove = (e) => {
+        const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+        const x = ((e.pageX - left - window.scrollX) / width) * 100;
+        const y = ((e.pageY - top - window.scrollY) / height) * 100;
+        setZoomStyle({
+            transform: 'scale(1.8)',
+            transformOrigin: `${x}% ${y}%`
+        });
+    };
+
+    const handleMouseLeave = () => {
+        setZoomStyle({ transform: 'scale(1)', transformOrigin: 'center' });
+    };
+
     // Review Form state
     const [newRating, setNewRating] = useState(5);
     const [newComment, setNewComment] = useState("");
@@ -141,6 +159,7 @@ const ProductDetails = () => {
             if (response.ok) {
                 toast.success("Product added to cart", { duration: 1500 });
                 window.dispatchEvent(new Event("cartUpdated"));
+                window.dispatchEvent(new Event("openCart"));
             } else {
                 toast.error(data.message || "Failed to add to cart", { duration: 1500 });
             }
@@ -267,9 +286,14 @@ const ProductDetails = () => {
 
                 {/* Main Image */}
                 <div className="min-w-0">
-                    <div className="aspect-[4/5] overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-sm lg:h-[620px] lg:aspect-auto dark:border-stone-800 dark:bg-stone-800 flex items-center justify-center p-4">
+                    <div 
+                        className="aspect-[4/5] overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-sm lg:h-[620px] lg:aspect-auto dark:border-stone-800 dark:bg-stone-800 flex items-center justify-center p-4 cursor-zoom-in relative"
+                        onMouseMove={handleMouseMove}
+                        onMouseLeave={handleMouseLeave}
+                    >
                         <img src={mainImage} alt={product.name} 
-                        className="h-full w-full object-contain" />
+                        className="h-full w-full object-contain transition-transform duration-100 ease-out"
+                        style={zoomStyle} />
                     </div>
                 </div>
 
@@ -345,9 +369,18 @@ const ProductDetails = () => {
 
                     {/* AVAILABLE SIZES */}
                     {availableSizes.length > 0 && <div className="mb-6">
-                        <p className="text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3">
-                            Size: <span className="text-stone-900 dark:text-stone-100 font-semibold">{selectedSize || "Select Size"}</span>
-                        </p>
+                        <div className="flex justify-between items-center mb-3">
+                            <p className="text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em]">
+                                Size: <span className="text-stone-900 dark:text-stone-100 font-semibold">{selectedSize || "Select Size"}</span>
+                            </p>
+                            <button 
+                                type="button"
+                                onClick={() => setIsSizeGuideOpen(true)}
+                                className="text-[10px] font-medium uppercase tracking-[0.15em] text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 underline underline-offset-4 cursor-pointer"
+                            >
+                                Size Guide
+                            </button>
+                        </div>
                         <div className="flex flex-wrap gap-2.5">
                             {availableSizes.map((size) => (
                                 <button key={size} 
@@ -379,15 +412,47 @@ const ProductDetails = () => {
                         </div>
                     </div>
 
-                    <button
-                    onClick={handleAddToCart}
-                    disabled={isButtonDisabled}
-                    className={`bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 py-4 rounded-xl w-full mb-8 text-xs uppercase tracking-[0.2em] font-medium transition-all cursor-pointer shadow-sm ${isButtonDisabled
-                        ? "cursor-not-allowed opacity-50" : "hover:bg-stone-800 dark:hover:bg-stone-200"
-                    }`}
-                    >
-                        {isButtonDisabled ? "Adding to Cart..." : "Add to Cart"}
-                    </button>
+                    {product.countInStock === 0 ? (
+                        <div className="mb-8 p-4 bg-stone-50 dark:bg-stone-900/60 rounded-2xl border border-stone-200 dark:border-stone-800">
+                            <p className="text-xs font-semibold text-rose-600 dark:text-rose-400 mb-1 uppercase tracking-wider">Out of Stock</p>
+                            <p className="text-[11px] text-stone-400 mb-3.5 leading-normal">Enter your email to receive a notification as soon as this item is restocked.</p>
+                            <form 
+                                onSubmit={(e) => {
+                                    e.preventDefault();
+                                    const email = e.target.email.value;
+                                    if(email) {
+                                        toast.success(`Thank you! We'll notify you at ${email} when it's back in stock.`);
+                                        e.target.reset();
+                                    }
+                                }} 
+                                className="flex shadow-sm rounded-xl overflow-hidden border border-stone-300 dark:border-stone-700 focus-within:border-stone-900 dark:focus-within:border-stone-100 transition-colors"
+                            >
+                                <input 
+                                    type="email" 
+                                    name="email" 
+                                    placeholder="Enter your email" 
+                                    required 
+                                    className="p-3 w-full text-xs bg-stone-50 dark:bg-stone-950 text-stone-950 dark:text-stone-100 placeholder:text-stone-400 focus:outline-none" 
+                                />
+                                <button 
+                                    type="submit" 
+                                    className="bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 px-4 py-3 text-[10px] uppercase tracking-wider font-semibold cursor-pointer hover:bg-stone-800 dark:hover:bg-stone-200 transition-colors whitespace-nowrap border-l border-stone-300 dark:border-stone-700"
+                                >
+                                    Notify Me
+                                </button>
+                            </form>
+                        </div>
+                    ) : (
+                        <button
+                        onClick={handleAddToCart}
+                        disabled={isButtonDisabled}
+                        className={`bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 py-4 rounded-xl w-full mb-8 text-xs uppercase tracking-[0.2em] font-medium transition-all cursor-pointer shadow-sm ${isButtonDisabled
+                            ? "cursor-not-allowed opacity-50" : "hover:bg-stone-800 dark:hover:bg-stone-200"
+                        }`}
+                        >
+                            {isButtonDisabled ? "Adding to Cart..." : "Add to Cart"}
+                        </button>
+                    )}
 
                     <div className="border-t border-stone-100 dark:border-stone-800 pt-6 text-stone-700 dark:text-stone-300">
                         <h3 className="text-xs font-serif font-medium mb-3 uppercase tracking-[0.2em] text-stone-400">Specifications</h3>
@@ -567,12 +632,12 @@ const ProductDetails = () => {
                                 className="group flex-shrink-0 w-[140px] sm:w-[170px] lg:w-auto flex flex-col"
                             >
                                 {/* Thumbnail */}
-                                <div className="w-full h-[170px] sm:h-[210px] rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-2 flex-shrink-0">
+                                <div className="w-full h-[170px] sm:h-[210px] rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-2 flex-shrink-0 flex items-center justify-center p-2">
                                     <img
                                         src={prod.images?.[0]?.url || "https://placehold.co/300x380"}
                                         alt={prod.name}
                                         loading="lazy"
-                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out"
                                     />
                                 </div>
 
@@ -585,6 +650,70 @@ const ProductDetails = () => {
                                 </p>
                             </Link>
                         ))}
+                    </div>
+                </div>
+            )}
+
+            {/* Size Guide Modal */}
+            {isSizeGuideOpen && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
+                    <div className="bg-white dark:bg-stone-900 w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl border border-stone-200 dark:border-stone-800 animate-in fade-in zoom-in-95 duration-200">
+                        <div className="flex justify-between items-center mb-6">
+                            <h3 className="font-serif text-lg tracking-wide uppercase text-stone-900 dark:text-stone-100">Size Guide</h3>
+                            <button 
+                                onClick={() => setIsSizeGuideOpen(false)}
+                                className="text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 text-sm font-semibold p-1 cursor-pointer"
+                            >
+                                Close
+                            </button>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-xs text-stone-700 dark:text-stone-300">
+                                <thead>
+                                    <tr className="border-b border-stone-200 dark:border-stone-800 text-[10px] uppercase tracking-wider text-stone-400">
+                                        <th className="py-2.5">Size</th>
+                                        <th className="py-2.5">Chest (in)</th>
+                                        <th className="py-2.5">Waist (in)</th>
+                                        <th className="py-2.5">Hips (in)</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-stone-100 dark:divide-stone-800/50">
+                                    <tr>
+                                        <td className="py-2.5 font-bold">S</td>
+                                        <td className="py-2.5">34 - 36</td>
+                                        <td className="py-2.5">28 - 30</td>
+                                        <td className="py-2.5">35 - 37</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-2.5 font-bold">M</td>
+                                        <td className="py-2.5">38 - 40</td>
+                                        <td className="py-2.5">32 - 34</td>
+                                        <td className="py-2.5">39 - 41</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-2.5 font-bold">L</td>
+                                        <td className="py-2.5">42 - 44</td>
+                                        <td className="py-2.5">36 - 38</td>
+                                        <td className="py-2.5">43 - 45</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-2.5 font-bold">XL</td>
+                                        <td className="py-2.5">46 - 48</td>
+                                        <td className="py-2.5">40 - 42</td>
+                                        <td className="py-2.5">47 - 49</td>
+                                    </tr>
+                                    <tr>
+                                        <td className="py-2.5 font-bold">XXL</td>
+                                        <td className="py-2.5">50 - 52</td>
+                                        <td className="py-2.5">44 - 46</td>
+                                        <td className="py-2.5">51 - 53</td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                        <p className="mt-5 text-[10px] text-stone-400 leading-normal font-light">
+                            * Measurements shown are in inches. If you are between sizes, we recommend sizing up for a more comfortable relaxed fit.
+                        </p>
                     </div>
                 </div>
             )}
