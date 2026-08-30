@@ -25,21 +25,34 @@ const ProductGrid = ({ products, loading = false, wishlist = [], onToggleWishlis
 
         const rawImageUrl = product.images?.[0]?.url || "https://picsum.photos/600/600";
         const optimizedUrl = getProductCardImageUrl(rawImageUrl, "grid");
+        const hoverImageUrl = product.images?.[1]?.url;
+        const optimizedHoverUrl = hoverImageUrl ? getProductCardImageUrl(hoverImageUrl, "grid") : null;
         const isPriority = index < priorityCount;
 
         return (
           <div key={product._id} className="group relative flex flex-col">
             {/* Image container — compact on mobile, taller on desktop */}
             <div className="w-full h-[200px] sm:h-[300px] lg:h-[380px] xl:h-[420px] mb-2 sm:mb-4 overflow-hidden rounded-xl sm:rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 relative shadow-sm">
-              <Link to={`/product/${product._id}`} className="block w-full h-full">
+              <Link to={`/product/${product._id}`} className="block w-full h-full relative">
                 <img
                   src={optimizedUrl}
                   alt={product.images?.[0]?.altText || product.name}
                   loading={isPriority ? "eager" : "lazy"}
                   fetchPriority={isPriority ? "high" : "auto"}
                   decoding="async"
-                  className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-700 ease-out"
+                  className={`w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ease-out absolute inset-0 ${optimizedHoverUrl ? "group-hover:opacity-0" : ""}`}
+                  draggable="false"
                 />
+                {optimizedHoverUrl && (
+                  <img
+                    src={optimizedHoverUrl}
+                    alt={`${product.name} alternate view`}
+                    loading="lazy"
+                    decoding="async"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-all duration-700 ease-out absolute inset-0 opacity-0 group-hover:opacity-100"
+                    draggable="false"
+                  />
+                )}
               </Link>
 
               {/* Wishlist Heart Toggle */}

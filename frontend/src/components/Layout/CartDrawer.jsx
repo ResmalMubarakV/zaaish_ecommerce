@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { IoMdClose } from "react-icons/io";
 import CartContents from "../Cart/CartContents";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 
 const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
     const navigate = useNavigate();
@@ -91,7 +91,32 @@ const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
                     {loading ? (
                         <p className="text-stone-400 text-xs py-16 text-center uppercase tracking-[0.2em] font-light">Loading cart items...</p>
                     ) : (!cart || cart.length === 0) ? (
-                        <p className="text-stone-400 text-xs py-16 text-center uppercase tracking-[0.2em] font-light">Your shopping cart is empty.</p>
+                        <div className="text-center py-16 px-4">
+                            <p className="text-stone-400 text-xs uppercase tracking-[0.2em] font-light mb-6">Your shopping cart is empty.</p>
+                            <div className="flex flex-col gap-2.5 max-w-xs mx-auto">
+                                <Link 
+                                    to="/collections/all" 
+                                    onClick={toggleCartDrawer}
+                                    className="bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 py-3.5 rounded-xl text-xs uppercase tracking-[0.15em] font-medium hover:bg-stone-850 dark:hover:bg-stone-200 transition-all cursor-pointer text-center shadow-sm"
+                                >
+                                    Shop New Arrivals
+                                </Link>
+                                <Link 
+                                    to="/collections/men" 
+                                    onClick={toggleCartDrawer}
+                                    className="border border-stone-200 dark:border-stone-800 text-stone-800 dark:text-stone-200 py-3 rounded-xl text-xs uppercase tracking-[0.15em] font-medium hover:bg-stone-50 dark:hover:bg-stone-900 transition-all cursor-pointer text-center"
+                                >
+                                    Shop Men
+                                </Link>
+                                <Link 
+                                    to="/collections/women" 
+                                    onClick={toggleCartDrawer}
+                                    className="border border-stone-200 dark:border-stone-800 text-stone-800 dark:text-stone-200 py-3 rounded-xl text-xs uppercase tracking-[0.15em] font-medium hover:bg-stone-50 dark:hover:bg-stone-900 transition-all cursor-pointer text-center"
+                                >
+                                    Shop Women
+                                </Link>
+                            </div>
+                        </div>
                     ) : (
                         <CartContents cart={cart} onUpdateCart={fetchCart} />
                     )}

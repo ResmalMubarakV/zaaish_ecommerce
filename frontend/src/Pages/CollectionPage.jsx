@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FaFilter } from "react-icons/fa";
+import { IoMdClose } from "react-icons/io";
 import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import FilterSidebar from '../components/Products/FilterSidebar';
@@ -173,6 +174,7 @@ const CollectionPage = () => {
         } else {
           toast.info("Removed from your wishlist");
         }
+        window.dispatchEvent(new Event("wishlistUpdated"));
       } else {
         toast.error(data.message || "Failed to update wishlist");
       }
@@ -223,6 +225,17 @@ const CollectionPage = () => {
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
+        {/* Mobile close button inside filter drawer */}
+        <div className="lg:hidden flex justify-between items-center mb-6 pb-4 border-b border-stone-100 dark:border-stone-800">
+          <span className="text-xs uppercase tracking-[0.2em] font-medium text-stone-500">Filters</span>
+          <button 
+            type="button" 
+            onClick={() => setIsSidebarOpen(false)}
+            className="p-1.5 rounded-lg text-stone-500 hover:text-stone-900 dark:text-stone-400 dark:hover:text-white hover:bg-stone-100 dark:hover:bg-stone-800 cursor-pointer"
+          >
+            <IoMdClose className="h-5 w-5" />
+          </button>
+        </div>
         <FilterSidebar options={filterOptions} onFiltersChange={() => setIsSidebarOpen(false)} />
       </div>
 

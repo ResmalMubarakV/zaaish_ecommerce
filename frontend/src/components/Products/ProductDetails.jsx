@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { toast } from "sonner";
-import { FiStar, FiUploadCloud, FiChevronLeft, FiChevronRight } from "react-icons/fi";
+import { FiStar, FiUploadCloud, FiChevronLeft, FiChevronRight, FiHeart, FiShare2 } from "react-icons/fi";
+import { IoMdClose } from "react-icons/io";
 
 const getColorHex = (colorName) => {
     if (!colorName) return "#000000";
@@ -41,6 +42,74 @@ const ProductDetails = () => {
     const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
     const [zoomStyle, setZoomStyle] = useState({ transform: 'scale(1)', transformOrigin: 'center' });
 
+    // Wishlist state and handlers
+    const [isWishlisted, setIsWishlisted] = useState(false);
+
+    // Reviews filters and photo zoom states
+    const [selectedRatingFilter, setSelectedRatingFilter] = useState(null);
+    const [activeReviewPhoto, setActiveReviewPhoto] = useState(null);
+    const [reviewSearchQuery, setReviewSearchQuery] = useState("");
+
+    // Accordion state
+    const [activeAccordion, setActiveAccordion] = useState(null);
+    const toggleAccordion = (index) => {
+        setActiveAccordion(prev => prev === index ? null : index);
+    };
+
+    const fetchWishlistStatus = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) return;
+        try {
+            const response = await fetch("/api/users/wishlist", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.ok) {
+                const data = await response.json();
+                const wishlist = data.wishlist || [];
+                setIsWishlisted(wishlist.some(item => (typeof item === "string" ? item : item?._id) === id));
+            }
+        } catch (error) {
+            console.error("Error fetching wishlist status:", error);
+        }
+    };
+
+    const handleToggleWishlist = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            toast.error("Please login to save items to your wishlist");
+            return;
+        }
+
+        try {
+            const response = await fetch("/api/users/wishlist", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ productId: id })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                if (data.action === "added") {
+                    setIsWishlisted(true);
+                    toast.success("Added to your wishlist ❤️");
+                } else {
+                    setIsWishlisted(false);
+                    toast.info("Removed from your wishlist");
+                }
+                window.dispatchEvent(new Event("wishlistUpdated"));
+            } else {
+                toast.error(data.message || "Failed to update wishlist");
+            }
+        } catch (err) {
+            console.error("Wishlist error:", err);
+            toast.error("Something went wrong updating wishlist");
+        }
+    };
+
     const handleMouseMove = (e) => {
         const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
         const x = ((e.pageX - left - window.scrollX) / width) * 100;
@@ -76,19 +145,19 @@ const ProductDetails = () => {
                 if (prod.colors && prod.colors.length > 0) setSelectedColor(prod.colors[0]);
                 
                 if (prod.category) {
-                    const simResponse = await fetch(`/api/products?category=${prod.category}&limit=6`);
+                    const simResponse = await fetch(`/api/products?category=${prod.category}&limit=8`);
                     const simData = await simResponse.json();
                     if (simResponse.ok) {
                         let simList = (simData.products || []).filter(p => p._id !== id);
-                        if (simList.length < 4) {
-                            const fallbackRes = await fetch(`/api/products?limit=6`);
+                        if (simList.length < 5) {
+                            const fallbackRes = await fetch(`/api/products?limit=8`);
                             const fallbackData = await fallbackRes.json();
                             if (fallbackRes.ok) {
                                 const extras = (fallbackData.products || []).filter(p => p._id !== id && !simList.some(item => item._id === p._id));
                                 simList = [...simList, ...extras];
                             }
                         }
-                        setSimilarProducts(simList.slice(0, 4));
+                        setSimilarProducts(simList.slice(0, 5));
                     }
                 }
 
@@ -104,6 +173,7 @@ const ProductDetails = () => {
 
     useEffect(() => {
         fetchProductDetails();
+        fetchWishlistStatus();
     }, [id]);
 
     const handleQuantityChange = (action) => {
@@ -265,6 +335,14 @@ const ProductDetails = () => {
     const availableSizes = [...new Set((product.sizes || []).map((size) => String(size).trim()).filter(Boolean))];
     const availableColors = [...new Set((product.colors || []).map((color) => String(color).trim()).filter(Boolean))];
 
+    // Ratings distribution helper calculations
+    const totalReviewsCount = product.reviews?.length || 0;
+    const ratingDistribution = [5, 4, 3, 2, 1].map((stars) => {
+        const count = (product.reviews || []).filter((r) => r.rating === stars).length;
+        const percentage = totalReviewsCount > 0 ? Math.round((count / totalReviewsCount) * 100) : 0;
+        return { stars, count, percentage };
+    });
+
   return (
     <div className="min-h-screen bg-stone-50/50 px-4 py-8 text-stone-900 transition-colors sm:px-6 sm:py-12 lg:px-8 lg:py-16 dark:bg-stone-950 dark:text-stone-100">
         <div className="mx-auto max-w-6xl rounded-3xl border border-stone-200/80 bg-white p-4 shadow-sm sm:p-8 lg:p-10 dark:border-stone-800 dark:bg-stone-900">
@@ -276,7 +354,7 @@ const ProductDetails = () => {
                         key={index}
                         src={image.url} 
                         alt={image.altText || `Thumbnail ${index}`} 
-                        className={`w-20 h-24 object-contain p-1 rounded-xl cursor-pointer border transition-all ${mainImage ===
+                        className={`w-20 h-24 object-cover rounded-xl cursor-pointer border transition-all ${mainImage ===
                             image.url ? "border-stone-950 dark:border-stone-100 ring-2 ring-stone-950/20 dark:ring-stone-100/20" : "border-stone-200 dark:border-stone-800 opacity-70 hover:opacity-100"
                         }`}
                         onClick={() => setMainImage(image.url)}
@@ -287,12 +365,12 @@ const ProductDetails = () => {
                 {/* Main Image */}
                 <div className="min-w-0">
                     <div 
-                        className="aspect-[4/5] overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-sm lg:h-[620px] lg:aspect-auto dark:border-stone-800 dark:bg-stone-800 flex items-center justify-center p-4 cursor-zoom-in relative"
+                        className="aspect-[4/5] overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-sm lg:h-[620px] lg:aspect-auto dark:border-stone-800 dark:bg-stone-800 cursor-zoom-in relative"
                         onMouseMove={handleMouseMove}
                         onMouseLeave={handleMouseLeave}
                     >
                         <img src={mainImage} alt={product.name} 
-                        className="h-full w-full object-contain transition-transform duration-100 ease-out"
+                        className="h-full w-full object-cover transition-transform duration-100 ease-out"
                         style={zoomStyle} />
                     </div>
                 </div>
@@ -304,7 +382,7 @@ const ProductDetails = () => {
                         key={index}
                         src={image.url} 
                         alt={image.altText || `Thumbnail ${index}`} 
-                        className={`w-20 h-24 object-contain p-1 rounded-xl cursor-pointer border flex-shrink-0 ${mainImage ===
+                        className={`w-20 h-24 object-cover rounded-xl cursor-pointer border flex-shrink-0 ${mainImage ===
                             image.url ? "border-stone-950 dark:border-stone-100" : "border-stone-200 dark:border-stone-800 opacity-70"
                         }`}
                         onClick={() => setMainImage(image.url)}/>
@@ -355,7 +433,7 @@ const ProductDetails = () => {
                                     aria-label={`Select ${color} colour`}
                                     aria-pressed={selectedColor === color}
                                     className={`relative w-8 h-8 rounded-full border cursor-pointer transition-transform hover:scale-110 flex items-center justify-center
-                                        ${selectedColor === color ? "border-2 border-stone-950 dark:border-stone-100 ring-2 ring-offset-2 ring-stone-950 dark:ring-stone-100 shadow-sm" : "border-stone-300 dark:border-stone-700 opacity-80 hover:opacity-100"}`}
+                                        ${selectedColor === color ? "border-2 border-stone-950 dark:border-stone-100 ring-2 ring-offset-2 ring-offset-white dark:ring-offset-stone-900 ring-stone-950 dark:ring-stone-100 shadow-sm" : "border-stone-300 dark:border-stone-700 opacity-80 hover:opacity-100"}`}
                                     style={{ backgroundColor: getColorHex(color) }}
                                     title={color}
                                 >
@@ -442,17 +520,45 @@ const ProductDetails = () => {
                                 </button>
                             </form>
                         </div>
-                    ) : (
-                        <button
-                        onClick={handleAddToCart}
-                        disabled={isButtonDisabled}
-                        className={`bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 py-4 rounded-xl w-full mb-8 text-xs uppercase tracking-[0.2em] font-medium transition-all cursor-pointer shadow-sm ${isButtonDisabled
-                            ? "cursor-not-allowed opacity-50" : "hover:bg-stone-800 dark:hover:bg-stone-200"
-                        }`}
-                        >
-                            {isButtonDisabled ? "Adding to Cart..." : "Add to Cart"}
-                        </button>
-                    )}
+                    ) : null}
+
+                    {/* Actions row: Add to Cart (if stock > 0), Wishlist, and Share */}
+                    <div className="flex flex-col sm:flex-row gap-3.5 mb-8">
+                        {product.countInStock > 0 && (
+                            <button
+                            onClick={handleAddToCart}
+                            disabled={isButtonDisabled}
+                            className={`grow bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 py-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium transition-all cursor-pointer shadow-sm ${isButtonDisabled
+                                ? "cursor-not-allowed opacity-50" : "hover:bg-stone-800 dark:hover:bg-stone-200"
+                            }`}
+                            >
+                                {isButtonDisabled ? "Adding..." : "Add to Cart"}
+                            </button>
+                        )}
+                        <div className={`flex gap-3 ${product.countInStock === 0 ? 'w-full' : 'sm:w-auto'}`}>
+                            <button
+                                type="button"
+                                onClick={handleToggleWishlist}
+                                className={`flex-1 sm:px-5 py-4 border rounded-xl flex items-center justify-center cursor-pointer transition-all hover:bg-stone-50 dark:hover:bg-stone-900 border-stone-200 dark:border-stone-800 ${product.countInStock === 0 ? 'grow' : ''}`}
+                                title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                            >
+                                <FiHeart className={`w-5 h-5 transition-transform hover:scale-110 active:scale-95 ${isWishlisted ? 'text-rose-500 fill-rose-500' : 'text-stone-700 dark:text-stone-300'}`} />
+                                {product.countInStock === 0 && <span className="ml-2 text-xs font-medium uppercase tracking-[0.15em] text-stone-700 dark:text-stone-300">Add to Wishlist</span>}
+                            </button>
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    navigator.clipboard.writeText(window.location.href);
+                                    toast.success("Product link copied to clipboard!");
+                                }}
+                                className={`flex-1 sm:px-5 py-4 border rounded-xl flex items-center justify-center cursor-pointer transition-all hover:bg-stone-50 dark:hover:bg-stone-900 border-stone-200 dark:border-stone-800 ${product.countInStock === 0 ? 'grow' : ''}`}
+                                title="Share Product"
+                            >
+                                <FiShare2 className="w-5 h-5 text-stone-700 dark:text-stone-300 transition-transform hover:scale-110 active:scale-95" />
+                                {product.countInStock === 0 && <span className="ml-2 text-xs font-medium uppercase tracking-[0.15em] text-stone-700 dark:text-stone-300">Share</span>}
+                            </button>
+                        </div>
+                    </div>
 
                     <div className="border-t border-stone-100 dark:border-stone-800 pt-6 text-stone-700 dark:text-stone-300">
                         <h3 className="text-xs font-serif font-medium mb-3 uppercase tracking-[0.2em] text-stone-400">Specifications</h3>
@@ -477,27 +583,105 @@ const ProductDetails = () => {
                             </tbody>
                         </table>
                     </div>
+
+                    {/* Animated Luxury Accordions */}
+                    <div className="border-t border-stone-100 dark:border-stone-800 mt-6 pt-4 divide-y divide-stone-100 dark:divide-stone-800">
+                        {/* Sizing & Fit Accordion */}
+                        <div className="py-4">
+                            <button 
+                                type="button" 
+                                onClick={() => toggleAccordion(0)}
+                                className="w-full flex justify-between items-center text-left text-xs uppercase tracking-[0.15em] font-medium text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-stone-100 cursor-pointer"
+                            >
+                                <span>Sizing & Fit</span>
+                                <span className="text-sm font-light">{activeAccordion === 0 ? "−" : "+"}</span>
+                            </button>
+                            {activeAccordion === 0 && (
+                                <div className="mt-3 text-xs text-stone-500 dark:text-stone-400 font-light leading-relaxed animate-fadeIn">
+                                    Designed for a relaxed, slightly oversized fit. Take your normal size for the intended slouchy luxury silhouette, or size down for a more structured, close fit. Sizing guides are available via the chart trigger.
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Care & Composition Accordion */}
+                        <div className="py-4">
+                            <button 
+                                type="button" 
+                                onClick={() => toggleAccordion(1)}
+                                className="w-full flex justify-between items-center text-left text-xs uppercase tracking-[0.15em] font-medium text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-stone-100 cursor-pointer"
+                            >
+                                <span>Composition & Care</span>
+                                <span className="text-sm font-light">{activeAccordion === 1 ? "−" : "+"}</span>
+                            </button>
+                            {activeAccordion === 1 && (
+                                <div className="mt-3 text-xs text-stone-500 dark:text-stone-400 font-light leading-relaxed animate-fadeIn">
+                                    100% sustainably sourced organic cashmere blend. Dry clean only. To maintain the fine knit surface, store flat in a drawer and avoid hanging on structured hangers. Keep away from rough jewelry.
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Shipping & Returns Accordion */}
+                        <div className="py-4">
+                            <button 
+                                type="button" 
+                                onClick={() => toggleAccordion(2)}
+                                className="w-full flex justify-between items-center text-left text-xs uppercase tracking-[0.15em] font-medium text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-stone-100 cursor-pointer"
+                            >
+                                <span>Shipping & Returns</span>
+                                <span className="text-sm font-light">{activeAccordion === 2 ? "−" : "+"}</span>
+                            </button>
+                            {activeAccordion === 2 && (
+                                <div className="mt-3 text-xs text-stone-500 dark:text-stone-400 font-light leading-relaxed animate-fadeIn">
+                                    We offer complimentary express shipping across India on orders above ₹3,000. Orders are processed within 1-2 business days. Returns are accepted within 14 days of delivery for unworn items with tags attached.
+                                </div>
+                            )}
+                        </div>
+                    </div>
                 </div>
             </div>
 
             {/* CUSTOMER REVIEWS SECTION */}
             <div className="mt-20 border-t border-stone-100 dark:border-stone-800 pt-16">
-                <div className="flex flex-col md:flex-row justify-between items-start md:items-center mb-10 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1.2fr] gap-8 items-start mb-12 border-b border-stone-100 dark:border-stone-800 pb-10">
                     <div>
                         <span className="text-[10px] uppercase tracking-[0.25em] text-stone-400 font-medium block mb-1">Customer Feedback</span>
-                        <h2 className="text-2xl sm:text-3xl font-serif font-light tracking-wide">Product Reviews ({product.reviews?.length || 0})</h2>
+                        <h2 className="text-2xl sm:text-3xl font-serif font-light tracking-wide mb-2">Product Reviews ({totalReviewsCount})</h2>
+                        <p className="text-stone-400 dark:text-stone-500 text-xs font-light">Verified reviews from verified buyers who bought this item.</p>
                     </div>
 
-                    <div className="flex items-center space-x-3 bg-stone-50 dark:bg-stone-950 px-5 py-3 rounded-2xl border border-stone-200/80 dark:border-stone-800">
-                        <span className="text-2xl font-serif font-medium text-stone-900 dark:text-stone-100">{(product.rating || 5.0).toFixed(1)}</span>
+                    {/* Big Score Box */}
+                    <div className="flex items-center space-x-4 bg-stone-50 dark:bg-stone-950 px-6 py-5 rounded-3xl border border-stone-200/80 dark:border-stone-800 h-full justify-center">
+                        <span className="text-4xl font-serif font-medium text-stone-900 dark:text-stone-100">{(product.rating || 5.0).toFixed(1)}</span>
                         <div>
-                            <div className="flex text-amber-400">
+                            <div className="flex text-amber-400 mb-0.5">
                                 {[1, 2, 3, 4, 5].map((star) => (
-                                    <FiStar key={star} className={`w-3.5 h-3.5 ${star <= Math.round(product.rating || 5) ? "fill-amber-400 text-amber-400" : "text-stone-300"}`} />
+                                    <FiStar key={star} className={`w-4 h-4 ${star <= Math.round(product.rating || 5) ? "fill-amber-400 text-amber-400" : "text-stone-300"}`} />
                                 ))}
                             </div>
-                            <span className="text-[10px] uppercase tracking-wider text-stone-400">Verified Ratings</span>
+                            <span className="text-[10px] uppercase tracking-[0.15em] text-stone-400 font-medium">Verified Ratings</span>
                         </div>
+                    </div>
+
+                    {/* Star Rating Breakdown Bars */}
+                    <div className="space-y-2.5 max-w-sm w-full md:ml-auto">
+                        {ratingDistribution.map(({ stars, count, percentage }) => (
+                            <button
+                                key={stars}
+                                type="button"
+                                onClick={() => count > 0 && setSelectedRatingFilter(stars)}
+                                className={`w-full flex items-center text-xs group text-left cursor-pointer transition-colors ${count > 0 ? 'hover:text-stone-900 dark:hover:text-stone-100' : 'opacity-35 cursor-not-allowed'}`}
+                                disabled={count === 0}
+                            >
+                                <span className="w-12 text-stone-500 font-medium">{stars} Star</span>
+                                <div className="grow h-2 bg-stone-100 dark:bg-stone-850 rounded-full mx-3 overflow-hidden">
+                                    <div 
+                                        className="h-full bg-stone-950 dark:bg-stone-100 rounded-full transition-all duration-500" 
+                                        style={{ width: `${percentage}%` }}
+                                    />
+                                </div>
+                                <span className="w-8 text-right text-stone-400 dark:text-stone-500 font-light">{percentage}%</span>
+                            </button>
+                        ))}
                     </div>
                 </div>
 
@@ -564,39 +748,135 @@ const ProductDetails = () => {
                     </div>
                 </form>
 
+                {/* Review Rating Filters & Keyword Search Row */}
+                <div className="flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center mb-6 no-print">
+                    {product.reviews && product.reviews.length > 0 && (
+                        <div className="flex flex-wrap items-center gap-2 text-xs">
+                            <span className="text-stone-400 font-medium text-[10px] uppercase tracking-wider mr-2">Filter Reviews:</span>
+                            <button 
+                                type="button"
+                                onClick={() => setSelectedRatingFilter(null)}
+                                className={`px-3.5 py-1.5 rounded-full border transition-all text-xs font-medium cursor-pointer ${
+                                    selectedRatingFilter === null 
+                                        ? "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 border-stone-950 dark:border-stone-100 shadow-sm" 
+                                        : "border-stone-200 dark:border-stone-850 text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-900"
+                                }`}
+                            >
+                                All Reviews
+                            </button>
+                            {[5, 4, 3, 2, 1].map((stars) => {
+                                const count = (product.reviews || []).filter(r => r.rating === stars).length;
+                                if (count === 0) return null;
+                                return (
+                                    <button 
+                                        key={stars}
+                                        type="button"
+                                        onClick={() => setSelectedRatingFilter(stars)}
+                                        className={`px-3.5 py-1.5 rounded-full border transition-all text-xs font-medium cursor-pointer flex items-center gap-1.5 ${
+                                            selectedRatingFilter === stars 
+                                                ? "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 border-stone-950 dark:border-stone-100 shadow-sm" 
+                                                : "border-stone-200 dark:border-stone-850 text-stone-600 dark:text-stone-400 hover:bg-stone-50 dark:hover:bg-stone-900"
+                                        }`}
+                                    >
+                                        <span>{stars} ★</span>
+                                        <span className="text-[10px] opacity-75">({count})</span>
+                                    </button>
+                                );
+                            })}
+                        </div>
+                    )}
+
+                    {product.reviews && product.reviews.length > 0 && (
+                        <div className="w-full sm:w-auto relative">
+                            <input 
+                                type="text"
+                                value={reviewSearchQuery}
+                                onChange={(e) => setReviewSearchQuery(e.target.value)}
+                                placeholder="Search reviews..."
+                                className="w-full sm:w-60 px-3.5 py-2 pl-3 pr-8 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-xs font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors placeholder:text-stone-400"
+                            />
+                            {reviewSearchQuery && (
+                                <button 
+                                    onClick={() => setReviewSearchQuery("")}
+                                    className="absolute right-2.5 top-1/2 -translate-y-1/2 text-stone-400 hover:text-stone-600 dark:hover:text-stone-200 text-xs cursor-pointer p-0.5"
+                                >
+                                    ✕
+                                </button>
+                            )}
+                        </div>
+                    )}
+                </div>
+
                 {/* Review List */}
                 <div className="space-y-6">
                     {product.reviews && product.reviews.length > 0 ? (
-                        product.reviews.map((rev, idx) => (
-                            <div key={idx} className="p-6 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 space-y-3">
-                                <div className="flex justify-between items-start">
-                                    <div className="flex items-center space-x-3">
-                                        <div className="w-8 h-8 rounded-full bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 flex items-center justify-center text-xs font-serif font-light">
-                                            {rev.name?.charAt(0).toUpperCase() || "C"}
+                        (() => {
+                            let filtered = selectedRatingFilter 
+                                ? product.reviews.filter(rev => rev.rating === selectedRatingFilter)
+                                : product.reviews;
+
+                            if (reviewSearchQuery.trim()) {
+                                const q = reviewSearchQuery.toLowerCase();
+                                filtered = filtered.filter(rev => 
+                                    rev.comment?.toLowerCase().includes(q) || 
+                                    rev.name?.toLowerCase().includes(q)
+                                );
+                            }
+
+                            if (filtered.length === 0) {
+                                return (
+                                    <div className="text-center py-12 bg-stone-50/50 dark:bg-stone-950 rounded-2xl border border-stone-200/60 dark:border-stone-800">
+                                        <p className="text-stone-400 text-xs font-light">
+                                            No {selectedRatingFilter}-star reviews found matching your search.
+                                        </p>
+                                        <button 
+                                            type="button" 
+                                            onClick={() => setSelectedRatingFilter(null)}
+                                            className="text-stone-900 dark:text-stone-100 text-xs font-medium uppercase tracking-wider underline underline-offset-4 mt-3 cursor-pointer"
+                                        >
+                                            Show All Reviews
+                                        </button>
+                                    </div>
+                                );
+                            }
+
+                            return filtered.map((rev, idx) => (
+                                <div key={idx} className="p-6 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 space-y-3">
+                                    <div className="flex justify-between items-start">
+                                        <div className="flex items-center space-x-3">
+                                            <div className="w-8 h-8 rounded-full bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 flex items-center justify-center text-xs font-serif font-light">
+                                                {rev.name?.charAt(0).toUpperCase() || "C"}
+                                            </div>
+                                            <div>
+                                                <span className="font-serif font-medium text-xs text-stone-900 dark:text-stone-100 block">{rev.name}</span>
+                                                <span className="text-[10px] text-stone-400 font-light">{new Date(rev.createdAt || Date.now()).toLocaleDateString()}</span>
+                                            </div>
                                         </div>
-                                        <div>
-                                            <span className="font-serif font-medium text-xs text-stone-900 dark:text-stone-100 block">{rev.name}</span>
-                                            <span className="text-[10px] text-stone-400 font-light">{new Date(rev.createdAt || Date.now()).toLocaleDateString()}</span>
+                                        <div className="flex text-amber-400">
+                                            {[1, 2, 3, 4, 5].map((star) => (
+                                                <FiStar key={star} className={`w-3.5 h-3.5 ${star <= rev.rating ? "fill-amber-400 text-amber-400" : "text-stone-300"}`} />
+                                            ))}
                                         </div>
                                     </div>
-                                    <div className="flex text-amber-400">
-                                        {[1, 2, 3, 4, 5].map((star) => (
-                                            <FiStar key={star} className={`w-3.5 h-3.5 ${star <= rev.rating ? "fill-amber-400 text-amber-400" : "text-stone-300"}`} />
-                                        ))}
-                                    </div>
+
+                                    <p className="text-stone-600 dark:text-stone-300 text-xs font-light leading-relaxed">{rev.comment}</p>
+
+                                    {rev.images && rev.images.length > 0 && (
+                                        <div className="flex gap-2 pt-2">
+                                            {rev.images.map((img, i) => (
+                                                <img 
+                                                    key={i} 
+                                                    src={img.url} 
+                                                    alt="Review attachment" 
+                                                    onClick={() => setActiveReviewPhoto(img.url)}
+                                                    className="w-14 h-14 object-cover rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm cursor-zoom-in hover:opacity-90 transition-opacity" 
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
                                 </div>
-
-                                <p className="text-stone-600 dark:text-stone-300 text-xs font-light leading-relaxed">{rev.comment}</p>
-
-                                {rev.images && rev.images.length > 0 && (
-                                    <div className="flex gap-2 pt-2">
-                                        {rev.images.map((img, i) => (
-                                            <img key={i} src={img.url} alt="Review attachment" className="w-14 h-14 object-cover rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm" />
-                                        ))}
-                                    </div>
-                                )}
-                            </div>
-                        ))
+                            ));
+                        })()
                     ) : (
                         <p className="text-center py-12 text-stone-400 text-xs uppercase tracking-[0.2em] font-light">
                             No reviews submitted yet. Be the first to share your experience!
@@ -632,12 +912,12 @@ const ProductDetails = () => {
                                 className="group flex-shrink-0 w-[140px] sm:w-[170px] lg:w-auto flex flex-col"
                             >
                                 {/* Thumbnail */}
-                                <div className="w-full h-[170px] sm:h-[210px] rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-2 flex-shrink-0 flex items-center justify-center p-2">
+                                <div className="w-full h-[170px] sm:h-[210px] rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-2 flex-shrink-0">
                                     <img
                                         src={prod.images?.[0]?.url || "https://placehold.co/300x380"}
                                         alt={prod.name}
                                         loading="lazy"
-                                        className="w-full h-full object-contain group-hover:scale-105 transition-transform duration-500 ease-out"
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                                     />
                                 </div>
 
@@ -715,6 +995,27 @@ const ProductDetails = () => {
                             * Measurements shown are in inches. If you are between sizes, we recommend sizing up for a more comfortable relaxed fit.
                         </p>
                     </div>
+                </div>
+            )}
+
+            {/* Expanded Review Image Lightbox */}
+            {activeReviewPhoto && (
+                <div 
+                    className="fixed inset-0 bg-black/90 backdrop-blur-sm z-[100] flex items-center justify-center p-4 cursor-pointer"
+                    onClick={() => setActiveReviewPhoto(null)}
+                >
+                    <button 
+                        onClick={() => setActiveReviewPhoto(null)}
+                        className="absolute top-6 right-6 text-white hover:text-stone-300 p-2 cursor-pointer transition-transform hover:scale-110"
+                    >
+                        <IoMdClose className="w-8 h-8" />
+                    </button>
+                    <img 
+                        src={activeReviewPhoto} 
+                        alt="Expanded customer review attachment" 
+                        className="max-w-full max-h-[85vh] rounded-xl object-contain shadow-2xl border border-stone-800 animate-zoomIn"
+                        onClick={(e) => e.stopPropagation()}
+                    />
                 </div>
             )}
         </div>

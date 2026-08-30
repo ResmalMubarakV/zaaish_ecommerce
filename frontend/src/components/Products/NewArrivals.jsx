@@ -154,21 +154,33 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
                 {newArrivals.map((product, index) => {
                     const rawImageUrl = product.images?.[0]?.url || "https://placehold.co/500x600";
                     const optimizedUrl = getProductCardImageUrl(rawImageUrl, "carousel");
+                    const hoverImageUrl = product.images?.[1]?.url;
+                    const optimizedHoverUrl = hoverImageUrl ? getProductCardImageUrl(hoverImageUrl, "carousel") : null;
                     const isPriority = index < 3;
 
                     return (
                     <div key={product._id} className="min-w-[80%] sm:min-w-[42%] lg:min-w-[28%] relative flex-shrink-0 group">
-                        <div className="overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-4 shadow-sm">
-                            <Link to={`/product/${product._id}`} className="block w-full h-full">
+                        <div className="overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-4 shadow-sm relative h-[380px] sm:h-[440px] lg:h-[480px]">
+                            <Link to={`/product/${product._id}`} className="block w-full h-full relative">
                                 <img
                                     src={optimizedUrl}
                                     alt={product.images?.[0]?.altText || product.name}
                                     loading={isPriority ? "eager" : "lazy"}
                                     fetchPriority={isPriority ? "high" : "auto"}
                                     decoding="async"
-                                    className="w-full h-[380px] sm:h-[440px] lg:h-[480px] object-contain p-3 rounded-2xl group-hover:scale-105 transition-transform duration-700 ease-out"
+                                    className={`w-full h-full object-cover rounded-2xl group-hover:scale-105 transition-all duration-700 ease-out absolute inset-0 ${optimizedHoverUrl ? "group-hover:opacity-0" : ""}`}
                                     draggable="false"
                                 />
+                                {optimizedHoverUrl && (
+                                    <img
+                                        src={optimizedHoverUrl}
+                                        alt={`${product.name} alternate view`}
+                                        loading="lazy"
+                                        decoding="async"
+                                        className="w-full h-full object-cover rounded-2xl group-hover:scale-105 transition-all duration-700 ease-out absolute inset-0 opacity-0 group-hover:opacity-100"
+                                        draggable="false"
+                                    />
+                                )}
                             </Link>
                         </div>
 

@@ -11,6 +11,7 @@ const Navbar = () => {
     const [drawerOpen, setDrawerOpen] = useState(false);
     const [navDrawerOpen, setNavDrawerOpen] = useState(false);
     const [cartItemCount, setCartItemCount] = useState(0);
+    const [wishlistItemCount, setWishlistItemCount] = useState(0);
     const [isScrolled, setIsScrolled] = useState(false);
 
     const [darkMode, setDarkMode] = useState(
@@ -59,8 +60,32 @@ const Navbar = () => {
             } else {
                 setCartItemCount(0);
             }
-        } catch {
+        } catch (error) {
+            console.error("Error fetching cart count:", error);
             setCartItemCount(0);
+        }
+    };
+
+    const fetchWishlistCount = async () => {
+        const token = localStorage.getItem("token");
+        if (!token) {
+            setWishlistItemCount(0);
+            return;
+        }
+
+        try {
+            const response = await fetch("/api/users/wishlist", {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            const data = await response.json();
+            if (response.ok && data.wishlist) {
+                setWishlistItemCount(data.wishlist.length);
+            } else {
+                setWishlistItemCount(0);
+            }
+        } catch (error) {
+            console.error("Error fetching wishlist count:", error);
+            setWishlistItemCount(0);
         }
     };
 
@@ -69,6 +94,13 @@ const Navbar = () => {
         queueMicrotask(handleCartUpdate);
         window.addEventListener("cartUpdated", handleCartUpdate);
         return () => window.removeEventListener("cartUpdated", handleCartUpdate);
+    }, []);
+
+    useEffect(() => {
+        const handleWishlistUpdate = () => { void fetchWishlistCount(); };
+        queueMicrotask(handleWishlistUpdate);
+        window.addEventListener("wishlistUpdated", handleWishlistUpdate);
+        return () => window.removeEventListener("wishlistUpdated", handleWishlistUpdate);
     }, []);
 
     useEffect(() => {
@@ -159,10 +191,15 @@ const Navbar = () => {
 
                         <button
                             onClick={handleWishlistClick}
-                            className="text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white transition-transform hover:scale-110 p-1 cursor-pointer"
+                            className="relative text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white transition-transform hover:scale-110 p-1 cursor-pointer"
                             title="Wishlist"
                         >
                             <HiOutlineHeart className="h-5 w-5 stroke-[1.5]" />
+                            {wishlistItemCount > 0 && (
+                                <span className="absolute -top-1 -right-1 bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-900 text-[9px] rounded-full h-[18px] w-[18px] flex items-center justify-center font-semibold">
+                                    {wishlistItemCount}
+                                </span>
+                            )}
                         </button>
 
                         <button
@@ -280,10 +317,17 @@ const Navbar = () => {
                     <div className="space-y-0.5">
                         <button
                             onClick={() => { closeDrawer(); handleWishlistClick(); }}
-                            className="flex items-center gap-3 w-full px-3 py-3.5 rounded-xl text-xs font-medium uppercase tracking-[0.12em] text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-900 hover:text-stone-950 dark:hover:text-white transition-colors cursor-pointer"
+                            className="flex items-center justify-between w-full px-3 py-3.5 rounded-xl text-xs font-medium uppercase tracking-[0.12em] text-stone-700 dark:text-stone-200 hover:bg-stone-50 dark:hover:bg-stone-900 hover:text-stone-950 dark:hover:text-white transition-colors cursor-pointer"
                         >
-                            <HiOutlineHeart className="h-4 w-4 stroke-[1.5] flex-shrink-0" />
-                            Wishlist
+                            <span className="flex items-center gap-3">
+                                <HiOutlineHeart className="h-4 w-4 stroke-[1.5] flex-shrink-0" />
+                                Wishlist
+                            </span>
+                            {wishlistItemCount > 0 && (
+                                <span className="bg-stone-200 dark:bg-stone-800 text-stone-900 dark:text-stone-100 text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold">
+                                    {wishlistItemCount}
+                                </span>
+                            )}
                         </button>
                         <button
                             onClick={() => { closeDrawer(); handleProfileClick(); }}

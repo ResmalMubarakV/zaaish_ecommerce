@@ -40,6 +40,7 @@ const Login = () => {
                           sessionStorage.removeItem("pendingCartItem");
                           sessionStorage.setItem("openCartAfterLogin", "true");
                           window.dispatchEvent(new Event("cartUpdated"));
+                          window.dispatchEvent(new Event("wishlistUpdated"));
                       }
                   } catch (cartError) {
                           console.error("Error syncing pending cart item:", cartError);
@@ -82,6 +83,7 @@ const Login = () => {
              type="email" 
              value={email} 
              onChange={(e) => setEmail(e.target.value)}
+             onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
              className='w-full p-3.5 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-sm font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors'
              placeholder="Enter your email address"
              required />
@@ -94,6 +96,7 @@ const Login = () => {
                type={showPassword ? "text" : "password"}
                value={password}
                onChange={(e) => setPassword(e.target.value)} 
+               onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
                className='w-full p-3.5 pr-12 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-sm font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors'
                placeholder="Enter your password"
                autoComplete="current-password"

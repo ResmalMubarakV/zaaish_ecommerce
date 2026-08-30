@@ -44,7 +44,7 @@ export const getOptimizedImageUrl = (url, options = {}) => {
     try {
       const optimized = new URL(url);
       optimized.searchParams.set("auto", "format");
-      optimized.searchParams.set("fit", "clip");
+      optimized.searchParams.set("fit", "crop");
       optimized.searchParams.set("q", "75");
       if (width) optimized.searchParams.set("w", String(width));
       if (height) optimized.searchParams.set("h", String(height));
@@ -59,7 +59,7 @@ export const getOptimizedImageUrl = (url, options = {}) => {
 
 export const getProductCardImageUrl = (url, variant = "grid") => {
   const { width, height } = CARD_SIZES[variant] || CARD_SIZES.grid;
-  return getOptimizedImageUrl(url, { width, height, crop: "fit" });
+  return getOptimizedImageUrl(url, { width, height, crop: "fill" });
 };
 
 export const preloadProductImages = (products, { variant = "grid", count = 8 } = {}) => {

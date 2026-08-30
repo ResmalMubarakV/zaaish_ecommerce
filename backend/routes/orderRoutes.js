@@ -132,6 +132,64 @@ router.get("/:id", protect, async (req, res, next) => {
     }
 });
 
+// @route   PUT /api/orders/:id/cancel
+// @desc    Cancel order by user
+// @access  Private
+router.put("/:id/cancel", protect, async (req, res, next) => {
+    try {
+        const order = await Order.findById(req.params.id);
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" });
+        }
+
+        // Check if user is owner
+        if (order.user.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+            return res.status(403).json({ success: false, message: "Not authorized to cancel this order" });
+        }
+
+        // Can only cancel if status is Processing or pending
+        if (order.status && order.status !== "Processing") {
+            return res.status(400).json({ success: false, message: `Cannot cancel order which is already ${order.status}` });
+        }
+
+        order.status = "Cancelled";
+        const updatedOrder = await order.save();
+        res.json({ success: true, order: updatedOrder, message: "Order cancelled successfully" });
+    } catch (error) {
+        next(error);
+    }
+});
+
+// @route   PUT /api/orders/:id/return
+// @desc    Request return for order by user
+// @access  Private
+router.put("/:id/return", protect, async (req, res, next) => {
+    try {
+        const order = await Order.findById(req.params.id);
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" });
+        }
+
+        // Check if user is owner
+        if (order.user.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+            return res.status(403).json({ success: false, message: "Not authorized to return this order" });
+        }
+
+        // Can only return if status is Delivered
+        if (order.status !== "Delivered") {
+            return res.status(400).json({ success: false, message: "Can only return orders that are delivered" });
+        }
+
+        order.status = "Return Requested";
+        const updatedOrder = await order.save();
+        res.json({ success: true, order: updatedOrder, message: "Return requested successfully" });
+    } catch (error) {
+        next(error);
+    }
+});
+
 
 // @route   GET /api/orders
 // @desc    Get all orders (Admin)

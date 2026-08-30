@@ -71,11 +71,11 @@ router.post("/", protect, async (req, res, next) => {
 });
 
 // @route   PUT /api/cart/:itemId
-// @desc    Update cart item quantity
+// @desc    Update cart item details
 // @access  Private
 router.put("/:itemId", protect, async (req, res, next) => {
     try {
-        const { quantity } = req.body;
+        const { quantity, size, color } = req.body;
         const { itemId } = req.params;
 
         const cartItem = req.user.cart.id(itemId);
@@ -83,11 +83,19 @@ router.put("/:itemId", protect, async (req, res, next) => {
             return res.status(404).json({ success: false, message: "Cart item not found" });
         }
 
-        const newQty = parseInt(quantity, 10);
-        if (newQty <= 0) {
-            cartItem.deleteOne();
-        } else {
-            cartItem.quantity = newQty;
+        if (quantity !== undefined) {
+            const newQty = parseInt(quantity, 10);
+            if (newQty <= 0) {
+                cartItem.deleteOne();
+            } else {
+                cartItem.quantity = newQty;
+            }
+        }
+        if (size !== undefined) {
+            cartItem.size = size;
+        }
+        if (color !== undefined) {
+            cartItem.color = color;
         }
 
         await req.user.save();
@@ -95,7 +103,7 @@ router.put("/:itemId", protect, async (req, res, next) => {
 
         res.json({
             success: true,
-            message: "Cart item quantity updated",
+            message: "Cart item details updated",
             cart: req.user.cart,
             cartItemCount: getCartItemCount(req.user.cart)
         });

@@ -47,6 +47,7 @@ const AdminLogin = () => {
                             type="email" 
                             value={email} 
                             onChange={(e) => setEmail(e.target.value)}
+                            onKeyDown={(e) => e.key === 'Enter' && handleAdminSubmit(e)}
                             className='w-full p-3.5 border border-stone-800 rounded-xl bg-stone-950 text-stone-100 text-sm font-light focus:outline-none focus:border-stone-500 transition-colors'
                             placeholder="admin@example.com"
                             required 
@@ -58,6 +59,7 @@ const AdminLogin = () => {
                             type="password" 
                             value={password}
                             onChange={(e) => setPassword(e.target.value)} 
+                            onKeyDown={(e) => e.key === 'Enter' && handleAdminSubmit(e)}
                             className='w-full p-3.5 border border-stone-800 rounded-xl bg-stone-950 text-stone-100 text-sm font-light focus:outline-none focus:border-stone-500 transition-colors'
                             placeholder="••••••••"
                             required 
