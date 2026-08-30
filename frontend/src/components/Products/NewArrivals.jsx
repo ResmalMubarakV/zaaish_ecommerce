@@ -2,33 +2,43 @@ import { useEffect, useRef, useState } from 'react'
 import { FiChevronLeft, FiChevronRight } from "react-icons/fi"
 import { Link } from "react-router-dom"
 
-const NewArrivals = () => {
+// When `products` and `loading` props are provided (from Home.jsx),
+// the internal fetch is skipped to avoid redundant API calls.
+const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
     const scrollRef = useRef(null);
     const [isDragging, setIsDragging] = useState(false);
     const [startX, setStartX] = useState(0);
     const [scrollLeft, setScrollLeft] = useState(0);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
-    const [newArrivals, setNewArrivals] = useState([]);
-    const [loading, setLoading] = useState(true);
+
+    // Internal state — only used when no props are passed (standalone usage)
+    const [internalProducts, setInternalProducts] = useState([]);
+    const [internalLoading, setInternalLoading] = useState(!propProducts);
+
+    const usingProps = propProducts !== undefined;
+    const newArrivals = usingProps ? propProducts : internalProducts;
+    const loading = usingProps ? (propLoading ?? false) : internalLoading;
 
     useEffect(() => {
+        // Skip fetch if data is passed as props
+        if (usingProps) return;
+
         const fetchNewArrivals = async () => {
             try {
+                setInternalLoading(true);
                 const response = await fetch('/api/products?limit=8&sortBy=newest');
                 const data = await response.json();
-                if (response.ok) {
-                    setNewArrivals(data.products || []);
-                }
+                if (response.ok) setInternalProducts(data.products || []);
             } catch (error) {
                 console.error("Error fetching new arrivals:", error);
             } finally {
-                setLoading(false);
+                setInternalLoading(false);
             }
         };
 
         fetchNewArrivals();
-    }, []);
+    }, [usingProps]);
 
     const handleMouseDown = (e) => {
         setIsDragging(true);
@@ -38,14 +48,12 @@ const NewArrivals = () => {
 
     const handleMouseMove = (e) => {
        if (!isDragging) return;
-       const x = e.pageX - scrollRef.current.offsetLeft; 
+       const x = e.pageX - scrollRef.current.offsetLeft;
        const walk = x - startX;
        scrollRef.current.scrollLeft = scrollLeft - walk;
     };
-    
-    const handleMouseUpOrLeave = () => {
-        setIsDragging(false);
-    };
+
+    const handleMouseUpOrLeave = () => setIsDragging(false);
 
     const scroll = (direction) => {
         const scrollAmount = direction === "left" ? -380 : 380;
@@ -57,7 +65,6 @@ const NewArrivals = () => {
          if (container) {
             const leftScroll = container.scrollLeft;
             const rightScrollable = container.scrollWidth > leftScroll + container.clientWidth;
-
             setCanScrollLeft(leftScroll > 0);
             setCanScrollRight(rightScrollable);
          }
@@ -65,85 +72,110 @@ const NewArrivals = () => {
 
     useEffect(() => {
         const container = scrollRef.current;
-        if(container) {
+        if (container) {
             container.addEventListener("scroll", updateScrollButtons);
             updateScrollButtons();
             return () => container.removeEventListener("scroll", updateScrollButtons);
         }
     }, [newArrivals]);
 
+    // Skeleton loading state
     if (loading) {
-        return <div className="text-center py-24 text-stone-400 text-xs uppercase tracking-[0.2em] font-light">Loading new arrivals...</div>;
-    }
-
-    if (newArrivals.length === 0) {
-        return null;
-    }
-
-  return (
-    <section className="py-24 px-6 lg:px-8 max-w-7xl mx-auto">
-        <div className="flex flex-col md:flex-row md:items-end justify-between mb-12 relative">
-            <div className="max-w-xl">
-                <span className="text-stone-400 dark:text-stone-500 text-[10px] uppercase tracking-[0.3em] font-medium block mb-2">Curated Selection</span>
-                <h2 className="text-3xl sm:text-4xl font-serif font-light text-stone-900 dark:text-stone-100 tracking-wide mb-3">
-                    Explore New Arrivals
-                </h2>
-                <p className="text-stone-500 dark:text-stone-400 text-sm font-light leading-relaxed">
-                    Discover the latest pieces freshly added to elevate your seasonal wardrobe.
-                </p>
-            </div>
-
-            {/* Scroll Navigation Buttons */}
-            <div className="hidden md:flex space-x-3 mt-4 md:mt-0">
-                <button
-                  onClick={() => scroll("left")}  
-                  disabled={!canScrollLeft}
-                  className={`p-3.5 rounded-xl border transition-all cursor-pointer ${canScrollLeft ? "bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 hover:border-stone-400 dark:hover:border-stone-600 shadow-sm"
-                  : "bg-stone-50 dark:bg-stone-950 border-stone-100 dark:border-stone-900 text-stone-300 dark:text-stone-700 cursor-not-allowed"}`}>
-                    <FiChevronLeft className="text-base"/>
-                </button>
-                <button 
-                  onClick={() => scroll("right")}
-                  disabled={!canScrollRight}
-                  className={`p-3.5 rounded-xl border transition-all cursor-pointer ${canScrollRight ? "bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 hover:border-stone-400 dark:hover:border-stone-600 shadow-sm"
-                    : "bg-stone-50 dark:bg-stone-950 border-stone-100 dark:border-stone-900 text-stone-300 dark:text-stone-700 cursor-not-allowed"}`}>
-                    <FiChevronRight className="text-base"/>
-                </button>
-            </div>
-        </div>
-
-        {/* Scrollable Content Container */}
-        <div 
-            ref={scrollRef} 
-            className={`w-full overflow-x-auto flex space-x-6 relative scrollbar-none pb-4 
-                ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
-            onMouseDown={handleMouseDown}
-            onMouseMove={handleMouseMove}
-            onMouseUp={handleMouseUpOrLeave}
-            onMouseLeave={handleMouseUpOrLeave}
-        >
-            {newArrivals.map((product) => (
-                <div key={product._id} className="min-w-[85%] sm:min-w-[45%] lg:min-w-[30%] relative flex-shrink-0 group">
-                    <div className="overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-4 shadow-sm">
-                        <img 
-                            src={product.images?.[0]?.url || "https://placehold.co/500x500"} 
-                            alt={product.images?.[0]?.altText || product.name} 
-                            className="w-full h-[480px] object-cover rounded-2xl group-hover:scale-105 transition-transform duration-700 ease-out"
-                            draggable="false" 
-                        />
-                    </div>
-
-                    <div className="flex justify-between items-start px-1">
-                        <Link to={`/product/${product._id}`} className="block">
-                            <h4 className="font-serif text-stone-900 dark:text-stone-100 font-normal tracking-wide truncate hover:text-stone-500 dark:hover:text-stone-400 transition-colors text-sm">{product.name}</h4>
-                            <p className="mt-1 text-stone-500 dark:text-stone-400 text-xs tracking-wider font-light">${product.price.toFixed(2)}</p>
-                        </Link>
+        return (
+            <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+                <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 sm:mb-12">
+                    <div className="max-w-xl">
+                        <div className="h-3 w-24 bg-stone-200 dark:bg-stone-800 rounded animate-pulse mb-3" />
+                        <div className="h-8 w-64 bg-stone-200 dark:bg-stone-800 rounded animate-pulse mb-3" />
+                        <div className="h-4 w-80 bg-stone-100 dark:bg-stone-900 rounded animate-pulse" />
                     </div>
                 </div>
-            ))}
-        </div>
-    </section>
-  )
-}
+                <div className="flex space-x-6 overflow-hidden">
+                    {[1, 2, 3].map((i) => (
+                        <div key={i} className="min-w-[85%] sm:min-w-[45%] lg:min-w-[30%] flex-shrink-0">
+                            <div className="h-[400px] sm:h-[480px] rounded-2xl bg-stone-200 dark:bg-stone-800 animate-pulse mb-4" />
+                            <div className="h-4 w-3/4 bg-stone-200 dark:bg-stone-800 rounded animate-pulse mb-2" />
+                            <div className="h-3 w-1/3 bg-stone-100 dark:bg-stone-900 rounded animate-pulse" />
+                        </div>
+                    ))}
+                </div>
+            </section>
+        );
+    }
+
+    if (newArrivals.length === 0) return null;
+
+    return (
+        <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 sm:mb-12 relative">
+                <div className="max-w-xl">
+                    <span className="text-stone-400 dark:text-stone-500 text-[10px] uppercase tracking-[0.3em] font-medium block mb-2">Curated Selection</span>
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-light text-stone-900 dark:text-stone-100 tracking-wide mb-3">
+                        Explore New Arrivals
+                    </h2>
+                    <p className="text-stone-500 dark:text-stone-400 text-sm font-light leading-relaxed">
+                        Discover the latest pieces freshly added to elevate your seasonal wardrobe.
+                    </p>
+                </div>
+
+                {/* Scroll Navigation Buttons */}
+                <div className="hidden md:flex space-x-3 mt-4 md:mt-0">
+                    <button
+                      onClick={() => scroll("left")}
+                      disabled={!canScrollLeft}
+                      className={`p-3.5 rounded-xl border transition-all cursor-pointer ${canScrollLeft
+                          ? "bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 hover:border-stone-400 dark:hover:border-stone-600 shadow-sm"
+                          : "bg-stone-50 dark:bg-stone-950 border-stone-100 dark:border-stone-900 text-stone-300 dark:text-stone-700 cursor-not-allowed"}`}
+                    >
+                        <FiChevronLeft className="text-base"/>
+                    </button>
+                    <button
+                      onClick={() => scroll("right")}
+                      disabled={!canScrollRight}
+                      className={`p-3.5 rounded-xl border transition-all cursor-pointer ${canScrollRight
+                          ? "bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 hover:border-stone-400 dark:hover:border-stone-600 shadow-sm"
+                          : "bg-stone-50 dark:bg-stone-950 border-stone-100 dark:border-stone-900 text-stone-300 dark:text-stone-700 cursor-not-allowed"}`}
+                    >
+                        <FiChevronRight className="text-base"/>
+                    </button>
+                </div>
+            </div>
+
+            {/* Scrollable Content Container */}
+            <div
+                ref={scrollRef}
+                className={`w-full overflow-x-auto flex space-x-4 sm:space-x-6 scrollbar-none pb-4 select-none ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUpOrLeave}
+                onMouseLeave={handleMouseUpOrLeave}
+            >
+                {newArrivals.map((product) => (
+                    <div key={product._id} className="min-w-[80%] sm:min-w-[42%] lg:min-w-[28%] relative flex-shrink-0 group">
+                        <div className="overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-4 shadow-sm">
+                            <img
+                                src={product.images?.[0]?.url || "https://placehold.co/500x600"}
+                                alt={product.images?.[0]?.altText || product.name}
+                                className="w-full h-[380px] sm:h-[440px] lg:h-[480px] object-cover rounded-2xl group-hover:scale-105 transition-transform duration-700 ease-out"
+                                draggable="false"
+                            />
+                        </div>
+
+                        <div className="flex justify-between items-start px-1">
+                            <Link to={`/product/${product._id}`} className="block min-w-0">
+                                <h4 className="font-serif text-stone-900 dark:text-stone-100 font-normal tracking-wide truncate hover:text-stone-500 dark:hover:text-stone-400 transition-colors text-sm">
+                                    {product.name}
+                                </h4>
+                                <p className="mt-1 text-stone-500 dark:text-stone-400 text-xs tracking-wider font-light">
+                                    ₹{product.price?.toFixed(2)}
+                                </p>
+                            </Link>
+                        </div>
+                    </div>
+                ))}
+            </div>
+        </section>
+    );
+};
 
 export default NewArrivals;

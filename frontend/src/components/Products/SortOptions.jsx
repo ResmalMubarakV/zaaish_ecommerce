@@ -18,12 +18,12 @@ const SortOptions = () => {
   };
 
   return (
-    <div className='mb-8 flex items-center justify-end'>
+    <div className='flex w-full items-center justify-end md:w-auto'>
       <select 
         id="sort" 
         onChange={handleSortChange}
         value={searchParams.get("sortBy") || ""}
-        className='border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 px-4 py-3 text-[11px] uppercase tracking-[0.2em] font-medium text-stone-700 dark:text-stone-300 rounded-xl focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 shadow-sm cursor-pointer transition-colors'
+        className='w-full border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 px-4 py-3 text-[11px] uppercase tracking-[0.2em] font-medium text-stone-700 dark:text-stone-300 rounded-xl focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 shadow-sm cursor-pointer transition-colors md:w-auto'
       >
         <option value="">Sort By: Default</option>
         <option value="priceAsc">Price: Low to High</option>

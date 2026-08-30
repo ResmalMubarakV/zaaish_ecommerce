@@ -81,7 +81,7 @@ const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
                     <div className="p-6 sm:p-8 bg-stone-50/80 dark:bg-stone-950 border-t border-stone-100 dark:border-stone-800 sticky bottom-0">
                         <div className="flex justify-between items-center mb-6 font-serif font-light text-base tracking-wide text-stone-900 dark:text-stone-100">
                             <span className="text-xs uppercase tracking-[0.2em] text-stone-500 font-medium">Subtotal</span>
-                            <span className="font-medium">${totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
+                            <span className="font-medium">₹{totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         </div>
                         <button 
                             onClick={handleCheckout} 

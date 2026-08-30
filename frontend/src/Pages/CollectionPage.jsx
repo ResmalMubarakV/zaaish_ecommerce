@@ -19,10 +19,11 @@ const CollectionPage = () => {
     limit: 12
   });
   const [wishlist, setWishlist] = useState([]);
+  const [filterOptions, setFilterOptions] = useState({});
   const sidebarRef = useRef(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
 
-  const categoryPills = ["All", "Top Wear", "Bottom Wear", "Outerwear", "Accessories", "Footwear"];
+  const categoryPills = ["All", ...(filterOptions.categories || [])];
 
   const toggleSidebar = () => {
     setIsSidebarOpen(prev => !prev);
@@ -105,6 +106,28 @@ const CollectionPage = () => {
     fetchProducts();
   }, [collection, searchParams]);
 
+  // Product attributes come from the catalog, so the storefront never offers a filter
+  // that an admin has not assigned to a product.
+  useEffect(() => {
+    const controller = new AbortController();
+
+    const fetchFilterOptions = async () => {
+      try {
+        const collectionParam = collection && collection.toLowerCase() !== "all"
+          ? `?collection=${encodeURIComponent(collection)}`
+          : "";
+        const response = await fetch(`/api/products/filter-options${collectionParam}`, { signal: controller.signal });
+        const data = await response.json();
+        if (response.ok) setFilterOptions(data.options || {});
+      } catch (error) {
+        if (error.name !== "AbortError") console.error("Error loading product filter options:", error);
+      }
+    };
+
+    fetchFilterOptions();
+    return () => controller.abort();
+  }, [collection]);
+
   const handlePageChange = (newPage) => {
     if (newPage < 1 || newPage > pagination.totalPages) return;
     const newParams = new URLSearchParams(searchParams);
@@ -161,11 +184,19 @@ const CollectionPage = () => {
 
   const searchQuery = searchParams.get("search");
   const activeCategory = searchParams.get("category") || "All";
+  const pageWindowStart = Math.min(
+    Math.max(1, pagination.currentPage - 2),
+    Math.max(1, pagination.totalPages - 4)
+  );
+  const visiblePages = Array.from(
+    { length: Math.min(5, pagination.totalPages) },
+    (_, index) => pageWindowStart + index
+  );
 
   return (
-    <div className='flex flex-col lg:flex-row relative min-h-screen bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors pt-6 lg:pt-8 pb-16'>
+    <div className='flex flex-col lg:flex-row relative min-h-screen bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors pt-4 sm:pt-6 lg:pt-8 pb-12 sm:pb-16'>
       {/* Mobile Filter Button */}
-      <div className='lg:hidden px-6 mb-4'>
+      <div className='lg:hidden px-4 sm:px-6 mb-4'>
         <button
           onClick={toggleSidebar}
           className='w-full border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 p-3 flex justify-center items-center rounded-xl text-xs uppercase tracking-[0.15em] font-medium cursor-pointer shadow-sm'
@@ -186,22 +217,22 @@ const CollectionPage = () => {
       <div
         ref={sidebarRef}
         className={`
-          fixed inset-y-0 z-50 left-0 w-80 bg-white dark:bg-stone-900 overflow-y-auto p-6 shadow-2xl border-r border-stone-200/80 dark:border-stone-800
+          fixed inset-y-0 z-50 left-0 w-[min(22rem,calc(100vw-1.5rem))] bg-white dark:bg-stone-900 overflow-y-auto p-4 sm:p-6 shadow-2xl border-r border-stone-200/80 dark:border-stone-800
           lg:translate-x-0 lg:sticky lg:top-28 lg:h-[calc(100vh-120px)] lg:shadow-none lg:border-none lg:bg-transparent lg:dark:bg-transparent
           transition-transform duration-300
           ${isSidebarOpen ? "translate-x-0" : "-translate-x-full"}
         `}
       >
-        <FilterSidebar />
+        <FilterSidebar options={filterOptions} onFiltersChange={() => setIsSidebarOpen(false)} />
       </div>
 
-      <div className='flex-1 px-6 lg:px-12'>
+      <div className='min-w-0 flex-1 px-4 sm:px-6 lg:px-12'>
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-6">
           <div>
             <span className="text-[10px] uppercase tracking-[0.25em] text-stone-400 font-medium block mb-1">
               {pagination.totalProducts} Items Available
             </span>
-            <h2 className='text-2xl sm:text-3xl font-serif font-light uppercase tracking-wide'>
+            <h2 className='text-xl sm:text-3xl font-serif font-light uppercase tracking-wide leading-tight'>
               {searchQuery 
                 ? `Search Results for "${searchQuery}"`
                 : collection === "all" || !collection 
@@ -211,13 +242,13 @@ const CollectionPage = () => {
             </h2>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="w-full md:w-auto flex items-center gap-4">
             <SortOptions />
           </div>
         </div>
 
         {/* Quick Category Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 mb-8 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 sm:mb-8 scrollbar-none">
           {categoryPills.map((cat) => (
             <button
               key={cat}
@@ -252,7 +283,7 @@ const CollectionPage = () => {
               Previous
             </button>
 
-            {Array.from({ length: pagination.totalPages }, (_, i) => i + 1).map((pageNum) => (
+            {visiblePages.map((pageNum) => (
               <button
                 key={pageNum}
                 onClick={() => handlePageChange(pageNum)}

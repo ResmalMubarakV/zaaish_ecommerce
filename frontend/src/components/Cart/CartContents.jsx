@@ -22,6 +22,7 @@ const CartContents = ({ cart, onUpdateCart }) => {
             const data = await response.json();
             if (response.ok) {
                 onUpdateCart(data.cart);
+                window.dispatchEvent(new Event("cartUpdated"));
             } else {
                 alert(data.message || "Failed to update quantity");
             }
@@ -42,6 +43,7 @@ const CartContents = ({ cart, onUpdateCart }) => {
             const data = await response.json();
             if (response.ok) {
                 onUpdateCart(data.cart);
+                window.dispatchEvent(new Event("cartUpdated"));
             } else {
                 alert(data.message || "Failed to remove item");
             }
@@ -82,7 +84,7 @@ const CartContents = ({ cart, onUpdateCart }) => {
                             </div>
                         </div>
                         <div className="text-right flex flex-col justify-between h-full">
-                            <p className="font-medium text-stone-900 dark:text-stone-100 text-sm tracking-wide">$ {(itemPrice * item.quantity).toLocaleString()}</p>
+                            <p className="font-medium text-stone-900 dark:text-stone-100 text-sm tracking-wide">₹{(itemPrice * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
                             <button onClick={() => handleRemoveItem(item._id)} className="cursor-pointer self-end mt-6">
                                 <RiDeleteBin3Line className="h-4 w-4 text-rose-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"/>
                             </button>

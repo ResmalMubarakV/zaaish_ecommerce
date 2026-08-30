@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate, useParams, Link } from 'react-router-dom';
 import { toast } from 'sonner';
-import { FiArrowLeft, FiUploadCloud, FiTrash2 } from 'react-icons/fi';
+import { FiArrowLeft, FiUploadCloud, FiTrash2, FiLoader } from 'react-icons/fi';
+import ProductVariantFields from './ProductVariantFields';
 
 const EditProductPage = () => {
     const { id } = useParams();
@@ -32,7 +33,12 @@ const EditProductPage = () => {
                 const response = await fetch(`/api/products/id/${id}`);
                 const data = await response.json();
                 if (response.ok) {
-                    setProductData(data.product);
+                    setProductData({
+                        ...data.product,
+                        sizes: data.product.sizes || [],
+                        colors: data.product.colors || [],
+                        images: data.product.images || []
+                    });
                 } else {
                     toast.error("Failed to load product details");
                 }
@@ -52,13 +58,23 @@ const EditProductPage = () => {
         setProductData((prevData) => ({ ...prevData, [name]: value }));
     };
 
+    const handleVariantChange = (field, values) => {
+        setProductData((prevData) => ({ ...prevData, [field]: values }));
+    };
+
     const handleImageUpload = async (e) => {
         const files = e.target.files;
         if (!files || files.length === 0) return;
 
+        const remainingSlots = 8 - productData.images.length;
+        const filesToUpload = Array.from(files).slice(0, remainingSlots);
+        if (filesToUpload.length < files.length) {
+            toast.info(`Only ${remainingSlots} image slot${remainingSlots === 1 ? "" : "s"} remaining.`);
+        }
+
         const formData = new FormData();
-        for (let i = 0; i < files.length; i++) {
-            formData.append("images", files[i]);
+        for (const file of filesToUpload) {
+            formData.append("images", file);
         }
 
         try {
@@ -84,6 +100,7 @@ const EditProductPage = () => {
             toast.error("Error uploading images");
         } finally {
             setUploading(false);
+            e.target.value = "";
         }
     };
 
@@ -96,6 +113,17 @@ const EditProductPage = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
+
+        if (productData.images.length === 0) {
+            toast.error("Please keep at least one product image");
+            return;
+        }
+
+        if (productData.sizes.length === 0 || productData.colors.length === 0) {
+            toast.error("Choose at least one available size and colour");
+            return;
+        }
+
         try {
             const token = localStorage.getItem("token");
             const payload = {
@@ -131,8 +159,23 @@ const EditProductPage = () => {
         return <div className="text-center py-32 text-stone-400 text-xs uppercase tracking-[0.2em] font-light">Loading product details...</div>;
     }
 
+    // Full-screen upload overlay prevents navigation during Cloudinary upload
+    const UploadOverlay = () => uploading ? (
+        <div className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/60 backdrop-blur-sm">
+            <div className="bg-white dark:bg-stone-900 rounded-3xl p-8 sm:p-10 shadow-2xl border border-stone-200 dark:border-stone-800 flex flex-col items-center max-w-xs w-full mx-4">
+                <div className="relative w-14 h-14 mb-5">
+                    <div className="absolute inset-0 rounded-full border-4 border-stone-200 dark:border-stone-800" />
+                    <div className="absolute inset-0 rounded-full border-4 border-t-stone-950 dark:border-t-stone-100 animate-spin" />
+                </div>
+                <p className="text-sm font-serif font-medium text-stone-900 dark:text-stone-100 mb-2 text-center">Uploading Images</p>
+                <p className="text-xs text-stone-500 dark:text-stone-400 text-center font-light">Please don't close or navigate away while your images upload to Cloudinary.</p>
+            </div>
+        </div>
+    ) : null;
+
     return (
         <div className="max-w-5xl mx-auto p-6 sm:p-8 lg:p-12 w-full text-stone-900 dark:text-stone-100">
+            <UploadOverlay />
             <div className="mb-8">
                 <Link to="/admin/products" className="inline-flex items-center text-xs uppercase tracking-[0.2em] font-medium text-stone-500 hover:text-stone-900 dark:hover:text-white transition-colors mb-4">
                     <FiArrowLeft className="mr-2" /> Back to Products
@@ -141,7 +184,7 @@ const EditProductPage = () => {
                 <p className="text-xs uppercase tracking-[0.15em] text-stone-400 mt-1">Update product specifications, pricing, and Cloudinary media assets.</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-8 bg-white dark:bg-stone-900 p-8 sm:p-10 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm">
+            <form onSubmit={handleSubmit} className="space-y-8 bg-white dark:bg-stone-900 p-5 sm:p-8 lg:p-10 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm">
                 
                 {/* Cloudinary Image Section */}
                 <div>
@@ -164,11 +207,12 @@ const EditProductPage = () => {
                         ))}
 
                         {(!productData.images || productData.images.length < 8) && (
-                            <label className="border-2 border-dashed border-stone-300 dark:border-stone-800 hover:border-stone-950 dark:hover:border-stone-100 rounded-2xl aspect-square flex flex-col items-center justify-center cursor-pointer transition-colors p-4 text-center">
-                                <FiUploadCloud className="w-8 h-8 text-stone-400 mb-2" />
+                            <label className={`relative border-2 border-dashed rounded-2xl aspect-square flex flex-col items-center justify-center p-4 text-center transition-colors ${uploading ? "border-stone-300 dark:border-stone-700 cursor-wait" : "border-stone-300 dark:border-stone-800 hover:border-stone-950 dark:hover:border-stone-100 cursor-pointer"}`}>
+                                {uploading ? <FiLoader className="w-8 h-8 text-stone-700 dark:text-stone-200 mb-2 animate-spin" /> : <FiUploadCloud className="w-8 h-8 text-stone-400 mb-2" />}
                                 <span className="text-[11px] font-medium uppercase tracking-wider text-stone-600 dark:text-stone-300">
-                                    {uploading ? "Uploading..." : "Upload Image"}
+                                    {uploading ? "Uploading images" : "Upload image"}
                                 </span>
+                                {uploading && <span className="mt-1 text-[10px] text-stone-400">Please keep this page open</span>}
                                 <input type="file" multiple accept="image/*" onChange={handleImageUpload} className="hidden" disabled={uploading} />
                             </label>
                         )}
@@ -243,17 +287,23 @@ const EditProductPage = () => {
                     </div>
                 </div>
 
+                <ProductVariantFields
+                    sizes={productData.sizes}
+                    colors={productData.colors}
+                    onChange={handleVariantChange}
+                />
+
                 <div>
                     <label className="block text-xs uppercase tracking-[0.15em] text-stone-400 font-medium mb-2">Description *</label>
                     <textarea name="description" value={productData.description || ""} onChange={handleChange} required rows={4} className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-stone-900 dark:focus:border-stone-100" />
                 </div>
 
-                <div className="flex justify-end space-x-4 pt-4 border-t border-stone-100 dark:border-stone-800">
-                    <Link to="/admin/products" className="px-6 py-3 rounded-xl border border-stone-200 dark:border-stone-800 text-xs font-medium uppercase tracking-[0.15em] hover:bg-stone-100 dark:hover:bg-stone-800 transition">
+                <div className="flex flex-col-reverse gap-3 pt-4 border-t border-stone-100 sm:flex-row sm:justify-end sm:space-x-4 dark:border-stone-800">
+                    <Link to="/admin/products" className="px-6 py-3 rounded-xl border border-stone-200 dark:border-stone-800 text-center text-xs font-medium uppercase tracking-[0.15em] hover:bg-stone-100 dark:hover:bg-stone-800 transition">
                         Cancel
                     </Link>
-                    <button type="submit" disabled={uploading} className="px-8 py-3 rounded-xl bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 text-xs font-medium uppercase tracking-[0.15em] hover:bg-stone-800 dark:hover:bg-stone-200 transition shadow-sm cursor-pointer disabled:opacity-50">
-                        Update Product
+                    <button type="submit" disabled={uploading} className="px-8 py-3 rounded-xl bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 text-xs font-medium uppercase tracking-[0.15em] hover:bg-stone-800 dark:hover:bg-stone-200 transition shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
+                        {uploading ? "Uploading images..." : "Update Product"}
                     </button>
                 </div>
             </form>

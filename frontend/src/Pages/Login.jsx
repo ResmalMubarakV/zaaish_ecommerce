@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import login from "../assets/login.webp"
+import { FiEye, FiEyeOff } from 'react-icons/fi';
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const [showPassword, setShowPassword] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
@@ -59,11 +61,11 @@ const Login = () => {
     };
 
   return (
-    <div className='flex h-[calc(100vh-84px)] w-full overflow-hidden bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors'>
+    <div className='flex min-h-[calc(100dvh-73px)] w-full bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors'>
       
       {/* Left Side: Form Container */}
-      <div className='w-full md:w-1/2 h-full flex flex-col justify-center items-center p-6 sm:p-10 overflow-y-auto'>
-        <form onSubmit={handleSubmit} className='w-full max-w-md bg-white dark:bg-stone-900 p-8 sm:p-10 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm'>
+      <div className='w-full md:w-1/2 flex flex-col justify-center items-center p-4 sm:p-8 lg:p-10'>
+        <form onSubmit={handleSubmit} className='my-6 w-full max-w-md bg-white dark:bg-stone-900 p-6 sm:p-10 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm'>
           
           <div className='flex justify-center mb-6'>
             <h2 className='text-2xl font-serif tracking-[0.25em] uppercase text-stone-950 dark:text-stone-100 font-light'>Zaaish</h2>
@@ -87,13 +89,19 @@ const Login = () => {
           
           <div className='mb-8'>
             <label className='block text-[10px] uppercase tracking-[0.2em] font-medium mb-2 text-stone-400 dark:text-stone-500'>Password</label>
-            <input 
-             type="password" 
-             value={password}
-             onChange={(e) => setPassword(e.target.value)} 
-             className='w-full p-3.5 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-sm font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors'
-             placeholder="Enter your password"
-             required />
+            <div className='relative'>
+              <input 
+               type={showPassword ? "text" : "password"}
+               value={password}
+               onChange={(e) => setPassword(e.target.value)} 
+               className='w-full p-3.5 pr-12 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-sm font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors'
+               placeholder="Enter your password"
+               autoComplete="current-password"
+               required />
+              <button type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} className='absolute inset-y-0 right-0 flex w-12 items-center justify-center text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 cursor-pointer'>
+                {showPassword ? <FiEyeOff className='h-4 w-4' /> : <FiEye className='h-4 w-4' />}
+              </button>
+            </div>
           </div>
           
           <button type='submit' className='w-full bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 p-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition-all cursor-pointer shadow-sm'>

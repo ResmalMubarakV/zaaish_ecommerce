@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { toast } from "sonner";
-import { FiStar, FiUploadCloud, FiTrash2, FiUserCheck } from "react-icons/fi";
-import ProductGrid from "./ProductGrid";
+import { FiStar, FiUploadCloud, FiChevronLeft, FiChevronRight } from "react-icons/fi";
 
 const getColorHex = (colorName) => {
     if (!colorName) return "#000000";
@@ -19,9 +18,11 @@ const getColorHex = (colorName) => {
         White: "#FFFFFF",
         Red: "#991B1B",
         Blue: "#2563EB",
-        Gray: "#6B7280"
+        Gray: "#6B7280",
+        Grey: "#6B7280",
+        Brown: "#78350F"
     };
-    return map[colorName] || colorName.toLowerCase();
+    return map[colorName] || "#78716C";
 };
 
 const ProductDetails = () => {
@@ -240,10 +241,15 @@ const ProductDetails = () => {
         return <div className="text-center py-32 text-stone-400 text-xs uppercase tracking-[0.2em] font-light">Product not found.</div>;
     }
 
+    // These are the exact variants assigned in the admin product editor. The
+    // de-duplication also keeps legacy product data from creating duplicate choices.
+    const availableSizes = [...new Set((product.sizes || []).map((size) => String(size).trim()).filter(Boolean))];
+    const availableColors = [...new Set((product.colors || []).map((color) => String(color).trim()).filter(Boolean))];
+
   return (
-    <div className="py-16 px-6 lg:px-8 bg-stone-50/50 dark:bg-stone-950 min-h-screen text-stone-900 dark:text-stone-100 transition-colors">
-        <div className="max-w-6xl mx-auto bg-white dark:bg-stone-900 rounded-3xl p-8 sm:p-12 shadow-sm border border-stone-200/80 dark:border-stone-800">
-            <div className="flex flex-col md:flex-row gap-10">
+    <div className="min-h-screen bg-stone-50/50 px-4 py-8 text-stone-900 transition-colors sm:px-6 sm:py-12 lg:px-8 lg:py-16 dark:bg-stone-950 dark:text-stone-100">
+        <div className="mx-auto max-w-6xl rounded-3xl border border-stone-200/80 bg-white p-4 shadow-sm sm:p-8 lg:p-10 dark:border-stone-800 dark:bg-stone-900">
+            <div className="grid items-start gap-6 lg:grid-cols-[5rem_minmax(0,1fr)_minmax(19rem,0.9fr)] lg:gap-8">
                 {/* Left Thumbnails */}
                 <div className="hidden md:flex flex-col space-y-4">
                     {product.images?.map((image, index) => (
@@ -260,10 +266,10 @@ const ProductDetails = () => {
                 </div>
 
                 {/* Main Image */}
-                <div className="md:w-1/2">
-                    <div className="overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-800 border border-stone-200 dark:border-stone-800 shadow-sm">
+                <div className="min-w-0">
+                    <div className="aspect-[4/5] overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-sm lg:h-[620px] lg:aspect-auto dark:border-stone-800 dark:bg-stone-800">
                         <img src={mainImage} alt={product.name} 
-                        className="w-full h-[500px] sm:h-[600px] object-cover" />
+                        className="h-full w-full object-cover" />
                     </div>
                 </div>
 
@@ -282,7 +288,7 @@ const ProductDetails = () => {
                 </div>
 
                 {/* Right Section */}
-                <div className="md:w-1/2 flex flex-col justify-center">
+                <div className="min-w-0 lg:flex lg:min-h-[620px] lg:flex-col lg:justify-center">
                     <span className="text-[10px] uppercase tracking-[0.25em] text-stone-400 font-medium block mb-1">
                         {product.brand || "Zaaish Reserve"} &bull; {product.category}
                     </span>
@@ -307,21 +313,23 @@ const ProductDetails = () => {
                     </div>
 
                     <p className="text-2xl font-serif font-medium text-stone-900 dark:text-stone-100 mb-6">
-                        $ {product.currentPrice || product.price}
+                        ₹{product.currentPrice || product.price}
                     </p>
                     <p className="text-stone-600 dark:text-stone-300 mb-8 leading-relaxed text-sm font-light">
                         {product.description}
                     </p>
                     
                     {/* AVAILABLE COLORS SWATCHES */}
-                    <div className="mb-6">
+                    {availableColors.length > 0 && <div className="mb-6">
                         <p className="text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3">
                             Color: <span className="text-stone-900 dark:text-stone-100 font-semibold">{selectedColor || "Select Color"}</span>
                         </p>
                         <div className="flex flex-wrap gap-3">
-                            {product.colors?.map((color) => (
+                            {availableColors.map((color) => (
                                 <button key={color}
                                     onClick={() => setSelectedColor(color)}
+                                    aria-label={`Select ${color} colour`}
+                                    aria-pressed={selectedColor === color}
                                     className={`relative w-8 h-8 rounded-full border cursor-pointer transition-transform hover:scale-110 flex items-center justify-center
                                         ${selectedColor === color ? "border-2 border-stone-950 dark:border-stone-100 ring-2 ring-offset-2 ring-stone-950 dark:ring-stone-100 shadow-sm" : "border-stone-300 dark:border-stone-700 opacity-80 hover:opacity-100"}`}
                                     style={{ backgroundColor: getColorHex(color) }}
@@ -333,15 +341,15 @@ const ProductDetails = () => {
                                 </button>
                             ))}
                         </div>
-                    </div>
+                    </div>}
 
                     {/* AVAILABLE SIZES */}
-                    <div className="mb-6">
+                    {availableSizes.length > 0 && <div className="mb-6">
                         <p className="text-stone-400 dark:text-stone-500 text-[10px] font-medium uppercase tracking-[0.2em] mb-3">
                             Size: <span className="text-stone-900 dark:text-stone-100 font-semibold">{selectedSize || "Select Size"}</span>
                         </p>
                         <div className="flex flex-wrap gap-2.5">
-                            {product.sizes?.map((size) => (
+                            {availableSizes.map((size) => (
                                 <button key={size} 
                                 onClick={() => setSelectedSize(size)}
                                 className={`px-5 py-2.5 rounded-xl border text-xs font-medium uppercase tracking-widest transition-all cursor-pointer
@@ -351,7 +359,7 @@ const ProductDetails = () => {
                                 </button>
                             ))}
                         </div>
-                    </div>
+                    </div>}
 
                     {/* Quantity */}
                     <div className="mb-8">
@@ -532,13 +540,52 @@ const ProductDetails = () => {
                 </div>
             </div>
 
-            {/* Similar Products */}
+            {/* Similar Products — compact strip (Amazon/Flipkart style) */}
             {similarProducts.length > 0 && (
-                <div className="mt-24 border-t border-stone-100 dark:border-stone-800 pt-16">
-                    <h2 className="text-2xl text-center font-serif font-light tracking-wide mb-10 text-stone-900 dark:text-stone-100">
-                        You May Also Like
-                    </h2>
-                    <ProductGrid products={similarProducts}/>
+                <div className="mt-16 sm:mt-24 border-t border-stone-100 dark:border-stone-800 pt-10 sm:pt-14">
+                    <div className="flex items-center justify-between mb-6">
+                        <div>
+                            <span className="text-[10px] uppercase tracking-[0.25em] text-stone-400 font-medium block mb-1">Explore More</span>
+                            <h2 className="text-lg sm:text-xl font-serif font-light tracking-wide text-stone-900 dark:text-stone-100">
+                                You May Also Like
+                            </h2>
+                        </div>
+                        <Link
+                            to="/collections/all"
+                            className="text-[10px] uppercase tracking-[0.2em] text-stone-500 hover:text-stone-900 dark:hover:text-stone-100 transition-colors font-medium whitespace-nowrap"
+                        >
+                            View All →
+                        </Link>
+                    </div>
+
+                    {/* Horizontal scroll strip on mobile / 5-col grid on large screens */}
+                    <div className="flex gap-3 sm:gap-4 overflow-x-auto scrollbar-none pb-2 lg:grid lg:grid-cols-5">
+                        {similarProducts.map((prod) => (
+                            <Link
+                                key={prod._id}
+                                to={`/product/${prod._id}`}
+                                className="group flex-shrink-0 w-[140px] sm:w-[170px] lg:w-auto flex flex-col"
+                            >
+                                {/* Thumbnail */}
+                                <div className="w-full h-[170px] sm:h-[210px] rounded-xl overflow-hidden bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-2 flex-shrink-0">
+                                    <img
+                                        src={prod.images?.[0]?.url || "https://placehold.co/300x380"}
+                                        alt={prod.name}
+                                        loading="lazy"
+                                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                                    />
+                                </div>
+
+                                {/* Info */}
+                                <p className="text-[11px] sm:text-xs font-serif text-stone-800 dark:text-stone-200 truncate group-hover:text-stone-500 dark:group-hover:text-stone-400 transition-colors mb-0.5 leading-snug">
+                                    {prod.name}
+                                </p>
+                                <p className="text-[11px] sm:text-xs text-stone-500 dark:text-stone-400 font-medium tracking-wider">
+                                    ₹{(prod.currentPrice || prod.price || 0).toFixed(2)}
+                                </p>
+                            </Link>
+                        ))}
+                    </div>
                 </div>
             )}
         </div>
@@ -547,3 +594,4 @@ const ProductDetails = () => {
 };
 
 export default ProductDetails;
+

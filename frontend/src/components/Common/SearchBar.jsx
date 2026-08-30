@@ -3,7 +3,7 @@ import { HiMagnifyingGlass, HiMiniXMark } from "react-icons/hi2";
 import { useNavigate } from "react-router-dom";
 import { useDebounce } from "../../hooks/useDebounce";
 
-const SearchBar = () => {
+const SearchBar = ({ buttonClassName = "", showLabel = false }) => {
     const [searchTerm, setSearchTerm] = useState("");
     const [isOpen, setIsOpen] = useState(false);
     const debouncedSearchTerm = useDebounce(searchTerm, 450);
@@ -33,7 +33,7 @@ const SearchBar = () => {
     return (
         <div className="flex items-center justify-center">
             {isOpen ? (
-                <div className="absolute inset-x-0 top-0 bg-white/95 dark:bg-stone-950/95 backdrop-blur-xl h-24 z-50 shadow-md border-b border-stone-200 dark:border-stone-800 px-6 flex items-center justify-center transition-all duration-300">
+                <div className="fixed inset-x-0 top-0 bg-white/95 dark:bg-stone-950/95 backdrop-blur-xl min-h-24 z-[80] shadow-md border-b border-stone-200 dark:border-stone-800 px-4 sm:px-6 flex items-center justify-center transition-all duration-300">
                     <form onSubmit={handleSearch} className="relative flex items-center justify-between w-full max-w-3xl mx-auto">
                         <div className="relative w-full">
                             <input 
@@ -57,8 +57,9 @@ const SearchBar = () => {
                     </form>
                 </div>
             ) : (
-                <button onClick={handleSearchToggle} className="text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white transition-transform hover:scale-110 p-1 cursor-pointer" title="Search">
+                <button onClick={handleSearchToggle} className={buttonClassName || "text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white transition-transform hover:scale-110 p-1 cursor-pointer"} title="Search" aria-label="Search products">
                     <HiMagnifyingGlass className="h-5 w-5 stroke-[1.5]"/>
+                    {showLabel && <span>Search the collection</span>}
                 </button>
             )}
         </div>

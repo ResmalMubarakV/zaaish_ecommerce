@@ -178,6 +178,60 @@ router.delete("/:id", protect, admin, async (req, res, next) => {
     }
 });
 
+// @route   GET /api/products/filter-options
+// @desc    Get the filter values that actually exist in the current catalog/collection
+// @access  Public
+router.get("/filter-options", async (req, res, next) => {
+    try {
+        const { collection } = req.query;
+        const query = {};
+
+        if (collection && collection.toLowerCase() !== "all") {
+            query.$or = [
+                { collections: { $regex: collection, $options: "i" } },
+                { gender: { $regex: collection, $options: "i" } },
+                { category: { $regex: collection, $options: "i" } }
+            ];
+        }
+
+        const products = await Product.find(query)
+            .select("category gender sizes colors material brand price")
+            .lean();
+
+        const uniqueValues = (values) => {
+            const seen = new Set();
+            return values
+                .map((value) => String(value || "").trim())
+                .filter((value) => {
+                    if (!value || seen.has(value.toLowerCase())) return false;
+                    seen.add(value.toLowerCase());
+                    return true;
+                })
+                .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }));
+        };
+
+        const prices = products.map((product) => product.price).filter(Number.isFinite);
+
+        res.json({
+            success: true,
+            options: {
+                categories: uniqueValues(products.map((product) => product.category)),
+                genders: uniqueValues(products.map((product) => product.gender)),
+                colors: uniqueValues(products.flatMap((product) => product.colors || [])),
+                sizes: uniqueValues(products.flatMap((product) => product.sizes || [])),
+                materials: uniqueValues(products.map((product) => product.material)),
+                brands: uniqueValues(products.map((product) => product.brand)),
+                priceRange: {
+                    min: prices.length ? Math.min(...prices) : 0,
+                    max: prices.length ? Math.max(...prices) : 0
+                }
+            }
+        });
+    } catch (error) {
+        next(error);
+    }
+});
+
 // @route   GET /api/products/:id
 // @desc    Get single product by ID
 // @access  Public
