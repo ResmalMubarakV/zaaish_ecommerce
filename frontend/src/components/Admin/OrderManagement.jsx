@@ -308,90 +308,112 @@ const OrderManagement = () => {
                 <div className="consignment-label-print hidden print:block p-8 border-4 border-black font-sans text-black">
                     <div className="flex justify-between items-start border-b-4 border-black pb-4 mb-4">
                         <div>
-                            <h1 className="text-4xl font-extrabold tracking-widest uppercase">ZAAISH LUXURY</h1>
-                            <p className="text-xs uppercase font-bold tracking-wider mt-1">Consignment Dispatch Label &bull; Priority Air Mail</p>
+                            <h1 className="text-4xl font-black tracking-tighter uppercase leading-none">Z A A I S H</h1>
+                            <p className="text-[10px] uppercase font-bold tracking-[0.2em] mt-1 text-stone-500">Luxury Atelier &bull; Consignment Center</p>
                         </div>
-                        <div className="text-right">
-                            <div className="text-sm font-bold font-mono">TRACKING NO:</div>
-                            <div className="text-xl font-extrabold font-mono">TRK-{printConsignmentOrder._id.toUpperCase()}</div>
+                        <div className="bg-black text-white px-4 py-2 text-center rounded">
+                            <span className="text-xl font-black block leading-none">PRIORITY</span>
+                            <span className="text-[8px] uppercase tracking-widest font-bold">AIR EXPRESS</span>
                         </div>
                     </div>
 
-                    {/* Barcode Graphic Box */}
-                    <div className="my-6 text-center border-2 border-black p-4 bg-stone-50">
-                        <div className="font-mono text-3xl font-bold tracking-widest mb-1">||| | |||| ||| ||||| || ||||| ||| |||</div>
-                        <div className="text-xs font-mono font-bold uppercase">* TRK-{printConsignmentOrder._id} *</div>
+                    {/* Routing Details Block */}
+                    <div className="grid grid-cols-3 gap-2 border-b-2 border-black pb-4 mb-4">
+                        <div className="border-r border-stone-300 pr-2">
+                            <span className="text-[9px] font-bold uppercase text-stone-500 block">CARRIER</span>
+                            <span className="text-xs font-black uppercase">DHL EXPRESS</span>
+                        </div>
+                        <div className="border-r border-stone-300 px-2 text-center">
+                            <span className="text-[9px] font-bold uppercase text-stone-500 block">ROUTE ZONE</span>
+                            <span className="text-sm font-black uppercase">IND-DEL-09</span>
+                        </div>
+                        <div className="pl-2 text-right">
+                            <span className="text-[9px] font-bold uppercase text-stone-500 block">HUB CODE</span>
+                            <span className="text-xs font-black uppercase">DEL-T3</span>
+                        </div>
                     </div>
 
-                    <div className="grid grid-cols-2 gap-6 border-b-2 border-black pb-6 mb-6">
+                    <div className="grid grid-cols-2 gap-6 border-b-4 border-black pb-6 mb-6">
                         {/* Sender */}
                         <div className="border-r-2 border-black pr-4">
-                            <h2 className="text-xs font-extrabold uppercase tracking-widest bg-black text-white px-2 py-1 inline-block mb-3">FROM (SHIPPER)</h2>
-                            <p className="font-bold text-sm">ZAAISH LUXURY ATELIER</p>
-                            <p className="text-xs">Dispatch Center &bull; Gate 4</p>
-                            <p className="text-xs">100 Fashion Way, Suite 400</p>
-                            <p className="text-xs">New York, NY 10001, USA</p>
-                            <p className="text-xs font-semibold mt-1">Contact: dispatch@zaaish.com</p>
+                            <span className="text-[9px] font-black uppercase tracking-wider text-stone-400 block mb-1.5">FROM (SHIPPER)</span>
+                            <p className="font-extrabold text-xs uppercase">ZAAISH LUXURY LOGISTICS</p>
+                            <p className="text-[10px] text-stone-600">Dispatch Annex &bull; Suite 400</p>
+                            <p className="text-[10px] text-stone-600">100 Fashion Way, Mumbai, MH</p>
+                            <p className="text-[10px] text-stone-600 mt-1 font-semibold">support@zaaish.com</p>
                         </div>
 
                         {/* Recipient */}
                         <div>
-                            <h2 className="text-xs font-extrabold uppercase tracking-widest bg-black text-white px-2 py-1 inline-block mb-3">TO (CONSIGNEE)</h2>
-                            <p className="font-extrabold text-base uppercase">
+                            <span className="text-[9px] font-black uppercase tracking-wider text-stone-400 block mb-1.5">TO (CONSIGNEE)</span>
+                            <p className="font-black text-sm uppercase">
                                 {printConsignmentOrder.shippingAddress?.firstName} {printConsignmentOrder.shippingAddress?.lastName}
                             </p>
-                            <p className="text-sm font-semibold mt-1">{printConsignmentOrder.shippingAddress?.address}</p>
-                            <p className="text-sm font-semibold">
+                            <p className="text-xs font-bold mt-1 text-stone-850">{printConsignmentOrder.shippingAddress?.address}</p>
+                            <p className="text-xs font-bold text-stone-850">
                                 {printConsignmentOrder.shippingAddress?.city}, {printConsignmentOrder.shippingAddress?.state} {printConsignmentOrder.shippingAddress?.postalCode}
                             </p>
-                            <p className="text-sm font-bold uppercase">{printConsignmentOrder.shippingAddress?.country}</p>
-                            <p className="text-sm font-bold mt-2">TEL: {printConsignmentOrder.shippingAddress?.phone}</p>
+                            <p className="text-xs font-black uppercase mt-1">{printConsignmentOrder.shippingAddress?.country}</p>
+                            <p className="text-xs font-bold mt-2 bg-stone-100 px-2 py-0.5 rounded inline-block">TEL: {printConsignmentOrder.shippingAddress?.phone}</p>
                         </div>
                     </div>
 
-                    {/* Package Specs */}
-                    <div className="grid grid-cols-3 gap-4 border-b-2 border-black pb-4 mb-4 text-center">
-                        <div className="border-r-2 border-black pr-2">
-                            <span className="text-[10px] font-bold uppercase block">PAYMENT MODE</span>
-                            <span className="text-sm font-extrabold uppercase">{printConsignmentOrder.paymentMethod} ({printConsignmentOrder.isPaid ? "PREPAID" : "COD"})</span>
+                    {/* Barcode Block */}
+                    <div className="border-b-4 border-black pb-6 mb-6 text-center">
+                        <div className="font-mono text-4xl tracking-[0.25em] font-light leading-none mb-1 text-stone-900 select-none">
+                            ||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||||
                         </div>
-                        <div className="border-r-2 border-black pr-2">
-                            <span className="text-[10px] font-bold uppercase block">DECLARED VALUE</span>
-                            <span className="text-sm font-extrabold">₹{printConsignmentOrder.totalPrice?.toFixed(2)}</span>
+                        <div className="text-xs font-mono font-black uppercase tracking-widest">* TRK-{printConsignmentOrder._id.toUpperCase()} *</div>
+                    </div>
+
+                    {/* Package Specs */}
+                    <div className="grid grid-cols-4 gap-4 border-b-2 border-black pb-4 mb-4 text-center">
+                        <div className="border-r border-stone-300 pr-2">
+                            <span className="text-[8px] font-bold uppercase text-stone-400 block">WEIGHT</span>
+                            <span className="text-xs font-black">1.40 KG</span>
+                        </div>
+                        <div className="border-r border-stone-300 pr-2">
+                            <span className="text-[8px] font-bold uppercase text-stone-400 block">ITEMS</span>
+                            <span className="text-xs font-black">{printConsignmentOrder.orderItems?.length || 1} UNIT</span>
+                        </div>
+                        <div className="border-r border-stone-300 pr-2">
+                            <span className="text-[8px] font-bold uppercase text-stone-400 block">DECLARED VALUE</span>
+                            <span className="text-xs font-black">₹{printConsignmentOrder.totalPrice?.toFixed(2)}</span>
                         </div>
                         <div>
-                            <span className="text-[10px] font-bold uppercase block">PACKAGE COUNT</span>
-                            <span className="text-sm font-extrabold">1 OF 1 &bull; 1.2 KG</span>
+                            <span className="text-[8px] font-bold uppercase text-stone-400 block">PAYMENT MODE</span>
+                            <span className="text-xs font-black uppercase bg-stone-100 px-1 py-0.5 rounded">{printConsignmentOrder.paymentMethod}</span>
                         </div>
                     </div>
 
                     {/* Order Contents */}
-                    <div>
-                        <h3 className="text-xs font-bold uppercase tracking-wider mb-2">CONSIGNMENT CONTENTS:</h3>
-                        <table className="w-full text-xs text-left border border-black">
-                            <thead className="bg-stone-200 uppercase font-bold border-b border-black">
-                                <tr>
-                                    <th className="p-2">Item Name</th>
+                    <div className="mb-6">
+                        <span className="text-[9px] font-black uppercase tracking-wider text-stone-450 block mb-2">CONSIGNMENT CONTENT CHECKLIST</span>
+                        <table className="w-full text-[10px] text-left border-collapse border border-stone-300">
+                            <thead>
+                                <tr className="border-b-2 border-black bg-stone-100 text-stone-600 uppercase font-black">
+                                    <th className="p-2">DESCRIPTION</th>
                                     <th className="p-2">SKU</th>
-                                    <th className="p-2">Size/Color</th>
-                                    <th className="p-2 text-right">Qty</th>
+                                    <th className="p-2">VARIANT</th>
+                                    <th className="p-2 text-right">QTY</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-black">
+                            <tbody className="divide-y divide-stone-250">
                                 {printConsignmentOrder.orderItems?.map((item, idx) => (
-                                    <tr key={idx}>
-                                        <td className="p-2 font-bold">{item.name}</td>
-                                        <td className="p-2 font-mono">{item.sku}</td>
-                                        <td className="p-2">{item.size} / {item.color}</td>
-                                        <td className="p-2 text-right font-bold">{item.quantity}</td>
+                                    <tr key={idx} className="font-medium">
+                                        <td className="p-2 font-bold uppercase text-stone-900">{item.name}</td>
+                                        <td className="p-2 font-mono text-stone-500">{item.sku || "N/A"}</td>
+                                        <td className="p-2 text-stone-600 uppercase">{item.size} &bull; {item.color}</td>
+                                        <td className="p-2 text-right font-black text-stone-900">{item.quantity}</td>
                                     </tr>
                                 ))}
                             </tbody>
                         </table>
                     </div>
 
-                    <div className="mt-8 text-center text-[10px] font-bold uppercase tracking-widest border-t border-black pt-4">
-                        *** OFFICIAL ZAAISH DISPATCH LABEL &bull; FRAGILE &bull; HANDLE WITH CARE ***
+                    <div className="flex justify-between items-center border-t border-stone-300 pt-4 text-[9px] font-bold uppercase text-stone-400 tracking-wider">
+                        <span>ZAAISH DESIGNED FOR MINIMALIST WARDROBE</span>
+                        <span>SCAN TO DISPATCH</span>
                     </div>
                 </div>
             )}
