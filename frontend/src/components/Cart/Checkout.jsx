@@ -501,9 +501,60 @@ const Checkout = () => {
                         </div>
                     </div>
 
-                    {/* Payment Method Selector */}
+                    {/* Section 3: Review Ordered Items (Product Summary placed ABOVE Payment Section) */}
+                    <div className="pt-6 border-t border-stone-100 dark:border-stone-800 mb-8">
+                        <div className="flex justify-between items-center mb-4">
+                            <h3 className='text-[11px] uppercase tracking-[0.2em] font-medium text-stone-400 dark:text-stone-500'>
+                                3. Review Ordered Items ({cart.products.length})
+                            </h3>
+                            <span className="text-[10px] text-stone-400 font-light">
+                                {cart.products.reduce((acc, p) => acc + p.quantity, 0)} items total
+                            </span>
+                        </div>
+
+                        {/* Product Items List Card */}
+                        <div className="bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200/80 dark:border-stone-800 p-4 sm:p-5 space-y-3">
+                            <div className="divide-y divide-stone-200/60 dark:divide-stone-800 max-h-64 overflow-y-auto scrollbar-none pr-1">
+                                {cart.products.map((product, index) => (
+                                    <div key={index} className="flex items-center justify-between py-3 first:pt-0 last:pb-0 gap-3">
+                                        <div className="flex items-center min-w-0 pr-2">
+                                            <img 
+                                                src={product.image} 
+                                                alt={product.name} 
+                                                className="w-12 h-15 object-cover mr-3.5 rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm shrink-0" 
+                                            />
+                                            <div className="min-w-0">
+                                                <h4 className="font-serif font-medium text-stone-900 dark:text-stone-100 text-xs sm:text-sm line-clamp-1">
+                                                    {product.name}
+                                                </h4>
+                                                <p className="text-[11px] text-stone-500 dark:text-stone-400 font-light mt-0.5">
+                                                    {product.size && `Size: ${product.size}`} {product.color && ` • Color: ${product.color}`}
+                                                </p>
+                                                <p className="text-[10px] text-stone-400 mt-0.5 font-light">
+                                                    Qty: {product.quantity} &bull; ₹{product.price.toLocaleString()} each
+                                                </p>
+                                            </div>
+                                        </div>
+                                        <span className="font-medium text-stone-900 dark:text-stone-100 text-xs sm:text-sm whitespace-nowrap">
+                                            ₹{(product.price * product.quantity).toLocaleString()}
+                                        </span>
+                                    </div>
+                                ))}
+                            </div>
+
+                            {/* Mini Subtotal Preview */}
+                            <div className="pt-3 border-t border-stone-200/80 dark:border-stone-800 flex justify-between items-center text-xs">
+                                <span className="text-stone-500 font-light">Items Subtotal</span>
+                                <span className="font-serif font-medium text-stone-900 dark:text-stone-100">
+                                    ₹{cart.totalPrice.toLocaleString(undefined, {minimumFractionDigits: 2})}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Section 4: Payment Method Selector */}
                     <div className="pt-6 border-t border-stone-100 dark:border-stone-800">
-                        <h3 className='text-[11px] uppercase tracking-[0.2em] font-medium mb-4 text-stone-400 dark:text-stone-500'>3. Select Payment Method</h3>
+                        <h3 className='text-[11px] uppercase tracking-[0.2em] font-medium mb-4 text-stone-400 dark:text-stone-500'>4. Select Payment Method</h3>
                         
                         {/* 2 Payment Tabs: Cash on Delivery, PayPal */}
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-6">

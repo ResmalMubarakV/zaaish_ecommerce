@@ -84,7 +84,110 @@ const MyOrdersPage = () => {
           <h2 className='text-xl sm:text-3xl font-serif font-light tracking-wide'>All Orders</h2>
         </div>
 
-        <div className='bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 rounded-3xl p-4 sm:p-8 shadow-sm'>
+        {/* MOBILE CARD VIEW (Zero Horizontal Scrolling on Small Screens) */}
+        <div className="block md:hidden space-y-4">
+          {filteredOrders.length > 0 ? (
+            filteredOrders.map((order) => {
+              const totalItemsCount = order.orderItems.reduce((acc, item) => acc + item.quantity, 0);
+              const firstItem = order.orderItems?.[0];
+
+              return (
+                <div 
+                  key={order._id}
+                  onClick={() => navigate(`/order/${order._id}`, { state: { from: "/my-orders" } })}
+                  className="bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 rounded-2xl p-4 shadow-sm hover:border-stone-400 dark:hover:border-stone-600 transition-all cursor-pointer space-y-3"
+                >
+                  {/* Card Header: ID, Date & Badges */}
+                  <div className="flex items-start justify-between gap-2 border-b border-stone-100 dark:border-stone-800 pb-3">
+                    <div>
+                      <span className="font-mono text-xs font-bold text-stone-900 dark:text-stone-100">
+                        #{order._id.substring(order._id.length - 8)}
+                      </span>
+                      <p className="text-[10px] text-stone-400 font-light mt-0.5">
+                        {new Date(order.createdAt).toLocaleDateString(undefined, { day: 'numeric', month: 'short', year: 'numeric' })}
+                      </p>
+                    </div>
+
+                    <div className="flex flex-wrap items-center justify-end gap-1.5">
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-wider ${
+                        order.isPaid 
+                          ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" 
+                          : "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
+                      }`}>
+                        {order.isPaid ? "Paid" : "Pending"}
+                      </span>
+
+                      <span className={`px-2 py-0.5 rounded-full text-[9px] font-semibold uppercase tracking-wider ${
+                        order.status === "Delivered" 
+                          ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" 
+                          : order.status === "Shipped" 
+                          ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800" 
+                          : "bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200"
+                      }`}>
+                        {order.status || "Processing"}
+                      </span>
+
+                      {order.returnRequest && order.returnRequest.status && order.returnRequest.status !== "None" && order.returnRequest.status !== "Cancelled" && (
+                        <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider ${
+                          order.returnRequest.status === "Refunded" || order.returnRequest.status === "Completed"
+                            ? "bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300"
+                            : order.returnRequest.status === "Rejected"
+                            ? "bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-300"
+                            : "bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300"
+                        }`}>
+                          Return: {order.returnRequest.status}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Card Body: Items Preview */}
+                  <div className="flex items-center gap-3">
+                    {firstItem && (
+                      <img 
+                        src={firstItem.image} 
+                        alt={firstItem.name} 
+                        className="w-14 h-18 object-cover rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm shrink-0" 
+                      />
+                    )}
+                    <div className="min-w-0 grow">
+                      <h4 className="font-serif font-medium text-stone-900 dark:text-stone-100 text-xs sm:text-sm line-clamp-1">
+                        {firstItem?.name || "Luxury Garment"}
+                      </h4>
+                      <p className="text-[11px] text-stone-500 font-light mt-0.5">
+                        {firstItem?.size ? `Size: ${firstItem.size}` : ""} {firstItem?.color ? `• Color: ${firstItem.color}` : ""}
+                      </p>
+                      <p className="text-[10px] text-stone-400 mt-1 font-light">
+                        {totalItemsCount} {totalItemsCount === 1 ? "item" : "items"} in package &bull; {order.shippingAddress?.city || "India"}
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* Card Footer: Price & CTA */}
+                  <div className="flex items-center justify-between pt-2 border-t border-stone-100 dark:border-stone-800 text-xs">
+                    <div>
+                      <span className="text-[9px] uppercase tracking-wider text-stone-400 block font-light">Total Price</span>
+                      <span className="font-serif font-medium text-stone-900 dark:text-stone-100 text-sm">
+                        ₹{order.totalPrice.toFixed(2)}
+                      </span>
+                    </div>
+
+                    <span className="inline-flex items-center text-xs uppercase tracking-wider font-semibold text-stone-950 dark:text-stone-100 hover:underline">
+                      View Details &rarr;
+                    </span>
+                  </div>
+                </div>
+              );
+            })
+          ) : (
+            <div className="text-center py-16 bg-white dark:bg-stone-900 rounded-2xl border border-stone-200/80 dark:border-stone-800 text-stone-400 text-xs uppercase tracking-[0.2em] font-light">
+              You Have No Orders Yet
+            </div>
+          )}
+        </div>
+
+        {/* DESKTOP TABLE VIEW (Visible on md: and above) */}
+        <div className='hidden md:block bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 rounded-3xl p-6 lg:p-8 shadow-sm'>
           <div className='w-full overflow-x-auto scrollbar-none'>
             <table className='min-w-full text-left text-stone-600 dark:text-stone-400 text-xs sm:text-sm whitespace-nowrap'>
               <thead className='bg-stone-50 dark:bg-stone-950/60 text-[10px] uppercase text-stone-400 dark:text-stone-500 font-medium tracking-[0.2em] border-b border-stone-200 dark:border-stone-800'>

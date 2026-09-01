@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
+import { FiCheck, FiPackage, FiTruck, FiClock, FiCheckCircle, FiExternalLink } from 'react-icons/fi'
 
 const OrderConfirmationPage = () => {
     const { id } = useParams();
@@ -41,6 +42,11 @@ const OrderConfirmationPage = () => {
         return <div className="text-center py-32 text-stone-400 text-xs uppercase tracking-[0.2em] font-light">Loading order receipt...</div>;
     }
 
+    const currentStatus = order?.status || "Processing";
+    const statusPercentage = 
+        currentStatus === "Delivered" ? 100 :
+        currentStatus === "Shipped" ? 66 : 33;
+
   return (
     <div className="min-h-screen bg-stone-50/50 dark:bg-stone-950 py-8 sm:py-16 px-3 sm:px-6 transition-colors">
       <style>{`
@@ -77,6 +83,91 @@ const OrderConfirmationPage = () => {
 
               {order ? (
                   <div>
+                      {/* PRODUCT STATUS SLIDEBAR TRACKER */}
+                      <div className="mb-6 p-4 sm:p-6 bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200/80 dark:border-stone-800 no-print">
+                          <div className="flex items-center justify-between mb-4">
+                              <span className="text-[10px] uppercase tracking-[0.2em] text-stone-400 font-medium">
+                                  Product Delivery Status
+                              </span>
+                              <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider ${
+                                  currentStatus === "Delivered" ? "bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300" :
+                                  currentStatus === "Shipped" ? "bg-blue-100 dark:bg-blue-950 text-blue-700 dark:text-blue-300" :
+                                  "bg-amber-100 dark:bg-amber-950 text-amber-700 dark:text-amber-300"
+                              }`}>
+                                  {currentStatus}
+                              </span>
+                          </div>
+
+                          {/* Slidebar Progress Track */}
+                          <div className="relative mb-6 mt-2">
+                              {/* Background Bar */}
+                              <div className="h-1.5 w-full bg-stone-200 dark:bg-stone-800 rounded-full overflow-hidden">
+                                  {/* Active Animated Slidebar */}
+                                  <div 
+                                      className="h-full bg-stone-950 dark:bg-stone-100 transition-all duration-700 ease-out rounded-full"
+                                      style={{ width: `${statusPercentage}%` }}
+                                  />
+                              </div>
+
+                              {/* Checkpoint Nodes */}
+                              <div className="flex justify-between items-center mt-3 text-center">
+                                  <div className="flex flex-col items-center">
+                                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                                          statusPercentage >= 33 
+                                              ? "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 shadow-sm ring-2 ring-stone-950/20" 
+                                              : "bg-stone-200 dark:bg-stone-800 text-stone-400"
+                                      }`}>
+                                          {statusPercentage > 33 ? <FiCheck className="stroke-[3]" /> : <FiPackage className="text-[11px]" />}
+                                      </div>
+                                      <span className="text-[9px] sm:text-[10px] uppercase tracking-wider font-semibold text-stone-800 dark:text-stone-200 mt-1">
+                                          Processing
+                                      </span>
+                                      <span className="text-[8px] text-stone-400 font-light">Atelier</span>
+                                  </div>
+
+                                  <div className="flex flex-col items-center">
+                                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                                          statusPercentage >= 66 
+                                              ? "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 shadow-sm ring-2 ring-stone-950/20" 
+                                              : "bg-stone-200 dark:bg-stone-800 text-stone-400"
+                                      }`}>
+                                          {statusPercentage > 66 ? <FiCheck className="stroke-[3]" /> : <FiTruck className="text-[11px]" />}
+                                      </div>
+                                      <span className="text-[9px] sm:text-[10px] uppercase tracking-wider font-semibold text-stone-800 dark:text-stone-200 mt-1">
+                                          Shipped
+                                      </span>
+                                      <span className="text-[8px] text-stone-400 font-light">In Transit</span>
+                                  </div>
+
+                                  <div className="flex flex-col items-center">
+                                      <div className={`w-6 h-6 rounded-full flex items-center justify-center text-[10px] font-bold ${
+                                          statusPercentage >= 100 
+                                              ? "bg-emerald-600 text-white shadow-sm ring-2 ring-emerald-500/20" 
+                                              : "bg-stone-200 dark:bg-stone-800 text-stone-400"
+                                      }`}>
+                                          <FiCheckCircle className="text-[11px]" />
+                                      </div>
+                                      <span className="text-[9px] sm:text-[10px] uppercase tracking-wider font-semibold text-stone-800 dark:text-stone-200 mt-1">
+                                          Delivered
+                                      </span>
+                                      <span className="text-[8px] text-stone-400 font-light">Doorstep</span>
+                                  </div>
+                              </div>
+                          </div>
+
+                          <div className="flex items-center justify-between text-[11px] pt-3 border-t border-stone-200/60 dark:border-stone-800/80">
+                              <span className="text-stone-500 font-light">
+                                  {currentStatus === "Delivered" ? "Parcel handover complete" : "Estimated dispatch: 24-48 hours"}
+                              </span>
+                              <Link 
+                                  to={`/order/${order._id}`} 
+                                  className="inline-flex items-center text-stone-900 dark:text-stone-100 font-medium hover:underline text-[10px] uppercase tracking-wider"
+                              >
+                                  Detailed Tracker <FiExternalLink className="ml-1 text-xs" />
+                              </Link>
+                          </div>
+                      </div>
+
                       <div className='flex justify-between text-xs text-stone-600 dark:text-stone-400 mb-6 bg-stone-50 dark:bg-stone-950 p-4 rounded-2xl border border-stone-200/80 dark:border-stone-800 font-light'>
                           <div>
                               <p><span className='font-medium text-stone-700 dark:text-stone-300 uppercase text-[10px] tracking-wider'>Order ID:</span> #{order._id}</p>
