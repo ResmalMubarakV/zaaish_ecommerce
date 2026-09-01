@@ -185,44 +185,78 @@ const AdminHomePage = () => {
             {/* Recent Orders Table */}
             <div className="bg-white dark:bg-stone-900 p-6 sm:p-8 lg:p-10 rounded-3xl shadow-sm border border-stone-200/80 dark:border-stone-800">
                 <div className="flex justify-between items-center mb-6">
-                    <h2 className='text-xl font-serif font-light tracking-wide text-stone-900 dark:text-stone-100'>Recent Orders Activity</h2>
-                    <Link to="/admin/orders" className="text-[11px] uppercase tracking-[0.2em] text-stone-900 dark:text-stone-100 font-medium hover:underline">
-                        View All Orders
+                    <div>
+                        <h2 className='text-xl font-serif font-light tracking-wide text-stone-900 dark:text-stone-100'>Recent Store Orders</h2>
+                        <p className='text-xs text-stone-400 font-light mt-0.5'>Latest customer checkout transactions and dispatch status</p>
+                    </div>
+                    <Link to="/admin/orders" className="text-[11px] uppercase tracking-[0.2em] text-stone-900 dark:text-stone-100 font-semibold hover:underline">
+                        View All Orders &rarr;
                     </Link>
                 </div>
                 <div className="overflow-x-auto">
                     <table className="min-w-full text-left text-stone-600 dark:text-stone-400 whitespace-nowrap">
                         <thead className='bg-stone-50 dark:bg-stone-950/60 text-[10px] uppercase text-stone-400 dark:text-stone-500 font-medium tracking-[0.2em] border-b border-stone-200 dark:border-stone-800'>
                             <tr>
-                                <th className="py-4 px-6">Order ID</th>
+                                <th className="py-4 px-6">Order ID & Time</th>
                                 <th className="py-4 px-6">Customer</th>
-                                <th className="py-4 px-6">Total Price</th>
-                                <th className="py-4 px-6">Status</th>
+                                <th className="py-4 px-6">Total Amount</th>
+                                <th className="py-4 px-6">Payment Mode</th>
+                                <th className="py-4 px-6">Fulfillment</th>
                             </tr>
                         </thead>
                         <tbody className="divide-y divide-stone-100 dark:divide-stone-800/80">
                             {recentOrders.length > 0 ? (
-                                recentOrders.map((order) => (
-                                    <tr key={order._id} className='hover:bg-stone-50/60 dark:hover:bg-stone-800/40 transition-colors'>
-                                        <td className='py-4 px-6 font-mono text-xs font-medium text-stone-900 dark:text-stone-100'>
-                                            #{order._id.substring(order._id.length - 8)}
-                                        </td>
-                                        <td className='py-4 px-6 font-medium text-stone-800 dark:text-stone-200 text-sm'>{order.user ? order.user.name : "Guest User"}</td>
-                                        <td className='py-4 px-6 font-semibold text-stone-900 dark:text-stone-100 text-sm'>₹{(order.totalPrice || 0).toFixed(2)}</td>
-                                        <td className='py-4 px-6'>
-                                            <span className={`px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider ${
-                                                order.status === "Delivered" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" :
-                                                order.status === "Shipped" ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800" :
-                                                "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
-                                            }`}>
-                                                {order.status || "Processing"}
-                                            </span>
-                                        </td>
-                                    </tr>
-                                ))
+                                recentOrders.map((order) => {
+                                    const isCOD = order.paymentMethod === "Cash on Delivery";
+                                    return (
+                                        <tr key={order._id} className='hover:bg-stone-50/60 dark:hover:bg-stone-800/40 transition-colors'>
+                                            <td className='py-4 px-6'>
+                                                <p className='font-mono text-xs font-medium text-stone-900 dark:text-stone-100'>
+                                                    #{order._id.substring(order._id.length - 8)}
+                                                </p>
+                                                <p className='text-[10px] text-stone-400 font-light mt-0.5'>
+                                                    {new Date(order.createdAt).toLocaleDateString()}
+                                                </p>
+                                            </td>
+                                            <td className='py-4 px-6 font-medium text-stone-800 dark:text-stone-200 text-sm'>
+                                                {order.shippingAddress?.firstName ? `${order.shippingAddress.firstName} ${order.shippingAddress.lastName}` : (order.user ? order.user.name : "Customer")}
+                                            </td>
+                                            <td className='py-4 px-6'>
+                                                <p className='font-semibold text-stone-900 dark:text-stone-100 text-sm'>
+                                                    ₹{(order.totalPrice || 0).toFixed(2)}
+                                                </p>
+                                                {isCOD && (
+                                                    <p className="text-[9px] text-amber-600 dark:text-amber-400 font-medium">
+                                                        +₹{(order.codFee || 60).toFixed(2)} COD fee
+                                                    </p>
+                                                )}
+                                            </td>
+                                            <td className='py-4 px-6'>
+                                                {isCOD ? (
+                                                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 inline-block">
+                                                        Cash on Delivery
+                                                    </span>
+                                                ) : (
+                                                    <span className="px-2.5 py-0.5 rounded-md text-[10px] font-medium uppercase tracking-wider bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700 inline-block">
+                                                        {order.paymentMethod || "Card"}
+                                                    </span>
+                                                )}
+                                            </td>
+                                            <td className='py-4 px-6'>
+                                                <span className={`px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider ${
+                                                    order.status === "Delivered" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" :
+                                                    order.status === "Shipped" ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800" :
+                                                    "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
+                                                }`}>
+                                                    {order.status || "Processing"}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    );
+                                })
                             ) : (
                                 <tr>
-                                    <td colSpan={4} className='py-16 text-center text-stone-400 text-xs uppercase tracking-[0.2em] font-light'>
+                                    <td colSpan={5} className='py-16 text-center text-stone-400 text-xs uppercase tracking-[0.2em] font-light'>
                                         No recent orders found
                                     </td>
                                 </tr>

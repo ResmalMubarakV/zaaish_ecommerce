@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { Link, useParams, useNavigate, useLocation } from 'react-router-dom'
 import { FiArrowLeft, FiDownload, FiCheck, FiPackage, FiTruck, FiCheckCircle } from 'react-icons/fi'
-import { toast } from "sonner"
 
 const OrderDetailsPage = () => {
     const { id } = useParams();
@@ -9,50 +8,6 @@ const OrderDetailsPage = () => {
     const location = useLocation();
     const [orderDetails, setOrderDetails] = useState(null);
     const [loading, setLoading] = useState(true);
-
-    const handleCancelOrder = async () => {
-        if (!window.confirm("Are you sure you want to cancel this order? This action cannot be undone.")) return;
-
-        try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(`/api/orders/${id}/cancel`, {
-                method: "PUT",
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            const data = await response.json();
-            if (response.ok) {
-                setOrderDetails(prev => ({ ...prev, status: "Cancelled" }));
-                toast.success("Order cancelled successfully!");
-            } else {
-                toast.error(data.message || "Failed to cancel order");
-            }
-        } catch (error) {
-            console.error("Error cancelling order:", error);
-            toast.error("Something went wrong");
-        }
-    };
-
-    const handleReturnOrder = async () => {
-        if (!window.confirm("Are you sure you want to request a return for this order?")) return;
-
-        try {
-            const token = localStorage.getItem("token");
-            const response = await fetch(`/api/orders/${id}/return`, {
-                method: "PUT",
-                headers: { Authorization: `Bearer ${token}` }
-            });
-            const data = await response.json();
-            if (response.ok) {
-                setOrderDetails(prev => ({ ...prev, status: "Return Requested" }));
-                toast.success("Return request submitted!");
-            } else {
-                toast.error(data.message || "Failed to submit return request");
-            }
-        } catch (error) {
-            console.error("Error requesting return:", error);
-            toast.error("Something went wrong");
-        }
-    };
 
     useEffect(() => {
         const fetchOrderDetails = async () => {
@@ -179,41 +134,14 @@ const OrderDetailsPage = () => {
                                 {new Date(orderDetails.createdAt).toLocaleString()}
                             </p>
                         </div>
-                        <div className="flex flex-col items-start sm:items-end mt-4 sm:mt-0 gap-3 no-print">
-                            <div className="flex flex-wrap gap-2">
-                                <span className={`${orderDetails.isPaid ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" : "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"} px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider`}>
-                                    {orderDetails.isPaid ? "Paid / Approved" : "Payment Pending"}
-                                </span>
+                        <div className="flex flex-col items-start sm:items-end mt-4 sm:mt-0 gap-2 no-print">
+                            <span className={`${orderDetails.isPaid ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" : "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"} px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider`}>
+                                {orderDetails.isPaid ? "Paid / Approved" : "Payment Pending"}
+                            </span>
 
-                                <span className={`${
-                                    orderDetails.status === "Delivered" || orderDetails.status === "Return Requested"
-                                        ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" 
-                                        : orderDetails.status === "Cancelled" 
-                                        ? "bg-stone-100 dark:bg-stone-800 text-stone-600 dark:text-stone-400 border border-stone-200 dark:border-stone-700"
-                                        : "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800"
-                                } px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider`}>
-                                    {orderDetails.status || "Processing"}
-                                </span>
-                            </div>
-
-                            {/* User Order Actions: Cancel or Return */}
-                            {(orderDetails.status === "Processing" || !orderDetails.status) && (
-                                <button
-                                    onClick={handleCancelOrder}
-                                    className="text-[10px] font-medium uppercase tracking-[0.15em] px-3.5 py-2 border border-rose-200 dark:border-rose-900/60 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950/30 rounded-xl cursor-pointer transition-colors shadow-sm"
-                                >
-                                    Cancel Order
-                                </button>
-                            )}
-
-                            {orderDetails.status === "Delivered" && (
-                                <button
-                                    onClick={handleReturnOrder}
-                                    className="text-[10px] font-medium uppercase tracking-[0.15em] px-3.5 py-2 border border-stone-200 dark:border-stone-800 text-stone-700 dark:text-stone-300 hover:bg-stone-50 dark:hover:bg-stone-800/80 rounded-xl cursor-pointer transition-colors shadow-sm"
-                                >
-                                    Request Return
-                                </button>
-                            )}
+                            <span className={`${orderDetails.status === "Delivered" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" : "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800"} px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider`}>
+                                {orderDetails.status || "Processing"}
+                            </span>
                         </div>
                     </div>
 
@@ -351,12 +279,18 @@ const OrderDetailsPage = () => {
                     <div className='border-t border-stone-200 dark:border-stone-800 print:border-stone-200 mt-8 pt-6 max-w-xs ml-auto space-y-2 text-xs font-light'>
                         <div className='flex justify-between text-stone-600 dark:text-stone-400 print:text-stone-600'>
                             <span>Subtotal</span>
-                            <span>₹{orderDetails.totalPrice.toFixed(2)}</span>
+                            <span>₹{(orderDetails.itemsPrice || (orderDetails.totalPrice - (orderDetails.codFee || 0))).toFixed(2)}</span>
                         </div>
                         <div className='flex justify-between text-stone-600 dark:text-stone-400 print:text-stone-600'>
                             <span>Shipping</span>
-                            <span>₹0.00</span>
+                            <span>₹{(orderDetails.shippingPrice || 0).toFixed(2)}</span>
                         </div>
+                        {(orderDetails.codFee > 0 || orderDetails.paymentMethod === "Cash on Delivery") && (
+                            <div className='flex justify-between text-amber-600 dark:text-amber-400 font-medium'>
+                                <span>COD Handling Fee</span>
+                                <span>+ ₹{(orderDetails.codFee || 60).toFixed(2)}</span>
+                            </div>
+                        )}
                         <div className='flex justify-between text-stone-900 dark:text-stone-100 print:text-stone-900 font-serif font-medium text-base border-t border-stone-200 dark:border-stone-800 print:border-stone-200 pt-3'>
                             <span>Total</span>
                             <span>₹{orderDetails.totalPrice.toFixed(2)}</span>

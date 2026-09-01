@@ -84,14 +84,24 @@ const OrderConfirmationPage = () => {
                           </div>
                           <div className="text-right">
                               <p><span className='font-medium text-stone-700 dark:text-stone-300 uppercase text-[10px] tracking-wider'>Payment:</span> {order.paymentMethod}</p>
-                              <p className='mt-1.5 text-emerald-600 dark:text-emerald-400 font-medium'>{order.isPaid ? "Paid Successfully" : "Pending"}</p>
+                              <p className={`mt-1.5 font-medium ${order.isPaid ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>
+                                  {order.paymentMethod === "Cash on Delivery" && !order.isPaid ? "To Pay on Delivery" : order.isPaid ? "Paid Successfully" : "Payment Pending"}
+                              </p>
                           </div>
                       </div>
+
+                      {order.paymentMethod === "Cash on Delivery" && !order.isPaid && (
+                          <div className="mb-6 p-4 rounded-2xl bg-amber-50/60 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-900/60 text-xs text-amber-900 dark:text-amber-200 font-light">
+                              <p className="font-medium uppercase tracking-wider text-[10px] text-amber-800 dark:text-amber-400 mb-1">Cash on Delivery Notice</p>
+                              Please keep ₹{order.totalPrice.toFixed(2)} ready in cash or UPI to hand over to the delivery agent when your parcel arrives.
+                          </div>
+                      )}
 
                       <div className='mb-6 text-xs bg-stone-50 dark:bg-stone-950 p-4 rounded-2xl border border-stone-200/80 dark:border-stone-800 font-light'>
                           <p className='font-medium uppercase tracking-[0.2em] text-stone-400 mb-1.5 text-[10px]'>Delivery Address:</p>
                           <p className='text-stone-900 dark:text-stone-100 font-medium'>{order.shippingAddress.firstName} {order.shippingAddress.lastName}</p>
-                          <p className='text-stone-600 dark:text-stone-400 mt-0.5'>{order.shippingAddress.address}, {order.shippingAddress.city}, {order.shippingAddress.country}</p>
+                          <p className='text-stone-600 dark:text-stone-400 mt-0.5'>{order.shippingAddress.address}, {order.shippingAddress.city}, {order.shippingAddress.country} {order.shippingAddress.postalCode && `- ${order.shippingAddress.postalCode}`}</p>
+                          {order.shippingAddress.phone && <p className='text-stone-500 mt-1'>Tel: {order.shippingAddress.phone}</p>}
                       </div>
 
                       <div className='mb-6'>
@@ -123,12 +133,18 @@ const OrderConfirmationPage = () => {
                       <div className='border-t border-stone-200 dark:border-stone-800 pt-4 space-y-2 text-xs font-light'>
                           <div className='flex justify-between text-stone-600 dark:text-stone-400'>
                               <span>Subtotal</span>
-                              <span>₹{order.totalPrice.toFixed(2)}</span>
+                              <span>₹{(order.itemsPrice || (order.totalPrice - (order.codFee || 0))).toFixed(2)}</span>
                           </div>
                           <div className='flex justify-between text-stone-600 dark:text-stone-400'>
                               <span>Shipping</span>
-                              <span>₹0.00</span>
+                              <span>₹{(order.shippingPrice || 0).toFixed(2)}</span>
                           </div>
+                          {(order.codFee > 0 || order.paymentMethod === "Cash on Delivery") && (
+                              <div className='flex justify-between text-amber-600 dark:text-amber-400 font-medium'>
+                                  <span>Cash on Delivery Handling Fee</span>
+                                  <span>+ ₹{(order.codFee || 60).toFixed(2)}</span>
+                              </div>
+                          )}
                           <div className='flex justify-between text-stone-900 dark:text-stone-100 font-serif font-medium text-sm border-t border-stone-200 dark:border-stone-800 pt-3'>
                               <span>Total Amount</span>
                               <span>₹{order.totalPrice.toFixed(2)}</span>
@@ -136,7 +152,7 @@ const OrderConfirmationPage = () => {
                       </div>
 
                       <div className='text-center mt-8 pt-6 border-t border-stone-100 dark:border-stone-800 text-[10px] text-stone-400 font-light tracking-wide'>
-                          <p>Thank you for shopping with Zaaish!</p>
+                          <p>Thank you for choosing Zaaish Luxury!</p>
                           <p className='mt-0.5'>For inquiries, contact support@zaaish.com</p>
                       </div>
                   </div>

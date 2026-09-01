@@ -38,7 +38,6 @@ const Login = () => {
 
                       if (cartResponse.ok) {
                           sessionStorage.removeItem("pendingCartItem");
-                          sessionStorage.setItem("openCartAfterLogin", "true");
                           window.dispatchEvent(new Event("cartUpdated"));
                           window.dispatchEvent(new Event("wishlistUpdated"));
                       }
@@ -47,7 +46,11 @@ const Login = () => {
                   }
               }
               
-              if (data.user.role === "admin") {
+              const isBuyNow = sessionStorage.getItem("pendingBuyNow");
+              if (isBuyNow) {
+                  sessionStorage.removeItem("pendingBuyNow");
+                  navigate("/checkout");
+              } else if (data.user.role === "admin") {
                   navigate("/admin");
               } else {
                   navigate("/");

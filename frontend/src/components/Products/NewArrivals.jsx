@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react'
-import { FiChevronLeft, FiChevronRight } from "react-icons/fi"
-import { Link } from "react-router-dom"
-import { getProductCardImageUrl } from "../../utils/cloudinaryHelper"
+import { useEffect, useRef, useState } from 'react';
+import { FiChevronLeft, FiChevronRight, FiShare2 } from "react-icons/fi";
+import { HiHeart, HiOutlineHeart } from "react-icons/hi2";
+import { Link } from "react-router-dom";
+import { toast } from "sonner";
+import { getProductCardImageUrl } from "../../utils/cloudinaryHelper";
 
 // When `products` and `loading` props are provided (from Home.jsx),
 // the internal fetch is skipped to avoid redundant API calls.
@@ -12,6 +14,7 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
     const [scrollLeft, setScrollLeft] = useState(0);
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
+    const [wishlist, setWishlist] = useState([]);
 
     // Internal state — only used when no props are passed (standalone usage)
     const [internalProducts, setInternalProducts] = useState([]);
@@ -20,6 +23,85 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
     const usingProps = propProducts !== undefined;
     const newArrivals = usingProps ? propProducts : internalProducts;
     const loading = usingProps ? (propLoading ?? false) : internalLoading;
+
+    useEffect(() => {
+        const fetchWishlist = async () => {
+            const token = localStorage.getItem("token");
+            if (!token) return;
+            try {
+                const res = await fetch("/api/users/wishlist", {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const data = await res.json();
+                if (res.ok && data.wishlist) setWishlist(data.wishlist);
+            } catch (e) {}
+        };
+        fetchWishlist();
+        window.addEventListener("wishlistUpdated", fetchWishlist);
+        return () => window.removeEventListener("wishlistUpdated", fetchWishlist);
+    }, []);
+
+    const handleToggleWishlist = async (e, productId) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const token = localStorage.getItem("token");
+        if (!token) {
+            toast.error("Please login to save items to your wishlist");
+            return;
+        }
+        try {
+            const response = await fetch("/api/users/wishlist", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({ productId })
+            });
+            const data = await response.json();
+            if (response.ok) {
+                setWishlist(data.wishlist || []);
+                if (data.action === "added") {
+                    toast.success("Added to your wishlist ❤️");
+                } else {
+                    toast.info("Removed from your wishlist");
+                }
+                window.dispatchEvent(new Event("wishlistUpdated"));
+            } else {
+                toast.error(data.message || "Failed to update wishlist");
+            }
+        } catch (err) {
+            toast.error("Error updating wishlist");
+        }
+    };
+
+    const handleShare = async (e, product) => {
+        e.preventDefault();
+        e.stopPropagation();
+        const shareUrl = `${window.location.origin}/product/${product._id}`;
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: `${product.name} | Zaaish`,
+                    text: `Discover ${product.name} at Zaaish.`,
+                    url: shareUrl
+                });
+                return;
+            } catch (err) {
+                if (err.name === "AbortError") return;
+            }
+        }
+        if (navigator.clipboard) {
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                toast.success("✨ Product link copied to clipboard!");
+            } catch (err) {
+                toast.info(`Product Link: ${shareUrl}`);
+            }
+        } else {
+            toast.info(`Product Link: ${shareUrl}`);
+        }
+    };
 
     useEffect(() => {
         // Skip fetch if data is passed as props
@@ -158,6 +240,13 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
                     const optimizedHoverUrl = hoverImageUrl ? getProductCardImageUrl(hoverImageUrl, "carousel") : null;
                     const isPriority = index < 3;
 
+                    const isWishlisted = Array.isArray(wishlist) && wishlist.some(
+                        (item) => (typeof item === "string" ? item : item?._id) === product._id
+                    );
+                    const currentPrice = product.currentPrice || product.discountPrice || product.price || 0;
+                    const originalPrice = product.price || 0;
+                    const hasDiscount = product.discountPrice && product.discountPrice < originalPrice;
+
                     return (
                     <div key={product._id} className="min-w-[80%] sm:min-w-[42%] lg:min-w-[28%] relative flex-shrink-0 group">
                         <div className="overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-4 shadow-sm relative aspect-[3/4]">
@@ -182,6 +271,18 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
                                     />
                                 )}
                             </Link>
+
+                            {/* Floating Badges (Top Left) */}
+                            <div className="absolute top-3 left-3 z-20 flex flex-col gap-1 pointer-events-none">
+                                {hasDiscount && (
+                                    <span className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-rose-500 text-white shadow-sm">
+                                        Sale
+                                    </span>
+                                )}
+                                <span className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-stone-950/80 text-white dark:bg-stone-100/90 dark:text-stone-950 backdrop-blur-sm shadow-sm">
+                                    New
+                                </span>
+                            </div>
                         </div>
 
                         <div className="flex justify-between items-start px-1">
@@ -189,9 +290,16 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
                                 <h4 className="font-serif text-stone-900 dark:text-stone-100 font-normal tracking-wide truncate hover:text-stone-500 dark:hover:text-stone-400 transition-colors text-sm">
                                     {product.name}
                                 </h4>
-                                <p className="mt-1 text-stone-500 dark:text-stone-400 text-xs tracking-wider font-light">
-                                    ₹{product.price?.toFixed(2)}
-                                </p>
+                                <div className="flex items-center space-x-2 mt-1">
+                                    <span className="text-stone-900 dark:text-stone-100 text-xs tracking-wider font-medium">
+                                        ₹{currentPrice.toFixed(2)}
+                                    </span>
+                                    {hasDiscount && (
+                                        <span className="text-stone-400 text-[11px] line-through font-light">
+                                            ₹{originalPrice.toFixed(2)}
+                                        </span>
+                                    )}
+                                </div>
                             </Link>
                         </div>
                     </div>

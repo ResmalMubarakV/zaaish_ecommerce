@@ -16,13 +16,12 @@ const orderItemSchema = new mongoose.Schema(
     image: {
       type: String,
       required: [true, "Order item image is required"],
-      trim: true,
-      match: [/^https?:\/\//i, "Order item image must be an HTTP(S) URL"]
+      trim: true
     },
     sku: {
       type: String,
-      required: [true, "Order item SKU is required"],
       trim: true,
+      default: "N/A",
       maxlength: [80, "Order item SKU cannot exceed 80 characters"]
     },
     price: {
@@ -41,14 +40,14 @@ const orderItemSchema = new mongoose.Schema(
     },
     size: {
       type: String,
-      required: [true, "Order item size is required"],
       trim: true,
+      default: "Standard",
       maxlength: [30, "Order item size cannot exceed 30 characters"]
     },
     color: {
       type: String,
-      required: [true, "Order item color is required"],
       trim: true,
+      default: "Standard",
       maxlength: [50, "Order item color cannot exceed 50 characters"]
     }
   },
@@ -172,8 +171,8 @@ const orderSchema = new mongoose.Schema(
     paymentMethod: {
       type: String,
       enum: {
-        values: ["PayPal", "Cash on Delivery"],
-        message: "Payment method must be PayPal or Cash on Delivery"
+        values: ["PayPal", "Cash on Delivery", "Credit Card", "Card", "Online Payment", "UPI"],
+        message: "Payment method must be valid"
       },
       default: "PayPal"
     },
@@ -198,6 +197,11 @@ const orderSchema = new mongoose.Schema(
       min: [0, "Tax price cannot be negative"],
       default: 0
     },
+    codFee: {
+      type: Number,
+      min: [0, "COD fee cannot be negative"],
+      default: 0
+    },
     totalPrice: {
       type: Number,
       required: [true, "Total price is required"],
@@ -207,8 +211,8 @@ const orderSchema = new mongoose.Schema(
       type: String,
       trim: true,
       uppercase: true,
-      enum: ["USD"],
-      default: "USD"
+      enum: ["INR", "USD"],
+      default: "INR"
     },
     isPaid: {
       type: Boolean,
@@ -221,8 +225,8 @@ const orderSchema = new mongoose.Schema(
     status: {
       type: String,
       enum: {
-        values: ["Processing", "Shipped", "Delivered"],
-        message: "Order status must be Processing, Shipped, or Delivered"
+        values: ["Processing", "Shipped", "Delivered", "Cancelled"],
+        message: "Order status must be Processing, Shipped, Delivered, or Cancelled"
       },
       default: "Processing"
     },

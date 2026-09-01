@@ -43,14 +43,46 @@ const ProductDetails = () => {
     const [zoomStyle, setZoomStyle] = useState({ transform: 'scale(1)', transformOrigin: 'center' });
 
     const getEstimatedDeliveryDate = () => {
-        const date = new Date();
-        date.setDate(date.getDate() + 3);
-        const options = { weekday: 'short', month: 'short', day: 'numeric' };
-        return date.toLocaleDateString('en-US', options);
+        const start = new Date();
+        start.setDate(start.getDate() + 7);
+        const end = new Date();
+        end.setDate(end.getDate() + 10);
+        const options = { month: 'short', day: 'numeric' };
+        return `${start.toLocaleDateString('en-US', options)} – ${end.toLocaleDateString('en-US', options)} (7–10 Business Days)`;
     };
 
     // Wishlist state and handlers
     const [isWishlisted, setIsWishlisted] = useState(false);
+
+    const handleShareProduct = async (e) => {
+        if (e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+        const shareUrl = window.location.href;
+        if (navigator.share) {
+            try {
+                await navigator.share({
+                    title: `${product?.name || "Product"} | Zaaish Luxury`,
+                    text: `Discover ${product?.name || "Product"} at Zaaish.`,
+                    url: shareUrl
+                });
+                return;
+            } catch (err) {
+                if (err.name === "AbortError") return;
+            }
+        }
+        if (navigator.clipboard) {
+            try {
+                await navigator.clipboard.writeText(shareUrl);
+                toast.success("✨ Product link copied to clipboard!");
+            } catch (err) {
+                toast.info(`Product Link: ${shareUrl}`);
+            }
+        } else {
+            toast.info(`Product Link: ${shareUrl}`);
+        }
+    };
 
     // Reviews filters and photo zoom states
     const [selectedRatingFilter, setSelectedRatingFilter] = useState(null);
@@ -248,6 +280,64 @@ const ProductDetails = () => {
         }
     };
 
+    const [isBuyingNow, setIsBuyingNow] = useState(false);
+
+    const handleBuyNow = async () => {
+        if (!selectedSize || !selectedColor) {
+            toast.error("Please select a size and color first", { duration: 1500 });
+            return;
+        }
+
+        const token = localStorage.getItem("token");
+        if (!token) {
+            const pendingBuyNow = {
+                productId: product._id,
+                size: selectedSize,
+                color: selectedColor,
+                quantity: quantity,
+                redirectToCheckout: true
+            };
+            sessionStorage.setItem("pendingBuyNow", "true");
+            sessionStorage.setItem("pendingCartItem", JSON.stringify(pendingBuyNow));
+            toast.info("Please sign in to proceed with instant checkout", { duration: 2000 });
+            navigate("/login");
+            return;
+        }
+
+        setIsBuyingNow(true);
+
+        try {
+            const response = await fetch('/api/cart', {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    productId: product._id,
+                    size: selectedSize,
+                    color: selectedColor,
+                    quantity: quantity
+                })
+            });
+
+            const data = await response.json();
+
+            if (response.ok) {
+                window.dispatchEvent(new Event("cartUpdated"));
+                // Immediately navigate directly straight to checkout!
+                navigate("/checkout");
+            } else {
+                toast.error(data.message || "Failed to proceed to checkout", { duration: 1500 });
+            }
+        } catch (error) {
+            console.error("Error with instant checkout:", error);
+            toast.error("Server error while processing instant checkout", { duration: 1500 });
+        } finally {
+            setIsBuyingNow(false);
+        }
+    };
+
     // Review Image Upload Handler
     const handleReviewImageUpload = async (e) => {
         const files = e.target.files;
@@ -372,13 +462,38 @@ const ProductDetails = () => {
                 {/* Main Image */}
                 <div className="min-w-0">
                     <div 
-                        className="aspect-[4/5] overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-sm lg:h-[620px] dark:border-stone-800 dark:bg-stone-800 cursor-zoom-in relative mx-auto lg:w-[496px]"
+                        className="aspect-[4/5] overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-sm lg:h-[620px] dark:border-stone-800 dark:bg-stone-800 cursor-zoom-in relative mx-auto lg:w-[496px] group/mainimage"
                         onMouseMove={handleMouseMove}
                         onMouseLeave={handleMouseLeave}
                     >
                         <img src={mainImage} alt={product.name} 
                         className="h-full w-full object-cover transition-transform duration-100 ease-out"
                         style={zoomStyle} />
+
+                        {/* Floating Wishlist & Share action buttons on product page image */}
+                        <div className="absolute top-4 right-4 z-20 flex flex-col gap-2.5">
+                            {/* Wishlist button */}
+                            <button
+                                type="button"
+                                onClick={handleToggleWishlist}
+                                className="p-3 rounded-full bg-white/85 dark:bg-stone-900/85 backdrop-blur-md border border-stone-200/60 dark:border-stone-800 text-stone-800 dark:text-stone-200 hover:scale-110 active:scale-95 transition-all shadow-md cursor-pointer group/btn"
+                                title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+                                aria-label="Toggle Wishlist"
+                            >
+                                <FiHeart className={`w-4 h-4 transition-colors ${isWishlisted ? "text-rose-500 fill-rose-500" : "text-stone-700 dark:text-stone-300 group-hover/btn:text-rose-500"}`} />
+                            </button>
+
+                            {/* Share button */}
+                            <button
+                                type="button"
+                                onClick={handleShareProduct}
+                                className="p-3 rounded-full bg-white/85 dark:bg-stone-900/85 backdrop-blur-md border border-stone-200/60 dark:border-stone-800 text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:scale-110 active:scale-95 transition-all shadow-md cursor-pointer"
+                                title="Share product"
+                                aria-label="Share Product"
+                            >
+                                <FiShare2 className="w-4 h-4" />
+                            </button>
+                        </div>
                     </div>
                 </div>
 
@@ -536,42 +651,41 @@ const ProductDetails = () => {
                         </div>
                     )}
 
-                    {/* Actions row: Add to Cart (if stock > 0), Wishlist, and Share */}
-                    <div className="flex flex-col sm:flex-row gap-3.5 mb-8">
-                        {product.countInStock > 0 && (
+                    {/* Actions row: ADD TO CART and BUY NOW (direct checkout like Flipkart/Amazon) */}
+                    <div className="flex flex-col sm:flex-row gap-3 mb-8">
+                        {product.countInStock > 0 ? (
+                            <>
+                                <button
+                                    type="button"
+                                    onClick={handleAddToCart}
+                                    disabled={isButtonDisabled || isBuyingNow}
+                                    className={`flex-1 bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 py-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium transition-all cursor-pointer shadow-sm ${
+                                        isButtonDisabled || isBuyingNow ? "cursor-not-allowed opacity-50" : "hover:bg-stone-800 dark:hover:bg-stone-200"
+                                    }`}
+                                >
+                                    {isButtonDisabled ? "Adding..." : "Add to Cart"}
+                                </button>
+
+                                <button
+                                    type="button"
+                                    onClick={handleBuyNow}
+                                    disabled={isButtonDisabled || isBuyingNow}
+                                    className={`flex-1 bg-amber-500 hover:bg-amber-600 text-stone-950 font-semibold py-4 rounded-xl text-xs uppercase tracking-[0.2em] transition-all cursor-pointer shadow-md flex items-center justify-center gap-1.5 ${
+                                        isButtonDisabled || isBuyingNow ? "cursor-not-allowed opacity-50" : "hover:scale-[1.01] active:scale-[0.99]"
+                                    }`}
+                                >
+                                    {isBuyingNow ? "Processing..." : "⚡ Buy Now"}
+                                </button>
+                            </>
+                        ) : (
                             <button
-                            onClick={handleAddToCart}
-                            disabled={isButtonDisabled}
-                            className={`grow bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 py-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium transition-all cursor-pointer shadow-sm ${isButtonDisabled
-                                ? "cursor-not-allowed opacity-50" : "hover:bg-stone-800 dark:hover:bg-stone-200"
-                            }`}
+                                type="button"
+                                disabled
+                                className="w-full bg-stone-200 dark:bg-stone-800 text-stone-400 dark:text-stone-500 py-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium cursor-not-allowed"
                             >
-                                {isButtonDisabled ? "Adding..." : "Add to Cart"}
+                                Currently Out of Stock
                             </button>
                         )}
-                        <div className={`flex gap-3 ${product.countInStock === 0 ? 'w-full' : 'sm:w-auto'}`}>
-                            <button
-                                type="button"
-                                onClick={handleToggleWishlist}
-                                className={`flex-1 sm:px-5 py-4 border rounded-xl flex items-center justify-center cursor-pointer transition-all hover:bg-stone-50 dark:hover:bg-stone-900 border-stone-200 dark:border-stone-800 ${product.countInStock === 0 ? 'grow' : ''}`}
-                                title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
-                            >
-                                <FiHeart className={`w-5 h-5 transition-transform hover:scale-110 active:scale-95 ${isWishlisted ? 'text-rose-500 fill-rose-500' : 'text-stone-700 dark:text-stone-300'}`} />
-                                {product.countInStock === 0 && <span className="ml-2 text-xs font-medium uppercase tracking-[0.15em] text-stone-700 dark:text-stone-300">Add to Wishlist</span>}
-                            </button>
-                            <button
-                                type="button"
-                                onClick={() => {
-                                    navigator.clipboard.writeText(window.location.href);
-                                    toast.success("Product link copied to clipboard!");
-                                }}
-                                className={`flex-1 sm:px-5 py-4 border rounded-xl flex items-center justify-center cursor-pointer transition-all hover:bg-stone-50 dark:hover:bg-stone-900 border-stone-200 dark:border-stone-800 ${product.countInStock === 0 ? 'grow' : ''}`}
-                                title="Share Product"
-                            >
-                                <FiShare2 className="w-5 h-5 text-stone-700 dark:text-stone-300 transition-transform hover:scale-110 active:scale-95" />
-                                {product.countInStock === 0 && <span className="ml-2 text-xs font-medium uppercase tracking-[0.15em] text-stone-700 dark:text-stone-300">Share</span>}
-                            </button>
-                        </div>
                     </div>
 
                     {/* Estimated Delivery Information */}

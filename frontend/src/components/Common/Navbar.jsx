@@ -235,14 +235,41 @@ const Navbar = () => {
                         </button>
                     </div>
 
-                    {/* ── Mobile right cluster: Cart + Hamburger only ── */}
-                    <div className="flex md:hidden items-center gap-2">
+                    {/* ── Mobile right cluster: Profile + Wishlist + Cart + Hamburger ── */}
+                    <div className="flex md:hidden items-center gap-1 sm:gap-2">
+                        {/* Mobile Profile button */}
+                        <button
+                            onClick={handleProfileClick}
+                            className="p-1.5 sm:p-2 text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white transition-colors cursor-pointer"
+                            title="My Profile / Account"
+                            aria-label="Account Profile"
+                        >
+                            <HiOutlineUser className="h-[21px] w-[21px] stroke-[1.5]" />
+                        </button>
+
+                        {/* Mobile Wishlist button */}
+                        <button
+                            onClick={handleWishlistClick}
+                            className="relative p-1.5 sm:p-2 text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white transition-colors cursor-pointer"
+                            title="Wishlist"
+                            aria-label="Wishlist"
+                        >
+                            <HiOutlineHeart className="h-[21px] w-[21px] stroke-[1.5]" />
+                            {wishlistItemCount > 0 && (
+                                <span className="absolute top-0.5 right-0.5 bg-rose-500 text-white text-[8px] rounded-full h-[15px] w-[15px] flex items-center justify-center font-bold">
+                                    {wishlistItemCount}
+                                </span>
+                            )}
+                        </button>
+
+                        {/* Mobile Cart button */}
                         <button
                             onClick={toggleCartDrawer}
-                            className="relative p-2 text-stone-700 dark:text-stone-300 cursor-pointer"
+                            className="relative p-1.5 sm:p-2 text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white transition-colors cursor-pointer"
                             title="Cart"
+                            aria-label="Shopping Bag"
                         >
-                            <HiOutlineShoppingBag className="h-[22px] w-[22px] stroke-[1.5]" />
+                            <HiOutlineShoppingBag className="h-[21px] w-[21px] stroke-[1.5]" />
                             {cartItemCount > 0 && (
                                 <span className="absolute top-0.5 right-0.5 bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-900 text-[8px] rounded-full h-[15px] w-[15px] flex items-center justify-center font-bold">
                                     {cartItemCount}
@@ -250,10 +277,12 @@ const Navbar = () => {
                             )}
                         </button>
 
+                        {/* Mobile Hamburger Drawer Menu button */}
                         <button
                             onClick={openDrawer}
-                            className="p-2 text-stone-700 dark:text-stone-300 cursor-pointer"
+                            className="p-1.5 sm:p-2 text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white transition-colors cursor-pointer"
                             title="Open Menu"
+                            aria-label="Menu"
                         >
                             <HiBars3BottomRight className="h-6 w-6 stroke-[1.5]" />
                         </button>
