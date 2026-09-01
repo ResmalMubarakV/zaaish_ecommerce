@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
-import { FiDownload, FiTrendingUp, FiShoppingBag, FiUsers, FiBox } from 'react-icons/fi';
+import { FiDownload, FiTrendingUp, FiShoppingBag, FiUsers, FiBox, FiRotateCcw } from 'react-icons/fi';
 
 const AdminHomePage = () => {
     const [stats, setStats] = useState({
         totalRevenue: 0,
         totalOrders: 0,
         totalProducts: 0,
-        totalUsers: 0
+        totalUsers: 0,
+        totalReturns: 0
     });
     const [recentOrders, setRecentOrders] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -154,13 +155,13 @@ const AdminHomePage = () => {
             <div className="bg-white dark:bg-stone-900 p-5 sm:p-8 rounded-3xl shadow-sm border border-stone-200/80 dark:border-stone-800 mb-6 sm:mb-8">
                 <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-6">
                     <div>
-                        <span className="text-[10px] uppercase tracking-[0.2em] text-stone-400 font-medium">Sales Distribution</span>
-                        <h2 className="text-base sm:text-lg font-serif font-light tracking-wide mt-0.5">Order Fulfillment Breakdown</h2>
+                        <span className="text-[10px] uppercase tracking-[0.2em] text-stone-400 font-medium">Sales & Returns Distribution</span>
+                        <h2 className="text-base sm:text-lg font-serif font-light tracking-wide mt-0.5">Order Fulfillment & Returns Breakdown</h2>
                     </div>
                     <span className="text-xs uppercase tracking-wider text-emerald-600 font-medium bg-emerald-50 dark:bg-emerald-950/40 px-3 py-1 rounded-full border border-emerald-200 dark:border-emerald-800">Live Analytics</span>
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-4 text-center">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 text-center">
                     <div className="p-4 bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200/80 dark:border-stone-800">
                         <span className="text-[10px] uppercase tracking-wider text-stone-400 block mb-1">Delivered</span>
                         <span className="text-lg sm:text-xl font-serif font-medium text-emerald-600">
@@ -177,6 +178,12 @@ const AdminHomePage = () => {
                         <span className="text-[10px] uppercase tracking-wider text-stone-400 block mb-1">Processing</span>
                         <span className="text-lg sm:text-xl font-serif font-medium text-amber-600">
                             {recentOrders.filter(o => o.status === "Processing" || !o.status).length} Orders
+                        </span>
+                    </div>
+                    <div className="p-4 bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200/80 dark:border-stone-800">
+                        <span className="text-[10px] uppercase tracking-wider text-rose-500 block mb-1">Return Requests</span>
+                        <span className="text-lg sm:text-xl font-serif font-medium text-rose-600 dark:text-rose-400">
+                            {stats.totalReturns || 0} Returns
                         </span>
                     </div>
                 </div>
@@ -243,13 +250,20 @@ const AdminHomePage = () => {
                                                 )}
                                             </td>
                                             <td className='py-4 px-6'>
-                                                <span className={`px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider ${
-                                                    order.status === "Delivered" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" :
-                                                    order.status === "Shipped" ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800" :
-                                                    "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
-                                                }`}>
-                                                    {order.status || "Processing"}
-                                                </span>
+                                                <div className="flex flex-col items-start gap-1">
+                                                    <span className={`px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider ${
+                                                        order.status === "Delivered" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" :
+                                                        order.status === "Shipped" ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800" :
+                                                        "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"
+                                                    }`}>
+                                                        {order.status || "Processing"}
+                                                    </span>
+                                                    {order.returnRequest && order.returnRequest.status && order.returnRequest.status !== "None" && (
+                                                        <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-rose-100 dark:bg-rose-950/60 text-rose-700 dark:text-rose-300">
+                                                            Return: {order.returnRequest.status}
+                                                        </span>
+                                                    )}
+                                                </div>
                                             </td>
                                         </tr>
                                     );

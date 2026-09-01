@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { toast } from 'sonner';
-import { FiPrinter, FiSearch, FiTruck, FiPackage, FiCheckCircle, FiEye, FiX, FiDollarSign, FiRefreshCw } from 'react-icons/fi';
+import { FiPrinter, FiSearch, FiTruck, FiPackage, FiCheckCircle, FiEye, FiX, FiDollarSign, FiRefreshCw, FiRotateCcw, FiClock, FiAlertCircle } from 'react-icons/fi';
 
 const OrderManagement = () => {
     const [orders, setOrders] = useState([]);
@@ -9,6 +9,15 @@ const OrderManagement = () => {
     const [printConsignmentOrder, setPrintConsignmentOrder] = useState(null);
     const [statusFilter, setStatusFilter] = useState("All");
     const [searchTerm, setSearchTerm] = useState("");
+
+    // Return Management Modal State
+    const [selectedReturnOrder, setSelectedReturnOrder] = useState(null);
+    const [returnActionStatus, setReturnActionStatus] = useState("Approved");
+    const [adminReturnResponse, setAdminReturnResponse] = useState("");
+    const [pickupDateInput, setPickupDateInput] = useState("");
+    const [refundAmountInput, setRefundAmountInput] = useState("");
+    const [refundMethodInput, setRefundMethodInput] = useState("Original Payment Method");
+    const [updatingReturn, setUpdatingReturn] = useState(false);
 
     const fetchOrders = async () => {
         try {
@@ -33,6 +42,56 @@ const OrderManagement = () => {
     useEffect(() => {
         fetchOrders();
     }, []);
+
+    const handleOpenReturnModal = (order) => {
+        setSelectedReturnOrder(order);
+        setReturnActionStatus(order.returnRequest?.status === "Pending" ? "Approved" : order.returnRequest?.status || "Approved");
+        setAdminReturnResponse(order.returnRequest?.adminResponse || "");
+        setPickupDateInput(order.returnRequest?.pickupDate ? new Date(order.returnRequest.pickupDate).toISOString().split('T')[0] : "");
+        setRefundAmountInput(order.returnRequest?.refundAmount || order.totalPrice || "");
+        setRefundMethodInput(order.returnRequest?.refundMethod || (order.paymentMethod === "Cash on Delivery" ? "Bank / UPI Transfer" : "Original Payment Method"));
+    };
+
+    const handleUpdateReturnStatus = async (e) => {
+        e.preventDefault();
+        if (!selectedReturnOrder) return;
+
+        try {
+            setUpdatingReturn(true);
+            const token = localStorage.getItem("token");
+            const response = await fetch(`/api/orders/${selectedReturnOrder._id}/return/status`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                    Authorization: `Bearer ${token}`
+                },
+                body: JSON.stringify({
+                    status: returnActionStatus,
+                    adminResponse: adminReturnResponse,
+                    pickupDate: pickupDateInput || undefined,
+                    refundAmount: refundAmountInput ? Number(refundAmountInput) : undefined,
+                    refundMethod: refundMethodInput
+                })
+            });
+
+            const data = await response.json();
+            if (response.ok) {
+                toast.success(`Return status updated to ${returnActionStatus}`);
+                setSelectedReturnOrder(null);
+                fetchOrders();
+                if (selectedOrder && selectedOrder._id === selectedReturnOrder._id) {
+                    setSelectedOrder(data.order);
+                }
+            } else {
+                toast.error(data.message || "Failed to update return status");
+            }
+        } catch (err) {
+            console.error("Return update error:", err);
+            toast.error("Error updating return status");
+        } finally {
+            setUpdatingReturn(false);
+        }
+    };
 
     const handleStatusChange = async (orderId, status) => {
         try {
@@ -96,7 +155,9 @@ const OrderManagement = () => {
 
     const filteredOrders = orders.filter(order => {
         let matchesStatus = true;
-        if (statusFilter === "COD") {
+        if (statusFilter === "Returns") {
+            matchesStatus = order.returnRequest && order.returnRequest.status && order.returnRequest.status !== "None";
+        } else if (statusFilter === "COD") {
             matchesStatus = order.paymentMethod === "Cash on Delivery";
         } else if (statusFilter !== "All") {
             matchesStatus = order.status === statusFilter;
@@ -107,12 +168,14 @@ const OrderManagement = () => {
             (order.user?.name && order.user.name.toLowerCase().includes(searchTerm.toLowerCase())) ||
             (order.shippingAddress?.firstName && order.shippingAddress.firstName.toLowerCase().includes(searchTerm.toLowerCase())) ||
             (order.shippingAddress?.lastName && order.shippingAddress.lastName.toLowerCase().includes(searchTerm.toLowerCase())) ||
-            (order.shippingAddress?.phone && order.shippingAddress.phone.includes(searchTerm));
+            (order.shippingAddress?.phone && order.shippingAddress.phone.includes(searchTerm)) ||
+            (order.returnRequest?.reason && order.returnRequest.reason.toLowerCase().includes(searchTerm.toLowerCase()));
         return matchesStatus && matchesSearch;
     });
 
     const statusCounts = {
         All: orders.length,
+        Returns: orders.filter(o => o.returnRequest && o.returnRequest.status && o.returnRequest.status !== "None").length,
         COD: orders.filter(o => o.paymentMethod === "Cash on Delivery").length,
         Processing: orders.filter(o => o.status === "Processing" || !o.status).length,
         Shipped: orders.filter(o => o.status === "Shipped").length,
@@ -176,6 +239,7 @@ const OrderManagement = () => {
                 <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none touch-scroll">
                     {[
                         { id: "All", label: "All Orders", count: statusCounts.All },
+                        { id: "Returns", label: "Returns & Refunds", count: statusCounts.Returns, isReturnTab: true },
                         { id: "COD", label: "COD Orders (₹60 Fee)", count: statusCounts.COD, highlight: true },
                         { id: "Processing", label: "Processing", count: statusCounts.Processing },
                         { id: "Shipped", label: "Shipped", count: statusCounts.Shipped },
@@ -187,9 +251,13 @@ const OrderManagement = () => {
                             onClick={() => setStatusFilter(tab.id)}
                             className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs uppercase tracking-wider font-medium whitespace-nowrap transition-all cursor-pointer flex items-center space-x-2 shrink-0 ${
                                 statusFilter === tab.id
-                                    ? tab.highlight 
+                                    ? tab.isReturnTab
+                                        ? "bg-rose-900 text-white shadow-md font-bold dark:bg-rose-800"
+                                        : tab.highlight 
                                         ? "bg-amber-500 text-stone-950 shadow-md font-bold" 
                                         : "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 shadow-sm"
+                                    : tab.isReturnTab
+                                    ? "bg-rose-50 dark:bg-rose-950/40 text-rose-800 dark:text-rose-300 border border-rose-300/80 dark:border-rose-900/60 hover:bg-rose-100"
                                     : tab.highlight
                                     ? "bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-400 border border-amber-300/80 dark:border-amber-900/60 hover:bg-amber-100"
                                     : "border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-900"
@@ -208,7 +276,7 @@ const OrderManagement = () => {
                 <div className="relative w-full sm:w-96">
                     <input
                         type="text"
-                        placeholder="Search by Order ID, customer, phone..."
+                        placeholder="Search by Order ID, customer, phone, return reason..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                         className="w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-4 py-2.5 sm:py-3 pl-10 text-xs tracking-wide focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 shadow-sm"
@@ -225,9 +293,9 @@ const OrderManagement = () => {
                             <tr>
                                 <th className="py-4 px-6">Order ID & Date</th>
                                 <th className="py-4 px-6">Customer & Phone</th>
-                                <th className="py-4 px-6">Total Amount</th>
-                                <th className="py-4 px-6">Payment Mode</th>
-                                <th className="py-4 px-6">Fulfillment</th>
+                                <th className="py-4 px-6">{statusFilter === "Returns" ? "Return Reason" : "Total Amount"}</th>
+                                <th className="py-4 px-6">{statusFilter === "Returns" ? "Return Items" : "Payment Mode"}</th>
+                                <th className="py-4 px-6">{statusFilter === "Returns" ? "Return Lifecycle" : "Fulfillment"}</th>
                                 <th className="py-4 px-6 text-right">Actions</th>
                             </tr>
                         </thead>
@@ -235,6 +303,8 @@ const OrderManagement = () => {
                             {filteredOrders.length > 0 ? (
                                 filteredOrders.map((order) => {
                                     const isCOD = order.paymentMethod === "Cash on Delivery";
+                                    const hasReturn = order.returnRequest && order.returnRequest.status && order.returnRequest.status !== "None";
+
                                     return (
                                         <tr key={order._id} className='hover:bg-stone-50/60 dark:hover:bg-stone-800/40 transition-colors'>
                                             <td className='py-4 px-6'>
@@ -255,49 +325,107 @@ const OrderManagement = () => {
                                                 </p>
                                             </td>
 
+                                            {/* Column 3: Return Reason OR Total Price */}
                                             <td className="py-4 px-6">
-                                                <p className="font-semibold text-stone-900 dark:text-stone-100 text-sm">
-                                                    ₹{(order.totalPrice || 0).toFixed(2)}
-                                                </p>
-                                                {isCOD && (
-                                                    <p className="text-[9px] text-amber-600 dark:text-amber-400 font-medium tracking-wide mt-0.5">
-                                                        Includes ₹{(order.codFee || 60).toFixed(2)} COD fee
-                                                    </p>
+                                                {statusFilter === "Returns" ? (
+                                                    <div>
+                                                        <span className="text-xs font-medium text-stone-900 dark:text-stone-100 block">
+                                                            {order.returnRequest?.reason || "Return Requested"}
+                                                        </span>
+                                                        <span className="text-[10px] text-stone-400 font-light block mt-0.5">
+                                                            Requested: {order.returnRequest?.requestedAt ? new Date(order.returnRequest.requestedAt).toLocaleDateString() : "Recently"}
+                                                        </span>
+                                                    </div>
+                                                ) : (
+                                                    <div>
+                                                        <p className="font-semibold text-stone-900 dark:text-stone-100 text-sm">
+                                                            ₹{(order.totalPrice || 0).toFixed(2)}
+                                                        </p>
+                                                        {isCOD && (
+                                                            <p className="text-[9px] text-amber-600 dark:text-amber-400 font-medium tracking-wide mt-0.5">
+                                                                Includes ₹{(order.codFee || 60).toFixed(2)} COD fee
+                                                            </p>
+                                                        )}
+                                                    </div>
                                                 )}
                                             </td>
 
+                                            {/* Column 4: Return Items OR Payment Mode */}
                                             <td className="py-4 px-6">
-                                                <div className="flex flex-col space-y-1 items-start">
-                                                    {isCOD ? (
-                                                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1">
-                                                            <FiTruck className="text-[10px]" /> Cash on Delivery
-                                                        </span>
-                                                    ) : (
-                                                        <span className="px-2.5 py-0.5 rounded-md text-[10px] font-medium uppercase tracking-wider bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
-                                                            {order.paymentMethod || "Prepaid"}
-                                                        </span>
-                                                    )}
+                                                {statusFilter === "Returns" ? (
+                                                    <div>
+                                                        <p className="text-xs font-medium text-stone-800 dark:text-stone-200">
+                                                            {order.returnRequest?.items?.length || order.orderItems?.length || 0} Item(s) Selected
+                                                        </p>
+                                                        <p className="text-[10px] text-stone-400 font-light mt-0.5">
+                                                            Refund: <strong className="text-stone-900 dark:text-stone-100 font-semibold">₹{(order.returnRequest?.refundAmount || order.totalPrice || 0).toFixed(2)}</strong>
+                                                        </p>
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex flex-col space-y-1 items-start">
+                                                        {isCOD ? (
+                                                            <span className="px-2.5 py-0.5 rounded-md text-[10px] font-bold uppercase tracking-wider bg-amber-500/20 text-amber-700 dark:text-amber-400 border border-amber-500/30 flex items-center gap-1">
+                                                                <FiTruck className="text-[10px]" /> Cash on Delivery
+                                                            </span>
+                                                        ) : (
+                                                            <span className="px-2.5 py-0.5 rounded-md text-[10px] font-medium uppercase tracking-wider bg-stone-100 dark:bg-stone-800 text-stone-700 dark:text-stone-300 border border-stone-200 dark:border-stone-700">
+                                                                {order.paymentMethod || "Prepaid"}
+                                                            </span>
+                                                        )}
 
-                                                    <span className={`text-[10px] font-medium ${order.isPaid ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>
-                                                        {order.isPaid ? "● Paid Successfully" : isCOD ? "● Collect at Doorstep" : "● Payment Pending"}
-                                                    </span>
-                                                </div>
+                                                        <span className={`text-[10px] font-medium ${order.isPaid ? "text-emerald-600 dark:text-emerald-400" : "text-amber-600 dark:text-amber-400"}`}>
+                                                            {order.isPaid ? "● Paid Successfully" : isCOD ? "● Collect at Doorstep" : "● Payment Pending"}
+                                                        </span>
+                                                    </div>
+                                                )}
                                             </td>
 
+                                            {/* Column 5: Return Status OR Fulfillment Status */}
                                             <td className="py-4 px-6">
-                                                <select 
-                                                    value={order.status || "Processing"} 
-                                                    onChange={(e) => handleStatusChange(order._id, e.target.value)}
-                                                    className='bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 text-stone-800 dark:text-stone-200 text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-stone-900 font-medium cursor-pointer'
-                                                >
-                                                    <option value="Processing">Processing</option>
-                                                    <option value="Shipped">Shipped</option>
-                                                    <option value="Delivered">Delivered</option>
-                                                    <option value="Cancelled">Cancelled</option>
-                                                </select>
+                                                {statusFilter === "Returns" ? (
+                                                    <span className={`px-3 py-1 rounded-full text-[11px] font-semibold uppercase tracking-wider ${
+                                                        order.returnRequest?.status === "Refunded" || order.returnRequest?.status === "Completed"
+                                                            ? "bg-emerald-100 dark:bg-emerald-950/60 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-800"
+                                                            : order.returnRequest?.status === "Rejected"
+                                                            ? "bg-rose-100 dark:bg-rose-950/60 text-rose-800 dark:text-rose-300 border border-rose-200 dark:border-rose-800"
+                                                            : order.returnRequest?.status === "Pickup Scheduled" || order.returnRequest?.status === "Approved"
+                                                            ? "bg-indigo-100 dark:bg-indigo-950/60 text-indigo-800 dark:text-indigo-300 border border-indigo-200 dark:border-indigo-800"
+                                                            : "bg-amber-100 dark:bg-amber-950/60 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-800"
+                                                    }`}>
+                                                        {order.returnRequest?.status}
+                                                    </span>
+                                                ) : (
+                                                    <div className="flex flex-col items-start gap-1">
+                                                        <select 
+                                                            value={order.status || "Processing"} 
+                                                            onChange={(e) => handleStatusChange(order._id, e.target.value)}
+                                                            className='bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 text-stone-800 dark:text-stone-200 text-xs rounded-xl px-3 py-2 focus:outline-none focus:border-stone-900 font-medium cursor-pointer'
+                                                        >
+                                                            <option value="Processing">Processing</option>
+                                                            <option value="Shipped">Shipped</option>
+                                                            <option value="Delivered">Delivered</option>
+                                                            <option value="Cancelled">Cancelled</option>
+                                                        </select>
+                                                        {hasReturn && (
+                                                            <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-rose-100 dark:bg-rose-950/50 text-rose-700 dark:text-rose-300">
+                                                                Return: {order.returnRequest.status}
+                                                            </span>
+                                                        )}
+                                                    </div>
+                                                )}
                                             </td>
 
                                             <td className="py-4 px-6 text-right space-x-2">
+                                                {hasReturn && (
+                                                    <button
+                                                        onClick={() => handleOpenReturnModal(order)}
+                                                        className="inline-flex items-center bg-rose-950 text-white dark:bg-rose-100 dark:text-rose-950 px-3 py-2 rounded-xl text-xs uppercase tracking-wider font-medium hover:bg-rose-800 transition cursor-pointer shadow-sm"
+                                                        title="Review Return Request"
+                                                    >
+                                                        <FiRotateCcw className="mr-1.5" /> Return
+                                                    </button>
+                                                )}
+
                                                 <button 
                                                     onClick={() => setSelectedOrder(order)}
                                                     className='inline-flex items-center bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 px-3.5 py-2 rounded-xl text-xs uppercase tracking-wider font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition cursor-pointer shadow-sm'
@@ -459,6 +587,160 @@ const OrderManagement = () => {
                                 Close
                             </button>
                         </div>
+                    </div>
+                </div>
+            )}
+
+            {/* ADMIN RETURN REVIEW & PROCESSING MODAL */}
+            {selectedReturnOrder && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 no-print animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-stone-900 rounded-3xl max-w-2xl w-[95%] sm:w-full max-h-[90vh] overflow-y-auto p-5 sm:p-8 lg:p-10 shadow-2xl border border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100">
+                        <div className="flex justify-between items-start mb-5 border-b border-stone-100 dark:border-stone-800 pb-4">
+                            <div>
+                                <span className="text-[10px] uppercase tracking-[0.2em] text-rose-600 dark:text-rose-400 font-bold">Return Review & Logistics</span>
+                                <h3 className="text-lg sm:text-2xl font-serif font-light mt-1 tracking-wide break-words">Order #{selectedReturnOrder._id}</h3>
+                                <p className="text-xs text-stone-400 mt-1 font-light">
+                                    Requested on {selectedReturnOrder.returnRequest?.requestedAt ? new Date(selectedReturnOrder.returnRequest.requestedAt).toLocaleString() : "Recently"}
+                                </p>
+                            </div>
+                            <button 
+                                onClick={() => setSelectedReturnOrder(null)}
+                                className="text-stone-400 hover:text-stone-900 dark:hover:text-white text-2xl p-1 leading-none cursor-pointer"
+                            >
+                                <FiX />
+                            </button>
+                        </div>
+
+                        {/* Customer Return Request Summary */}
+                        <div className="p-4 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 mb-6 space-y-2 text-xs">
+                            <div className="flex justify-between items-center">
+                                <span className="text-stone-400 uppercase tracking-wider text-[10px]">Return Reason:</span>
+                                <span className="font-serif font-medium text-stone-900 dark:text-stone-100">{selectedReturnOrder.returnRequest?.reason}</span>
+                            </div>
+                            {selectedReturnOrder.returnRequest?.comments && (
+                                <div className="pt-1 border-t border-stone-200/60 dark:border-stone-800">
+                                    <span className="text-stone-400 uppercase tracking-wider text-[10px] block mb-0.5">Customer Remarks:</span>
+                                    <p className="text-stone-700 dark:text-stone-300 italic font-light">"{selectedReturnOrder.returnRequest.comments}"</p>
+                                </div>
+                            )}
+                        </div>
+
+                        {/* Selected Return Items */}
+                        <h4 className="font-medium text-xs uppercase tracking-[0.15em] text-stone-400 mb-3">Items Being Returned</h4>
+                        <div className="space-y-3 mb-6 max-h-48 overflow-y-auto scrollbar-none">
+                            {(selectedReturnOrder.returnRequest?.items || selectedReturnOrder.orderItems)?.map((item, idx) => (
+                                <div key={idx} className="flex items-center justify-between p-3 bg-stone-50 dark:bg-stone-950 rounded-xl border border-stone-200 dark:border-stone-800 text-xs">
+                                    <div className="flex items-center space-x-3 min-w-0 pr-2">
+                                        <img src={item.image} alt={item.name} className="w-10 h-12 object-cover rounded-lg border border-stone-200 dark:border-stone-800 shrink-0" />
+                                        <div className="min-w-0">
+                                            <p className="font-serif font-medium text-stone-900 dark:text-stone-100 truncate">{item.name}</p>
+                                            <p className="text-[10px] text-stone-400 font-light">Size: {item.size} • Color: {item.color} • Qty: {item.quantity}</p>
+                                        </div>
+                                    </div>
+                                    <span className="font-medium text-stone-900 dark:text-stone-100 shrink-0 ml-2">₹{(item.price * item.quantity).toFixed(2)}</span>
+                                </div>
+                            ))}
+                        </div>
+
+                        {/* Customer Payout Details (if provided) */}
+                        {selectedReturnOrder.returnRequest?.bankDetails && (selectedReturnOrder.returnRequest.bankDetails.upiId || selectedReturnOrder.returnRequest.bankDetails.accountNumber) && (
+                            <div className="p-4 rounded-2xl bg-amber-50/70 dark:bg-amber-950/40 border border-amber-200/80 dark:border-amber-900/60 mb-6 text-xs space-y-1.5">
+                                <h5 className="font-serif font-medium text-amber-900 dark:text-amber-200 text-xs">Customer Refund Payout Details</h5>
+                                {selectedReturnOrder.returnRequest.bankDetails.upiId && (
+                                    <p className="text-amber-800 dark:text-amber-300">
+                                        <strong>UPI ID:</strong> {selectedReturnOrder.returnRequest.bankDetails.upiId}
+                                    </p>
+                                )}
+                                {selectedReturnOrder.returnRequest.bankDetails.accountNumber && (
+                                    <p className="text-amber-800 dark:text-amber-300">
+                                        <strong>Bank Account:</strong> {selectedReturnOrder.returnRequest.bankDetails.accountNumber} ({selectedReturnOrder.returnRequest.bankDetails.bankName || "Bank"}) • IFSC: {selectedReturnOrder.returnRequest.bankDetails.ifscCode} • Name: {selectedReturnOrder.returnRequest.bankDetails.accountName}
+                                    </p>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Admin Action Form */}
+                        <form onSubmit={handleUpdateReturnStatus} className="space-y-4 pt-4 border-t border-stone-100 dark:border-stone-800">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div>
+                                    <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-medium mb-1.5">Update Return Status *</label>
+                                    <select
+                                        value={returnActionStatus}
+                                        onChange={(e) => setReturnActionStatus(e.target.value)}
+                                        className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-stone-900"
+                                    >
+                                        <option value="Pending">Pending Review</option>
+                                        <option value="Approved">Approve Return</option>
+                                        <option value="Pickup Scheduled">Pickup Scheduled</option>
+                                        <option value="Refunded">Mark Refunded & Restock Items</option>
+                                        <option value="Rejected">Reject Return Request</option>
+                                        <option value="Cancelled">Cancel Return</option>
+                                    </select>
+                                </div>
+
+                                <div>
+                                    <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-medium mb-1.5">Scheduled Courier Pickup Date</label>
+                                    <input
+                                        type="date"
+                                        value={pickupDateInput}
+                                        onChange={(e) => setPickupDateInput(e.target.value)}
+                                        className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-stone-900"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-medium mb-1.5">Refund Amount (₹)</label>
+                                    <input
+                                        type="number"
+                                        step="0.01"
+                                        value={refundAmountInput}
+                                        onChange={(e) => setRefundAmountInput(e.target.value)}
+                                        className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-stone-900"
+                                    />
+                                </div>
+
+                                <div>
+                                    <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-medium mb-1.5">Refund Payout Channel</label>
+                                    <select
+                                        value={refundMethodInput}
+                                        onChange={(e) => setRefundMethodInput(e.target.value)}
+                                        className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-xl px-3.5 py-2.5 text-xs focus:outline-none focus:border-stone-900"
+                                    >
+                                        <option value="Original Payment Method">Original Payment Method</option>
+                                        <option value="Bank / UPI Transfer">Bank / UPI Transfer</option>
+                                        <option value="Store Credit / Voucher">Store Credit / Voucher</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div>
+                                <label className="block text-[11px] uppercase tracking-wider text-stone-400 font-medium mb-1.5">Admin Response / Pickup Guidelines</label>
+                                <textarea
+                                    rows={2}
+                                    value={adminReturnResponse}
+                                    onChange={(e) => setAdminReturnResponse(e.target.value)}
+                                    placeholder="e.g. Return approved. Please keep the original tags intact; our BlueDart courier will collect the parcel tomorrow..."
+                                    className="w-full bg-stone-50 dark:bg-stone-950 border border-stone-200 dark:border-stone-800 rounded-xl px-3.5 py-2 text-xs focus:outline-none focus:border-stone-900"
+                                />
+                            </div>
+
+                            <div className="flex flex-col-reverse sm:flex-row justify-end gap-3 pt-3">
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedReturnOrder(null)}
+                                    className="px-5 py-2.5 rounded-xl border border-stone-200 dark:border-stone-800 text-xs font-medium uppercase tracking-wider hover:bg-stone-100 dark:hover:bg-stone-800 transition cursor-pointer"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    type="submit"
+                                    disabled={updatingReturn}
+                                    className="px-6 py-2.5 rounded-xl bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 text-xs font-medium uppercase tracking-wider hover:bg-stone-800 dark:hover:bg-stone-200 transition shadow-sm cursor-pointer disabled:opacity-50"
+                                >
+                                    {updatingReturn ? "Updating..." : "Save Return Resolution"}
+                                </button>
+                            </div>
+                        </form>
                     </div>
                 </div>
             )}

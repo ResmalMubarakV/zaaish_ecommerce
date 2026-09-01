@@ -44,6 +44,8 @@ const MyOrdersPage = () => {
       sorted.sort((a, b) => a.totalPrice - b.totalPrice);
     } else if (value === "priceDesc") {
       sorted.sort((a, b) => b.totalPrice - a.totalPrice);
+    } else if (value === "returns") {
+      sorted = sorted.filter(o => o.returnRequest && o.returnRequest.status && o.returnRequest.status !== "None");
     }
     setFilteredOrders(sorted);
   };
@@ -74,6 +76,7 @@ const MyOrdersPage = () => {
             <option value="oldest">Sort: Oldest First</option>
             <option value="priceAsc">Price: Low to High</option>
             <option value="priceDesc">Price: High to Low</option>
+            <option value="returns">Filter: Returns & Exchanges</option>
           </select>
         </div>
 
@@ -134,11 +137,24 @@ const MyOrdersPage = () => {
                         </span>
                       </td>
                       <td className='py-4 px-4 text-center'>
-                        <span className={`px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider ${
-                          order.status === "Delivered" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" : order.status === "Shipped" ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800" : "bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200"
-                        }`}>
-                          {order.status || "Processing"}
-                        </span>
+                        <div className="flex flex-col items-center gap-1">
+                          <span className={`px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider ${
+                            order.status === "Delivered" ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" : order.status === "Shipped" ? "bg-blue-50 dark:bg-blue-950/50 text-blue-700 dark:text-blue-400 border border-blue-200 dark:border-blue-800" : "bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200"
+                          }`}>
+                            {order.status || "Processing"}
+                          </span>
+                          {order.returnRequest && order.returnRequest.status && order.returnRequest.status !== "None" && order.returnRequest.status !== "Cancelled" && (
+                            <span className={`px-2.5 py-0.5 rounded-md text-[10px] font-semibold uppercase tracking-wider ${
+                              order.returnRequest.status === "Refunded" || order.returnRequest.status === "Completed"
+                                ? "bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300"
+                                : order.returnRequest.status === "Rejected"
+                                ? "bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-300"
+                                : "bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300"
+                            }`}>
+                              Return: {order.returnRequest.status}
+                            </span>
+                          )}
+                        </div>
                       </td>
                     </tr>
                   ))

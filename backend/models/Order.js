@@ -149,6 +149,84 @@ const paymentResultSchema = new mongoose.Schema(
   }
 );
 
+const bankDetailsSchema = new mongoose.Schema(
+  {
+    accountName: { type: String, trim: true, default: "" },
+    accountNumber: { type: String, trim: true, default: "" },
+    ifscCode: { type: String, trim: true, default: "" },
+    bankName: { type: String, trim: true, default: "" },
+    upiId: { type: String, trim: true, default: "" }
+  },
+  { _id: false, strict: "throw" }
+);
+
+const returnRequestSchema = new mongoose.Schema(
+  {
+    status: {
+      type: String,
+      enum: {
+        values: ["None", "Pending", "Approved", "Rejected", "Pickup Scheduled", "Refunded", "Completed", "Cancelled"],
+        message: "Invalid return status"
+      },
+      default: "None"
+    },
+    reason: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+    comments: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+    items: {
+      type: [orderItemSchema],
+      default: []
+    },
+    requestedAt: {
+      type: Date,
+      default: null
+    },
+    pickupDate: {
+      type: Date,
+      default: null
+    },
+    adminResponse: {
+      type: String,
+      trim: true,
+      default: ""
+    },
+    refundAmount: {
+      type: Number,
+      default: 0,
+      min: [0, "Refund amount cannot be negative"]
+    },
+    refundStatus: {
+      type: String,
+      enum: {
+        values: ["Pending", "Processed", "Rejected", "N/A"],
+        message: "Invalid refund status"
+      },
+      default: "N/A"
+    },
+    refundMethod: {
+      type: String,
+      trim: true,
+      default: "Original Payment Method"
+    },
+    bankDetails: {
+      type: bankDetailsSchema,
+      default: () => ({})
+    },
+    resolvedAt: {
+      type: Date,
+      default: null
+    }
+  },
+  { _id: false, strict: "throw" }
+);
+
 const orderSchema = new mongoose.Schema(
   {
     user: {
@@ -237,6 +315,10 @@ const orderSchema = new mongoose.Schema(
     deliveredAt: {
       type: Date,
       default: null
+    },
+    returnRequest: {
+      type: returnRequestSchema,
+      default: () => ({ status: "None", refundStatus: "N/A" })
     }
   },
   {

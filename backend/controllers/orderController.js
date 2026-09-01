@@ -234,6 +234,171 @@ const updateOrderToPaid = async (req, res, next) => {
     }
 };
 
+// @desc    Request product return for a delivered order
+// @route   POST /api/orders/:id/return
+// @access  Private
+const requestOrderReturn = async (req, res, next) => {
+    try {
+        const { reason, comments, items, bankDetails } = req.body;
+        const order = await Order.findById(req.params.id);
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" });
+        }
+
+        // Verify order ownership
+        if (order.user.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+            return res.status(403).json({ success: false, message: "Not authorized to request return for this order" });
+        }
+
+        if (order.status !== "Delivered") {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Returns can only be requested for delivered orders" 
+            });
+        }
+
+        if (["Pending", "Approved", "Pickup Scheduled", "Refunded"].includes(order.returnRequest?.status)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: `A return request is already in progress (${order.returnRequest.status})` 
+            });
+        }
+
+        if (!reason) {
+            return res.status(400).json({ success: false, message: "Please specify a reason for return" });
+        }
+
+        const returnItems = (items && items.length > 0) ? items : order.orderItems;
+        const calculatedRefund = returnItems.reduce((acc, item) => acc + (Number(item.price || 0) * Number(item.quantity || 1)), 0);
+
+        order.returnRequest = {
+            status: "Pending",
+            reason,
+            comments: comments || "",
+            items: returnItems,
+            requestedAt: Date.now(),
+            pickupDate: null,
+            adminResponse: "",
+            refundAmount: calculatedRefund,
+            refundStatus: "Pending",
+            refundMethod: order.paymentMethod === "Cash on Delivery" ? (bankDetails?.upiId ? "UPI Transfer" : "Bank Transfer") : "Original Payment Method",
+            bankDetails: bankDetails || {},
+            resolvedAt: null
+        };
+
+        const updatedOrder = await order.save();
+        res.status(200).json({ success: true, message: "Return request submitted successfully", order: updatedOrder });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Cancel a pending return request
+// @route   PUT /api/orders/:id/return/cancel
+// @access  Private
+const cancelOrderReturn = async (req, res, next) => {
+    try {
+        const order = await Order.findById(req.params.id);
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" });
+        }
+
+        if (order.user.toString() !== req.user._id.toString() && req.user.role !== "admin") {
+            return res.status(403).json({ success: false, message: "Not authorized to cancel this return" });
+        }
+
+        if (order.returnRequest?.status !== "Pending") {
+            return res.status(400).json({ 
+                success: false, 
+                message: "Only pending return requests can be cancelled" 
+            });
+        }
+
+        order.returnRequest.status = "Cancelled";
+        order.returnRequest.refundStatus = "N/A";
+        order.returnRequest.resolvedAt = Date.now();
+
+        const updatedOrder = await order.save();
+        res.status(200).json({ success: true, message: "Return request cancelled", order: updatedOrder });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Update return request status and handle restock/refund (Admin)
+// @route   PUT /api/orders/:id/return/status
+// @access  Private/Admin
+const updateOrderReturnStatus = async (req, res, next) => {
+    try {
+        const { status, adminResponse, pickupDate, refundAmount, refundStatus, refundMethod } = req.body;
+        const order = await Order.findById(req.params.id).populate("user", "name email");
+
+        if (!order) {
+            return res.status(404).json({ success: false, message: "Order not found" });
+        }
+
+        if (!order.returnRequest || order.returnRequest.status === "None") {
+            return res.status(400).json({ success: false, message: "No active return request on this order" });
+        }
+
+        const prevStatus = order.returnRequest.status;
+
+        if (status) order.returnRequest.status = status;
+        if (adminResponse !== undefined) order.returnRequest.adminResponse = adminResponse;
+        if (pickupDate) order.returnRequest.pickupDate = new Date(pickupDate);
+        if (refundAmount !== undefined) order.returnRequest.refundAmount = Number(refundAmount);
+        if (refundStatus) order.returnRequest.refundStatus = refundStatus;
+        if (refundMethod) order.returnRequest.refundMethod = refundMethod;
+
+        if (status === "Rejected") {
+            order.returnRequest.refundStatus = "Rejected";
+            order.returnRequest.resolvedAt = Date.now();
+        } else if (status === "Refunded" || status === "Completed") {
+            order.returnRequest.refundStatus = "Processed";
+            order.returnRequest.resolvedAt = Date.now();
+
+            // Restock items if moving to Refunded for the first time
+            if (prevStatus !== "Refunded" && prevStatus !== "Completed") {
+                const itemsToRestock = order.returnRequest.items && order.returnRequest.items.length > 0 
+                    ? order.returnRequest.items 
+                    : order.orderItems;
+
+                for (const item of itemsToRestock) {
+                    if (item.product) {
+                        await Product.findByIdAndUpdate(item.product, {
+                            $inc: { countInStock: Number(item.quantity || 1) }
+                        });
+                    }
+                }
+            }
+        }
+
+        const updatedOrder = await order.save();
+        res.status(200).json({ success: true, message: `Return status updated to ${status}`, order: updatedOrder });
+    } catch (error) {
+        next(error);
+    }
+};
+
+// @desc    Get all orders with return requests (Admin)
+// @route   GET /api/orders/returns/all
+// @access  Private/Admin
+const getReturnOrders = async (req, res, next) => {
+    try {
+        const returnOrders = await Order.find({
+            "returnRequest.status": { $ne: "None" }
+        })
+        .populate("user", "name email")
+        .sort({ "returnRequest.requestedAt": -1, createdAt: -1 });
+
+        res.json({ success: true, count: returnOrders.length, orders: returnOrders });
+    } catch (error) {
+        next(error);
+    }
+};
+
 module.exports = {
     createOrder,
     getMyOrders,
@@ -242,4 +407,8 @@ module.exports = {
     getAllOrders,
     updateOrderStatus,
     updateOrderToPaid,
+    requestOrderReturn,
+    cancelOrderReturn,
+    updateOrderReturnStatus,
+    getReturnOrders,
 };

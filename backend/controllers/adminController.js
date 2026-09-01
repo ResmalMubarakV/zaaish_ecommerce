@@ -10,6 +10,7 @@ const getAdminStats = async (req, res, next) => {
         const totalProducts = await Product.countDocuments();
         const totalOrders = await Order.countDocuments();
         const totalUsers = await User.countDocuments({ role: "user" });
+        const totalReturns = await Order.countDocuments({ "returnRequest.status": { $ne: "None" } });
 
         // Calculate total revenue from paid orders
         const orders = await Order.find({ isPaid: true });
@@ -28,6 +29,7 @@ const getAdminStats = async (req, res, next) => {
                 totalOrders,
                 totalProducts,
                 totalUsers,
+                totalReturns,
             },
             recentOrders,
         });

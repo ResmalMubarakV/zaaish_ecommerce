@@ -203,9 +203,22 @@ const Profile = () => {
                           <td className='py-4 px-4 text-stone-500 dark:text-stone-400 font-light'>{new Date(order.createdAt).toLocaleDateString()}</td>
                           <td className='py-4 px-4 text-right font-medium text-stone-900 dark:text-stone-100'>₹{(order.totalPrice || 0).toFixed(2)}</td>
                           <td className='py-4 px-4 text-center'>
-                            <span className='px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200'>
-                              {order.status || "Processing"}
-                            </span>
+                            <div className="flex flex-col items-center gap-1">
+                              <span className='px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider bg-stone-100 dark:bg-stone-800 text-stone-800 dark:text-stone-200'>
+                                {order.status || "Processing"}
+                              </span>
+                              {order.returnRequest && order.returnRequest.status && order.returnRequest.status !== "None" && order.returnRequest.status !== "Cancelled" && (
+                                <span className={`px-2 py-0.5 rounded-md text-[9px] font-semibold uppercase tracking-wider ${
+                                  order.returnRequest.status === "Refunded" || order.returnRequest.status === "Completed"
+                                    ? "bg-emerald-100 dark:bg-emerald-900/60 text-emerald-800 dark:text-emerald-300"
+                                    : order.returnRequest.status === "Rejected"
+                                    ? "bg-rose-100 dark:bg-rose-900/60 text-rose-800 dark:text-rose-300"
+                                    : "bg-amber-100 dark:bg-amber-900/60 text-amber-800 dark:text-amber-300"
+                                }`}>
+                                  Return: {order.returnRequest.status}
+                                </span>
+                              )}
+                            </div>
                           </td>
                         </tr>
                       ))}
