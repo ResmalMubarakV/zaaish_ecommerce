@@ -174,17 +174,17 @@ const EditProductPage = () => {
     ) : null;
 
     return (
-        <div className="max-w-5xl mx-auto p-6 sm:p-8 lg:p-12 w-full text-stone-900 dark:text-stone-100">
+        <div className="max-w-5xl mx-auto p-4 sm:p-8 lg:p-12 w-full text-stone-900 dark:text-stone-100">
             <UploadOverlay />
-            <div className="mb-8">
-                <Link to="/admin/products" className="inline-flex items-center text-xs uppercase tracking-[0.2em] font-medium text-stone-500 hover:text-stone-900 dark:hover:text-white transition-colors mb-4">
+            <div className="mb-6 sm:mb-8">
+                <Link to="/admin/products" className="inline-flex items-center text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium text-stone-500 hover:text-stone-900 dark:hover:text-white transition-colors mb-3 sm:mb-4">
                     <FiArrowLeft className="mr-2" /> Back to Products
                 </Link>
-                <h1 className="text-2xl sm:text-3xl font-serif font-light tracking-wide">Edit Product</h1>
+                <h1 className="text-xl sm:text-3xl font-serif font-light tracking-wide">Edit Product</h1>
                 <p className="text-xs uppercase tracking-[0.15em] text-stone-400 mt-1">Update product specifications, pricing, and Cloudinary media assets.</p>
             </div>
 
-            <form onSubmit={handleSubmit} className="space-y-8 bg-white dark:bg-stone-900 p-5 sm:p-8 lg:p-10 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm">
+            <form onSubmit={handleSubmit} className="space-y-6 sm:space-y-8 bg-white dark:bg-stone-900 p-4 sm:p-8 lg:p-10 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm">
                 
                 {/* Cloudinary Image Section */}
                 <div>

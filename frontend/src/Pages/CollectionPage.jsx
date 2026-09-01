@@ -235,7 +235,7 @@ const CollectionPage = () => {
             <span className="text-[10px] uppercase tracking-[0.25em] text-stone-400 font-medium block mb-1">
               {pagination.totalProducts} Items Available
             </span>
-            <h2 className='text-xl sm:text-3xl font-serif font-light uppercase tracking-wide leading-tight'>
+            <h2 className='text-xl sm:text-3xl font-serif font-light uppercase tracking-wide leading-tight break-words'>
               {searchQuery 
                 ? `Search Results for "${searchQuery}"`
                 : collection === "all" || !collection 
@@ -259,12 +259,12 @@ const CollectionPage = () => {
         </div>
 
         {/* Quick Category Filter Pills */}
-        <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 sm:mb-8 scrollbar-none">
+        <div className="flex items-center gap-2 overflow-x-auto pb-3 mb-6 sm:mb-8 scrollbar-none touch-scroll">
           {categoryPills.map((cat) => (
             <button
               key={cat}
               onClick={() => handlePillClick(cat)}
-              className={`px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium whitespace-nowrap transition-all cursor-pointer ${
+              className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium whitespace-nowrap transition-all cursor-pointer ${
                 (cat === "All" && !searchParams.get("category")) || activeCategory === cat
                   ? "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 shadow-sm"
                   : "border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-900"
@@ -275,7 +275,7 @@ const CollectionPage = () => {
           ))}
         </div>
 
-        {/* Product Grid Component */}
+        {/* Product Grid */}
         <ProductGrid 
           products={products} 
           loading={loading} 
@@ -285,20 +285,20 @@ const CollectionPage = () => {
 
         {/* Server-Side Pagination Controls */}
         {!loading && pagination.totalPages > 1 && (
-          <div className="flex items-center justify-center gap-2 mt-14 pt-8 border-t border-stone-200/80 dark:border-stone-800">
+          <div className="flex items-center justify-center flex-wrap gap-1.5 sm:gap-2 mt-10 sm:mt-14 pt-6 sm:pt-8 border-t border-stone-200/80 dark:border-stone-800">
             <button
               onClick={() => handlePageChange(pagination.currentPage - 1)}
               disabled={pagination.currentPage === 1}
-              className="px-4 py-2 rounded-xl border border-stone-200 dark:border-stone-800 text-xs font-medium uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors"
+              className="px-3 sm:px-4 py-2 rounded-xl border border-stone-200 dark:border-stone-800 text-[11px] sm:text-xs font-medium uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors"
             >
-              Previous
+              Prev
             </button>
 
             {visiblePages.map((pageNum) => (
               <button
                 key={pageNum}
                 onClick={() => handlePageChange(pageNum)}
-                className={`w-9 h-9 rounded-xl text-xs font-medium transition-all ${
+                className={`w-8 h-8 sm:w-9 sm:h-9 rounded-xl text-xs font-medium transition-all ${
                   pagination.currentPage === pageNum
                     ? "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 shadow-sm font-semibold"
                     : "border border-stone-200 dark:border-stone-800 hover:bg-stone-100 dark:hover:bg-stone-900"
@@ -311,7 +311,7 @@ const CollectionPage = () => {
             <button
               onClick={() => handlePageChange(pagination.currentPage + 1)}
               disabled={pagination.currentPage === pagination.totalPages}
-              className="px-4 py-2 rounded-xl border border-stone-200 dark:border-stone-800 text-xs font-medium uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors"
+              className="px-3 sm:px-4 py-2 rounded-xl border border-stone-200 dark:border-stone-800 text-[11px] sm:text-xs font-medium uppercase tracking-wider disabled:opacity-40 disabled:cursor-not-allowed hover:bg-stone-100 dark:hover:bg-stone-900 transition-colors"
             >
               Next
             </button>

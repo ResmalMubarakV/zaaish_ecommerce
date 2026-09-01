@@ -42,7 +42,7 @@ const OrderConfirmationPage = () => {
     }
 
   return (
-    <div className="min-h-screen bg-stone-50/50 dark:bg-stone-950 py-16 px-6 transition-colors">
+    <div className="min-h-screen bg-stone-50/50 dark:bg-stone-950 py-8 sm:py-16 px-3 sm:px-6 transition-colors">
       <style>{`
         @page { margin: 0; }
         @media print {
@@ -54,23 +54,23 @@ const OrderConfirmationPage = () => {
         }
       `}</style>
 
-      <div className='max-w-xl mx-auto p-8 bg-white dark:bg-stone-900 rounded-3xl shadow-sm border border-stone-200/80 dark:border-stone-800 receipt-box text-stone-900 dark:text-stone-100'>
+      <div className='max-w-xl mx-auto p-5 sm:p-8 bg-white dark:bg-stone-900 rounded-3xl shadow-sm border border-stone-200/80 dark:border-stone-800 receipt-box text-stone-900 dark:text-stone-100'>
           
-          <div className='flex justify-between items-center mb-8 no-print'>
-              <Link to="/my-orders" className='text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-white font-medium text-xs uppercase tracking-[0.2em]'>
+          <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 sm:gap-0 mb-6 sm:mb-8 no-print'>
+              <Link to="/my-orders" className='text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-white font-medium text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em]'>
                   &larr; Back to My Orders
               </Link>
               <button 
                   onClick={handlePrintInvoice}
-                  className='bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 px-5 py-3 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition shadow-sm cursor-pointer'
+                  className='w-full sm:w-auto bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 px-5 py-3 rounded-xl text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition shadow-sm cursor-pointer text-center'
               >
                   Print / Save Receipt
               </button>
           </div>
 
           <div className='font-sans'>
-              <div className='text-center border-b border-stone-200 dark:border-stone-800 pb-6 mb-6'>
-                  <h2 className='text-2xl font-serif font-light tracking-[0.25em] uppercase'>ZAAISH</h2>
+              <div className='text-center border-b border-stone-200 dark:border-stone-800 pb-5 sm:pb-6 mb-5 sm:mb-6'>
+                  <h2 className='text-2xl font-serif font-light tracking-[0.2em] sm:tracking-[0.25em] uppercase'>ZAAISH</h2>
                   <p className='text-[10px] uppercase tracking-[0.2em] text-stone-400 mt-1 font-light'>Luxury Fashion Store</p>
                   <p className='text-xs font-medium text-stone-600 dark:text-stone-400 mt-2 uppercase tracking-widest'>Official Purchase Receipt</p>
               </div>

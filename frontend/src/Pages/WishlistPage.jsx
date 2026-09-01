@@ -70,20 +70,20 @@ const WishlistPage = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto py-12 px-6 lg:px-8 min-h-screen bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors">
-      <div className="mb-8">
+    <div className="max-w-7xl mx-auto py-8 sm:py-12 px-4 sm:px-6 lg:px-8 min-h-screen bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors">
+      <div className="mb-6 sm:mb-8">
         <Link 
           to="/" 
-          className="inline-flex items-center text-xs uppercase tracking-[0.2em] font-medium text-stone-500 hover:text-stone-950 dark:hover:text-white transition-colors cursor-pointer"
+          className="inline-flex items-center text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium text-stone-500 hover:text-stone-950 dark:hover:text-white transition-colors cursor-pointer"
         >
           <FiArrowLeft className="mr-2 text-sm" /> Back to Store
         </Link>
       </div>
 
-      <h1 className="text-3xl md:text-4xl font-serif font-light mb-2 tracking-wide">
+      <h1 className="text-2xl sm:text-3xl md:text-4xl font-serif font-light mb-2 tracking-wide">
         My Wishlist
       </h1>
-      <p className="text-stone-500 dark:text-stone-400 text-xs tracking-wider uppercase font-light mb-10">
+      <p className="text-stone-500 dark:text-stone-400 text-xs tracking-wider uppercase font-light mb-6 sm:mb-10">
         Saved items in your personal collection
       </p>
 

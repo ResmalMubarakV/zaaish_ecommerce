@@ -171,7 +171,7 @@ const Navbar = () => {
                 <div className="max-w-7xl mx-auto flex items-center justify-between px-4 sm:px-6 lg:px-8">
 
                     {/* Brand Logo — always visible */}
-                    <Link to="/" className="text-2xl lg:text-3xl font-serif font-normal tracking-[0.25em] uppercase text-stone-950 dark:text-stone-100">
+                    <Link to="/" className="text-xl sm:text-2xl lg:text-3xl font-serif font-normal tracking-[0.2em] sm:tracking-[0.25em] uppercase text-stone-950 dark:text-stone-100 shrink-0 select-none">
                         Zaaish
                     </Link>
 

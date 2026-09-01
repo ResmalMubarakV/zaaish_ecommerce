@@ -65,16 +65,16 @@ const ProductManagement = () => {
     }
 
     return (
-        <div className='max-w-7xl mx-auto p-6 sm:p-8 lg:p-12 w-full text-stone-900 dark:text-stone-100'>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <div className='max-w-7xl mx-auto p-4 sm:p-8 lg:p-12 w-full text-stone-900 dark:text-stone-100'>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-serif font-light tracking-wide">Product Catalog Management</h1>
+                    <h1 className="text-xl sm:text-3xl font-serif font-light tracking-wide">Product Catalog Management</h1>
                     <p className="text-xs uppercase tracking-[0.15em] text-stone-400 dark:text-stone-500 mt-1">Manage catalog listings, pricing, and stock inventory.</p>
                 </div>
                 
                 <Link
                     to="/admin/products/new"
-                    className="inline-flex items-center bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 px-5 py-3 rounded-xl text-xs uppercase tracking-[0.15em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition shadow-sm cursor-pointer"
+                    className="w-full sm:w-auto inline-flex items-center justify-center bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 px-5 py-3 rounded-xl text-xs uppercase tracking-[0.15em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition shadow-sm cursor-pointer"
                 >
                     <FiPlus className="mr-2 text-sm" /> Add New Product
                 </Link>
@@ -99,7 +99,7 @@ const ProductManagement = () => {
             </div>
 
             <div className="bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 rounded-3xl overflow-hidden shadow-sm w-full">
-                <div className="overflow-x-auto w-full">
+                <div className="overflow-x-auto scrollbar-none w-full">
                     <table className="min-w-full text-left text-stone-600 dark:text-stone-400 whitespace-nowrap">
                         <thead className="bg-stone-50 dark:bg-stone-950/60 text-[10px] uppercase text-stone-400 dark:text-stone-500 font-medium tracking-[0.2em] border-b border-stone-200 dark:border-stone-800">
                             <tr>
@@ -115,15 +115,15 @@ const ProductManagement = () => {
                                 filteredProducts.map((product) => (
                                     <tr key={product._id} className='hover:bg-stone-50/60 dark:hover:bg-stone-800/40 transition-colors'>
                                         <td className="py-4 px-6">
-                                            <div className="flex items-center space-x-4 min-w-[220px]">
+                                            <div className="flex items-center space-x-4 min-w-[200px]">
                                                 <img 
                                                     src={product.images?.[0]?.url || "https://picsum.photos/100/100"} 
                                                     alt={product.name} 
                                                     className="w-11.5 h-14 object-cover rounded-xl border border-stone-200 dark:border-stone-800 flex-shrink-0 shadow-sm"
                                                 />
-                                                <div className="truncate">
-                                                    <p className="font-serif font-medium text-stone-900 dark:text-stone-100 text-sm truncate">{product.name}</p>
-                                                    <p className="text-[11px] text-stone-400 uppercase tracking-wider truncate mt-0.5">{product.category || "General"}</p>
+                                                <div className="min-w-0">
+                                                    <p className="font-serif font-medium text-stone-900 dark:text-stone-100 text-sm line-clamp-1 break-words">{product.name}</p>
+                                                    <p className="text-[11px] text-stone-400 uppercase tracking-wider line-clamp-1 mt-0.5">{product.category || "General"}</p>
                                                 </div>
                                             </div>
                                         </td>

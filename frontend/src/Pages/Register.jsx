@@ -64,11 +64,11 @@ const Register = () => {
     };
 
   return (
-    <div className='flex h-[calc(100vh-73px)] w-full bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors overflow-hidden'>
+    <div className='flex min-h-[calc(100dvh-73px)] h-auto md:h-[calc(100vh-73px)] w-full bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors overflow-hidden'>
       
       {/* Left Side: Form Container */}
       <div className='w-full md:w-1/2 flex flex-col justify-center items-center p-4 sm:p-8 lg:p-10 h-full overflow-y-auto'>
-        <form onSubmit={handleSubmit} className='my-6 w-full max-w-md bg-white dark:bg-stone-900 p-6 sm:p-10 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm'>
+        <form onSubmit={handleSubmit} className='my-6 w-full max-w-md bg-white dark:bg-stone-900 p-5 sm:p-10 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm'>
           
           <div className='flex justify-center mb-6'>
             <h2 className='text-2xl font-serif tracking-[0.25em] uppercase text-stone-950 dark:text-stone-100 font-light'>Zaaish</h2>

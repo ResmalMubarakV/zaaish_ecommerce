@@ -53,14 +53,14 @@ const MyOrdersPage = () => {
   }
 
   return (
-    <div className='min-h-screen bg-stone-50/50 dark:bg-stone-950 py-16 px-6 lg:px-8 text-stone-900 dark:text-stone-100 transition-colors'>
+    <div className='min-h-screen bg-stone-50/50 dark:bg-stone-950 py-8 sm:py-16 px-4 sm:px-6 lg:px-8 text-stone-900 dark:text-stone-100 transition-colors'>
       <div className='max-w-7xl mx-auto'>
         
         {/* Back to Profile & Title Header */}
-        <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between mb-8 gap-4'>
+        <div className='flex flex-col sm:flex-row items-start sm:items-center justify-between mb-6 sm:mb-8 gap-4'>
           <Link 
             to="/profile" 
-            className='inline-flex items-center text-xs uppercase tracking-[0.2em] font-medium text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-white transition-colors cursor-pointer'
+            className='inline-flex items-center text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-white transition-colors cursor-pointer'
           >
             <FiArrowLeft className='mr-2 text-sm' /> Back to Profile
           </Link>
@@ -68,7 +68,7 @@ const MyOrdersPage = () => {
           <select 
             value={sortBy} 
             onChange={handleSortChange}
-            className='border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 px-4 py-3 text-[11px] uppercase tracking-[0.2em] font-medium text-stone-700 dark:text-stone-300 rounded-xl focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 shadow-sm cursor-pointer'
+            className='w-full sm:w-auto border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 px-4 py-2.5 sm:py-3 text-[10px] sm:text-[11px] uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium text-stone-700 dark:text-stone-300 rounded-xl focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 shadow-sm cursor-pointer'
           >
             <option value="newest">Sort: Newest First</option>
             <option value="oldest">Sort: Oldest First</option>
@@ -77,12 +77,12 @@ const MyOrdersPage = () => {
           </select>
         </div>
 
-        <div className='mb-8'>
-          <h2 className='text-2xl sm:text-3xl font-serif font-light tracking-wide'>All Orders</h2>
+        <div className='mb-6 sm:mb-8'>
+          <h2 className='text-xl sm:text-3xl font-serif font-light tracking-wide'>All Orders</h2>
         </div>
 
-        <div className='bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 rounded-3xl p-6 sm:p-8 shadow-sm'>
-          <div className='w-full overflow-x-auto'>
+        <div className='bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 rounded-3xl p-4 sm:p-8 shadow-sm'>
+          <div className='w-full overflow-x-auto scrollbar-none'>
             <table className='min-w-full text-left text-stone-600 dark:text-stone-400 text-xs sm:text-sm whitespace-nowrap'>
               <thead className='bg-stone-50 dark:bg-stone-950/60 text-[10px] uppercase text-stone-400 dark:text-stone-500 font-medium tracking-[0.2em] border-b border-stone-200 dark:border-stone-800'>
                 <tr>

@@ -268,8 +268,8 @@ const Checkout = () => {
     }
 
   return (
-    <div className='min-h-screen bg-stone-50/50 dark:bg-stone-950 py-12 sm:py-16 px-4 sm:px-6 lg:px-8 text-stone-900 dark:text-stone-100 transition-colors'>
-        <div className='grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 max-w-7xl mx-auto'>
+    <div className='min-h-screen bg-stone-50/50 dark:bg-stone-950 py-8 sm:py-16 px-3 sm:px-6 lg:px-8 text-stone-900 dark:text-stone-100 transition-colors'>
+        <div className='grid grid-cols-1 lg:grid-cols-12 gap-6 sm:gap-8 lg:gap-12 max-w-7xl mx-auto'>
             
             {/* Left Section: Delivery & Payment Details */}
             <div className='lg:col-span-7 flex flex-col gap-6'>
@@ -279,28 +279,28 @@ const Checkout = () => {
                     <button 
                         type="button"
                         onClick={() => setShowMobileSummary(prev => !prev)}
-                        className="w-full px-6 py-4 flex justify-between items-center text-[10px] font-medium uppercase tracking-[0.15em] text-stone-700 dark:text-stone-300 cursor-pointer hover:bg-stone-50 dark:hover:bg-stone-850"
+                        className="w-full px-4 sm:px-6 py-3.5 sm:py-4 flex justify-between items-center text-[10px] font-medium uppercase tracking-[0.15em] text-stone-700 dark:text-stone-300 cursor-pointer hover:bg-stone-50 dark:hover:bg-stone-850"
                     >
                         <span className="flex items-center gap-1.5">
                             🛒 {showMobileSummary ? "Hide Order Summary" : "Show Order Summary"}
                         </span>
-                        <span className="font-serif text-sm text-stone-900 dark:text-stone-100 font-medium">
+                        <span className="font-serif text-xs sm:text-sm text-stone-900 dark:text-stone-100 font-medium">
                             ₹{finalTotal.toLocaleString(undefined, {minimumFractionDigits: 2})} {showMobileSummary ? "▲" : "▼"}
                         </span>
                     </button>
                     {showMobileSummary && (
-                        <div className="px-6 pb-6 border-t border-stone-100 dark:border-stone-800">
+                        <div className="px-4 sm:px-6 pb-5 sm:pb-6 border-t border-stone-100 dark:border-stone-800">
                             <div className="divide-y divide-stone-100 dark:divide-stone-800 max-h-60 overflow-y-auto mb-4">
                                 {cart.products.map((product, index) => (
                                     <div key={index} className="flex items-center justify-between py-3">
-                                        <div className="flex items-center">
-                                            <img src={product.image} alt={product.name} className="w-10 h-12 object-cover mr-3 rounded-lg border border-stone-200/60 dark:border-stone-800 shadow-sm" />
-                                            <div>
-                                                <h4 className="font-serif font-medium text-stone-900 dark:text-stone-100 text-xs">{product.name}</h4>
+                                        <div className="flex items-center min-w-0 pr-2">
+                                            <img src={product.image} alt={product.name} className="w-10 h-12 object-cover mr-3 rounded-lg border border-stone-200/60 dark:border-stone-800 shadow-sm flex-shrink-0" />
+                                            <div className="min-w-0">
+                                                <h4 className="font-serif font-medium text-stone-900 dark:text-stone-100 text-xs line-clamp-1 break-words">{product.name}</h4>
                                                 <p className="text-[10px] text-stone-500 dark:text-stone-400">Qty: {product.quantity} &bull; {product.size} &bull; {product.color}</p>
                                             </div>
                                         </div>
-                                        <span className="text-xs font-medium text-stone-900 dark:text-stone-100">₹{(product.price * product.quantity).toLocaleString()}</span>
+                                        <span className="text-xs font-medium text-stone-900 dark:text-stone-100 whitespace-nowrap ml-2">₹{(product.price * product.quantity).toLocaleString()}</span>
                                     </div>
                                 ))}
                             </div>
@@ -331,12 +331,12 @@ const Checkout = () => {
                     )}
                 </div>
 
-                <div className='bg-white dark:bg-stone-900 rounded-3xl p-6 sm:p-10 shadow-sm border border-stone-200/80 dark:border-stone-800'>
+                <div className='bg-white dark:bg-stone-900 rounded-3xl p-5 sm:p-8 lg:p-10 shadow-sm border border-stone-200/80 dark:border-stone-800'>
                     
                     {/* Header */}
-                    <div className="border-b border-stone-100 dark:border-stone-800 pb-6 mb-8">
-                        <span className="text-[10px] uppercase tracking-[0.25em] text-stone-400 font-medium block mb-1">Step 1 of 2</span>
-                        <h2 className='text-2xl sm:text-3xl font-serif font-light tracking-wide uppercase text-stone-950 dark:text-stone-100'>Express Checkout</h2>
+                    <div className="border-b border-stone-100 dark:border-stone-800 pb-5 sm:pb-6 mb-6 sm:mb-8">
+                        <span className="text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-stone-400 font-medium block mb-1">Step 1 of 2</span>
+                        <h2 className='text-xl sm:text-3xl font-serif font-light tracking-wide uppercase text-stone-950 dark:text-stone-100'>Express Checkout</h2>
                     </div>
 
                     {/* Contact Details */}
@@ -592,10 +592,10 @@ const Checkout = () => {
                                 </div>
 
                                 <button 
-                                    type="button"
+                                    type="button" 
                                     onClick={handleCODPaymentSubmit}
                                     disabled={isSubmitting}
-                                    className="w-full bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 py-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition-all cursor-pointer shadow-sm disabled:opacity-50"
+                                    className="w-full bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 py-3.5 sm:py-4 rounded-xl text-[11px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition-all cursor-pointer shadow-sm disabled:opacity-50"
                                 >
                                     {isSubmitting ? "Placing Order..." : `Confirm COD Order (₹${finalTotal.toLocaleString(undefined, {minimumFractionDigits: 2})})`}
                                 </button>
@@ -625,27 +625,27 @@ const Checkout = () => {
 
             {/* Right Section: Order Summary */}
             <div className='lg:col-span-5'>
-                <div className='bg-white dark:bg-stone-900 p-6 sm:p-8 lg:p-10 rounded-3xl border border-stone-200/80 dark:border-stone-800 sticky top-24 shadow-sm'>
+                <div className='bg-white dark:bg-stone-900 p-5 sm:p-8 lg:p-10 rounded-3xl border border-stone-200/80 dark:border-stone-800 sticky top-24 shadow-sm'>
                     
-                    <h3 className='text-xl font-serif font-light tracking-[0.15em] text-stone-900 dark:text-stone-100 mb-6'>Order Summary</h3>
+                    <h3 className='text-lg sm:text-xl font-serif font-light tracking-[0.15em] text-stone-900 dark:text-stone-100 mb-4 sm:mb-6'>Order Summary</h3>
                     
                     {/* Item list */}
-                    <div className='border-t border-stone-100 dark:border-stone-800 py-4 mb-6 max-h-80 overflow-y-auto divide-y divide-stone-100 dark:divide-stone-800 scrollbar-none'>
+                    <div className='border-t border-stone-100 dark:border-stone-800 py-3 sm:py-4 mb-4 sm:mb-6 max-h-80 overflow-y-auto divide-y divide-stone-100 dark:divide-stone-800 scrollbar-none'>
                         {cart.products.map((product, index) => (
-                            <div key={index} className='flex items-start justify-between py-4'>
-                                <div className='flex items-start'>
+                            <div key={index} className='flex items-start justify-between py-3.5 sm:py-4'>
+                                <div className='flex items-start min-w-0 pr-2'>
                                     <img 
                                         src={product.image} 
                                         alt={product.name} 
-                                        className='w-14 h-18 object-cover mr-4 rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm' 
+                                        className='w-12 h-16 sm:w-14 sm:h-18 object-cover mr-3 sm:mr-4 rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm flex-shrink-0' 
                                     />
-                                    <div>
-                                        <h4 className='font-serif font-medium text-stone-900 dark:text-stone-100 text-sm line-clamp-1'>{product.name}</h4>
+                                    <div className="min-w-0">
+                                        <h4 className='font-serif font-medium text-stone-900 dark:text-stone-100 text-xs sm:text-sm line-clamp-2 break-words leading-snug'>{product.name}</h4>
                                         <p className='text-stone-500 dark:text-stone-400 text-[10px] uppercase tracking-wider mt-1'>Size: {product.size} &bull; Color: {product.color}</p>
                                         <p className='text-stone-400 text-xs mt-0.5'>Qty: {product.quantity}</p>
                                     </div>
                                 </div>
-                                <p className='font-medium text-stone-900 dark:text-stone-100 text-sm whitespace-nowrap ml-3'>
+                                <p className='font-medium text-stone-900 dark:text-stone-100 text-xs sm:text-sm whitespace-nowrap ml-2'>
                                     ₹{(product.price * product.quantity).toLocaleString()}
                                 </p>
                             </div>
@@ -653,20 +653,20 @@ const Checkout = () => {
                     </div>
 
                     {/* Promo Code Input */}
-                    <div className='border-t border-stone-100 dark:border-stone-800 pt-6 pb-6'>
-                        <div className='flex gap-3'>
+                    <div className='border-t border-stone-100 dark:border-stone-800 pt-5 sm:pt-6 pb-5 sm:pb-6'>
+                        <div className='flex gap-2 sm:gap-3'>
                             <input 
                                 type="text" 
                                 value={promoCode} 
                                 onChange={(e) => setPromoCode(e.target.value)}
-                                placeholder="PROMO CODE (e.g. ZAAISH10)"
-                                className='grow p-3 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-xs font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors uppercase placeholder:text-stone-400'
+                                placeholder="PROMO CODE"
+                                className='grow p-2.5 sm:p-3 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-xs font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors uppercase placeholder:text-stone-400 min-w-0'
                                 disabled={!!appliedCode}
                             />
                             <button 
                                 type="button"
                                 onClick={handleApplyPromo}
-                                className='bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 px-4 rounded-xl text-xs uppercase tracking-wider font-semibold cursor-pointer hover:bg-stone-800 dark:hover:bg-stone-200 transition-all border border-stone-950 dark:border-stone-100 disabled:opacity-50 disabled:cursor-not-allowed'
+                                className='bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 px-3.5 sm:px-4 rounded-xl text-xs uppercase tracking-wider font-semibold cursor-pointer hover:bg-stone-800 dark:hover:bg-stone-200 transition-all border border-stone-950 dark:border-stone-100 disabled:opacity-50 disabled:cursor-not-allowed shrink-0'
                                 disabled={!!appliedCode || !promoCode}
                             >
                                 Apply
@@ -676,7 +676,7 @@ const Checkout = () => {
                         {appliedCode && <p className='text-emerald-600 dark:text-emerald-400 text-[10px] mt-2 font-medium tracking-wide'>🎉 Code {appliedCode} applied (10% discount)</p>}
                         
                         {!appliedCode && (
-                            <div className="mt-3 flex items-center gap-2 overflow-x-auto scrollbar-none py-1">
+                            <div className="mt-3 flex items-center gap-2 overflow-x-auto scrollbar-none touch-scroll py-1">
                                 <span className="text-[10px] text-stone-400 uppercase tracking-widest font-semibold shrink-0">Offers:</span>
                                 {["ZAAISH10", "WELCOME10", "LUXURY"].map((code) => (
                                     <button
@@ -690,7 +690,7 @@ const Checkout = () => {
                                             setPromoError("");
                                             toast.success(`Promo code ${code} applied successfully!`);
                                         }}
-                                        className="p-1.5 px-3 border border-stone-200 dark:border-stone-800 bg-stone-100/50 dark:bg-stone-900 rounded-lg text-[9px] font-black uppercase tracking-wider text-stone-700 dark:text-stone-300 hover:border-stone-950 dark:hover:border-stone-100 transition cursor-pointer"
+                                        className="p-1.5 px-2.5 sm:px-3 border border-stone-200 dark:border-stone-800 bg-stone-100/50 dark:bg-stone-900 rounded-lg text-[9px] font-black uppercase tracking-wider text-stone-700 dark:text-stone-300 hover:border-stone-950 dark:hover:border-stone-100 transition cursor-pointer whitespace-nowrap"
                                     >
                                         {code} (10%)
                                     </button>

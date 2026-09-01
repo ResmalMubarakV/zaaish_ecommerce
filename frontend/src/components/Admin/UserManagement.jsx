@@ -68,10 +68,10 @@ const UserManagement = () => {
     }
 
     return (
-        <div className='max-w-7xl mx-auto p-6 sm:p-8 lg:p-12 w-full text-stone-900 dark:text-stone-100'>
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4">
+        <div className='max-w-7xl mx-auto p-4 sm:p-8 lg:p-12 w-full text-stone-900 dark:text-stone-100'>
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
                 <div>
-                    <h1 className="text-2xl sm:text-3xl font-serif font-light tracking-wide">User Account Management</h1>
+                    <h1 className="text-xl sm:text-3xl font-serif font-light tracking-wide">User Account Management</h1>
                     <p className="text-xs uppercase tracking-[0.15em] text-stone-400 mt-1">Review registered user accounts, administrative privileges, and security roles.</p>
                 </div>
                 <div className="text-xs uppercase tracking-[0.15em] bg-stone-100 dark:bg-stone-900 text-stone-700 dark:text-stone-300 px-4 py-2.5 rounded-xl font-medium whitespace-nowrap border border-stone-200/80 dark:border-stone-800">
@@ -81,12 +81,12 @@ const UserManagement = () => {
 
             {/* Filter & Search Toolbar */}
             <div className="flex flex-col sm:flex-row justify-between items-center mb-6 gap-4 bg-white dark:bg-stone-900 p-4 rounded-2xl border border-stone-200/80 dark:border-stone-800 shadow-sm">
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 overflow-x-auto w-full sm:w-auto scrollbar-none">
                     {["All", "user", "admin"].map((role) => (
                         <button
                             key={role}
                             onClick={() => setRoleFilter(role)}
-                            className={`px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium cursor-pointer transition-all ${
+                            className={`px-3.5 sm:px-4 py-2 rounded-xl text-xs uppercase tracking-wider font-medium cursor-pointer transition-all shrink-0 ${
                                 roleFilter === role
                                     ? "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 shadow-sm"
                                     : "border border-stone-200 dark:border-stone-800 text-stone-600 dark:text-stone-400 hover:bg-stone-100 dark:hover:bg-stone-800"
@@ -110,7 +110,7 @@ const UserManagement = () => {
             </div>
 
             <div className="bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 rounded-3xl overflow-hidden shadow-sm w-full">
-                <div className="overflow-x-auto w-full">
+                <div className="overflow-x-auto scrollbar-none w-full">
                     <table className="min-w-full text-left text-stone-600 dark:text-stone-400 whitespace-nowrap">
                         <thead className='bg-stone-50 dark:bg-stone-950/60 text-[10px] uppercase text-stone-400 dark:text-stone-500 font-medium tracking-[0.2em] border-b border-stone-200 dark:border-stone-800'>
                             <tr>

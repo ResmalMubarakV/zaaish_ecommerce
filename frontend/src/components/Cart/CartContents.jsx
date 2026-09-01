@@ -87,22 +87,22 @@ const CartContents = ({ cart, onUpdateCart }) => {
                 const availableColors = item.product?.colors || [];
 
                 return (
-                    <div key={item._id} className="flex items-start justify-between py-6 group">
-                        <div className="flex items-start">
+                    <div key={item._id} className="flex items-start justify-between py-4 sm:py-6 gap-3 sm:gap-4 group">
+                        <div className="flex items-start min-w-0 pr-1">
                             {item.product?.images?.[0]?.url && (
-                                <img src={item.product.images[0].url} alt={item.product.name} className="w-20 h-24 object-cover mr-4 rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm" />
+                                <img src={item.product.images[0].url} alt={item.product.name} className="w-16 h-20 sm:w-20 sm:h-24 object-cover mr-3 sm:mr-4 rounded-xl border border-stone-200 dark:border-stone-800 shadow-sm flex-shrink-0" />
                             )}
-                            <div>
-                                <h3 className="font-serif font-medium text-stone-900 dark:text-stone-100 text-sm tracking-wide">{item.product?.name || "Product"}</h3>
+                            <div className="min-w-0">
+                                <h3 className="font-serif font-medium text-stone-900 dark:text-stone-100 text-xs sm:text-sm tracking-wide line-clamp-2 break-words leading-snug">{item.product?.name || "Product"}</h3>
                                 
-                                <div className="flex flex-wrap items-center gap-3 mt-1.5 text-[11px] text-stone-500 dark:text-stone-400 font-light">
+                                <div className="flex flex-wrap items-center gap-2 sm:gap-3 mt-1.5 text-[10px] sm:text-[11px] text-stone-500 dark:text-stone-400 font-light">
                                     {availableSizes.length > 0 ? (
                                         <div className="flex items-center gap-1">
                                             <span>Size:</span>
                                             <select 
                                                 value={item.size}
                                                 onChange={(e) => handleVariantChange(item._id, "size", e.target.value)}
-                                                className="bg-transparent border border-stone-200 dark:border-stone-850 px-1 py-0.5 rounded focus:outline-none text-[10px] uppercase font-semibold text-stone-700 dark:text-stone-300"
+                                                className="bg-transparent border border-stone-200 dark:border-stone-850 px-1 py-0.5 rounded focus:outline-none text-[9px] sm:text-[10px] uppercase font-semibold text-stone-700 dark:text-stone-300"
                                             >
                                                 {availableSizes.map(sz => (
                                                     <option key={sz} value={sz} className="dark:bg-stone-900">{sz}</option>
@@ -119,7 +119,7 @@ const CartContents = ({ cart, onUpdateCart }) => {
                                             <select 
                                                 value={item.color}
                                                 onChange={(e) => handleVariantChange(item._id, "color", e.target.value)}
-                                                className="bg-transparent border border-stone-200 dark:border-stone-850 px-1 py-0.5 rounded focus:outline-none text-[10px] uppercase font-semibold text-stone-700 dark:text-stone-300"
+                                                className="bg-transparent border border-stone-200 dark:border-stone-850 px-1 py-0.5 rounded focus:outline-none text-[9px] sm:text-[10px] uppercase font-semibold text-stone-700 dark:text-stone-300"
                                             >
                                                 {availableColors.map(cl => (
                                                     <option key={cl} value={cl} className="dark:bg-stone-900">{cl}</option>
@@ -131,21 +131,29 @@ const CartContents = ({ cart, onUpdateCart }) => {
                                     )}
                                 </div>
 
-                                <div className="flex items-center mt-4">
+                                <div className="flex items-center mt-3 sm:mt-4">
                                     <button 
                                         onClick={() => handleQuantityChange(item._id, -1, item.quantity)}
-                                        className="border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/80 rounded-lg px-3 py-1 text-xs font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 transition cursor-pointer">-</button>
-                                    <span className="mx-3.5 text-xs font-semibold text-stone-900 dark:text-stone-100">{item.quantity}</span>
+                                        className="border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/80 rounded-lg px-2.5 sm:px-3 py-0.5 sm:py-1 text-xs font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 transition cursor-pointer"
+                                        aria-label="Decrease quantity"
+                                    >
+                                        -
+                                    </button>
+                                    <span className="mx-2.5 sm:mx-3.5 text-xs font-semibold text-stone-900 dark:text-stone-100">{item.quantity}</span>
                                     <button 
                                         onClick={() => handleQuantityChange(item._id, 1, item.quantity)}
-                                        className="border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/80 rounded-lg px-3 py-1 text-xs font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 transition cursor-pointer">+</button>
+                                        className="border border-stone-200 dark:border-stone-700 bg-stone-50 dark:bg-stone-800/80 rounded-lg px-2.5 sm:px-3 py-0.5 sm:py-1 text-xs font-medium text-stone-700 dark:text-stone-300 hover:bg-stone-100 dark:hover:bg-stone-700 transition cursor-pointer"
+                                        aria-label="Increase quantity"
+                                    >
+                                        +
+                                    </button>
                                 </div>
                             </div>
                         </div>
-                        <div className="text-right flex flex-col justify-between h-full">
-                            <p className="font-medium text-stone-900 dark:text-stone-100 text-sm tracking-wide">₹{(itemPrice * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
-                            <button onClick={() => handleRemoveItem(item._id)} className="cursor-pointer self-end mt-6">
-                                <RiDeleteBin3Line className="h-4 w-4 text-rose-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors"/>
+                        <div className="text-right flex flex-col justify-between items-end h-full shrink-0">
+                            <p className="font-medium text-stone-900 dark:text-stone-100 text-xs sm:text-sm tracking-wide whitespace-nowrap">₹{(itemPrice * item.quantity).toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</p>
+                            <button onClick={() => handleRemoveItem(item._id)} className="cursor-pointer mt-4 sm:mt-6 p-1 text-stone-400 hover:text-rose-600 dark:hover:text-rose-400 transition-colors" aria-label="Remove item">
+                                <RiDeleteBin3Line className="h-4 w-4"/>
                             </button>
                         </div>
                     </div>

@@ -185,8 +185,8 @@ const ProductGrid = ({ products, loading = false, wishlist: propWishlist, onTogg
               </div>
             </div>
 
-            <Link to={`/product/${product._id}`}>
-              <h3 className="text-xs sm:text-sm font-serif font-normal text-stone-800 dark:text-stone-200 mb-0.5 sm:mb-1 truncate tracking-wide group-hover:text-stone-500 dark:group-hover:text-stone-400 transition-colors">
+            <Link to={`/product/${product._id}`} className="min-w-0 w-full block">
+              <h3 className="text-xs sm:text-sm font-serif font-normal text-stone-800 dark:text-stone-200 mb-1 line-clamp-2 break-words leading-snug tracking-wide group-hover:text-stone-500 dark:group-hover:text-stone-400 transition-colors">
                 {product.name}
               </h3>
               <div className="flex items-center space-x-2">

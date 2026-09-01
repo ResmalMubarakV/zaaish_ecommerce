@@ -49,8 +49,8 @@ const SearchBar = ({ buttonClassName = "", showLabel = false }) => {
     return (
         <div className="flex items-center justify-center">
             {isOpen ? (
-                <div className="fixed inset-x-0 top-0 bg-white/95 dark:bg-stone-950/95 backdrop-blur-xl min-h-24 z-[80] shadow-md border-b border-stone-200 dark:border-stone-800 px-4 sm:px-6 flex items-center justify-center transition-all duration-300">
-                    <div className="relative w-full max-w-3xl mx-auto py-5">
+                <div className="fixed inset-x-0 top-0 bg-white/95 dark:bg-stone-950/95 backdrop-blur-xl min-h-20 sm:min-h-24 z-[80] shadow-md border-b border-stone-200 dark:border-stone-800 px-3 sm:px-6 flex items-center justify-center transition-all duration-300">
+                    <div className="relative w-full max-w-3xl mx-auto py-3 sm:py-5">
                         <form onSubmit={handleSearch} className="relative flex items-center justify-between w-full">
                             <div className="relative w-full">
                                 <input 
@@ -58,26 +58,28 @@ const SearchBar = ({ buttonClassName = "", showLabel = false }) => {
                                     placeholder="Search luxury apparel, categories, and styles..." 
                                     value={searchTerm} 
                                     onChange={(e) => setSearchTerm(e.target.value)}
-                                    className="bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 px-5 py-3.5 pl-4 pr-12 rounded-xl focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 w-full placeholder:text-stone-400 text-xs sm:text-sm tracking-wide text-stone-900 dark:text-stone-100 transition-colors shadow-inner" 
+                                    className="bg-stone-50 dark:bg-stone-900 border border-stone-200 dark:border-stone-800 px-4 sm:px-5 py-3 sm:py-3.5 pl-3.5 sm:pl-4 pr-10 sm:pr-12 rounded-xl focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 w-full placeholder:text-stone-400 text-xs sm:text-sm tracking-wide text-stone-900 dark:text-stone-100 transition-colors shadow-inner" 
                                     autoFocus
                                 />
-                                <button type="submit" className="absolute right-4 top-1/2 transform -translate-y-1/2 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white cursor-pointer">
-                                    <HiMagnifyingGlass className="h-5 w-5 stroke-[1.5]" />
+                                <button type="submit" className="absolute right-3.5 sm:right-4 top-1/2 transform -translate-y-1/2 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white cursor-pointer" aria-label="Submit search">
+                                    <HiMagnifyingGlass className="h-4 w-4 sm:h-5 sm:w-5 stroke-[1.5]" />
                                 </button>
                             </div>
                             <button 
                                 type="button" 
                                 onClick={handleSearchToggle}
-                                className="ml-5 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white p-2 cursor-pointer transition-transform hover:scale-110"> 
-                                <HiMiniXMark className="h-6 w-6 stroke-[1.5]" />
+                                className="ml-2 sm:ml-5 text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white p-2 cursor-pointer transition-transform hover:scale-110"
+                                aria-label="Close search"
+                            > 
+                                <HiMiniXMark className="h-5 w-5 sm:h-6 sm:w-6 stroke-[1.5]" />
                             </button>
                         </form>
 
                         {/* Suggestions Dropdown */}
                         {searchTerm.trim().length > 0 && (
-                            <div className="absolute top-[80px] left-0 right-0 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl shadow-xl z-[90] overflow-hidden max-h-96 overflow-y-auto mt-2">
+                            <div className="absolute top-[68px] sm:top-[80px] left-0 right-0 bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-2xl shadow-xl z-[90] overflow-hidden max-h-[70vh] sm:max-h-96 overflow-y-auto mt-2">
                                 {suggestions.length > 0 ? (
-                                    <div className="p-4 divide-y divide-stone-100 dark:divide-stone-800">
+                                    <div className="p-3 sm:p-4 divide-y divide-stone-100 dark:divide-stone-800">
                                         <p className="text-[9px] uppercase tracking-[0.2em] text-stone-400 dark:text-stone-500 mb-2 font-medium">Matching Products</p>
                                         {suggestions.map((product) => (
                                             <button 
@@ -88,25 +90,25 @@ const SearchBar = ({ buttonClassName = "", showLabel = false }) => {
                                                     setSearchTerm("");
                                                     setSuggestions([]);
                                                 }}
-                                                className="w-full text-left py-3 flex items-center justify-between hover:bg-stone-50 dark:hover:bg-stone-800/50 px-2 rounded-xl transition-all cursor-pointer group"
+                                                className="w-full text-left py-2.5 sm:py-3 flex items-center justify-between hover:bg-stone-50 dark:hover:bg-stone-800/50 px-2 rounded-xl transition-all cursor-pointer group"
                                             >
-                                                <div className="flex items-center">
+                                                <div className="flex items-center min-w-0 pr-2">
                                                     <img 
                                                         src={product.images?.[0]?.url || "https://placehold.co/300x380"} 
                                                         alt={product.name} 
-                                                        className="w-10 h-12 object-cover mr-4 rounded-lg border border-stone-200 dark:border-stone-800 shadow-sm flex-shrink-0"
+                                                        className="w-9 h-11 sm:w-10 sm:h-12 object-cover mr-3 sm:mr-4 rounded-lg border border-stone-200 dark:border-stone-800 shadow-sm flex-shrink-0"
                                                     />
-                                                    <div>
-                                                        <h4 className="font-serif text-sm text-stone-900 dark:text-stone-100 group-hover:text-stone-600 dark:group-hover:text-stone-400 transition-colors leading-snug">{product.name}</h4>
-                                                        <p className="text-[10px] text-stone-500 dark:text-stone-400 mt-0.5 uppercase tracking-wide">{product.category} &bull; {product.brand}</p>
+                                                    <div className="min-w-0">
+                                                        <h4 className="font-serif text-xs sm:text-sm text-stone-900 dark:text-stone-100 group-hover:text-stone-600 dark:group-hover:text-stone-400 transition-colors leading-snug line-clamp-1 break-words">{product.name}</h4>
+                                                        <p className="text-[10px] text-stone-500 dark:text-stone-400 mt-0.5 uppercase tracking-wide truncate">{product.category} &bull; {product.brand}</p>
                                                     </div>
                                                 </div>
-                                                <p className="font-serif text-sm font-medium text-stone-900 dark:text-stone-100">₹{(product.currentPrice || product.price || 0).toLocaleString()}</p>
+                                                <p className="font-serif text-xs sm:text-sm font-medium text-stone-900 dark:text-stone-100 whitespace-nowrap ml-2">₹{(product.currentPrice || product.price || 0).toLocaleString()}</p>
                                             </button>
                                         ))}
                                     </div>
                                 ) : (
-                                    <p className="text-center py-6 text-stone-400 dark:text-stone-500 text-xs font-light">
+                                    <p className="text-center py-6 text-stone-400 dark:text-stone-500 text-xs font-light px-4">
                                         No product matches found. Press Enter to view all search results.
                                     </p>
                                 )}

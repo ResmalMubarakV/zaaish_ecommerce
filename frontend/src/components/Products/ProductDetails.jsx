@@ -441,7 +441,7 @@ const ProductDetails = () => {
     });
 
   return (
-    <div className="min-h-screen bg-stone-50/50 px-4 py-8 text-stone-900 transition-colors sm:px-6 sm:py-12 lg:px-8 lg:py-16 dark:bg-stone-950 dark:text-stone-100">
+    <div className="min-h-screen bg-stone-50/50 px-3 py-6 text-stone-900 transition-colors sm:px-6 sm:py-12 lg:px-8 lg:py-16 dark:bg-stone-950 dark:text-stone-100">
         <div className="mx-auto max-w-6xl rounded-3xl border border-stone-200/80 bg-white p-4 shadow-sm sm:p-8 lg:p-10 dark:border-stone-800 dark:bg-stone-900">
             <div className="grid items-start gap-6 lg:grid-cols-[5rem_minmax(0,1fr)_minmax(19rem,0.9fr)] lg:gap-8">
                 {/* Left Thumbnails */}
@@ -462,7 +462,7 @@ const ProductDetails = () => {
                 {/* Main Image */}
                 <div className="min-w-0">
                     <div 
-                        className="aspect-[4/5] overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-sm lg:h-[620px] dark:border-stone-800 dark:bg-stone-800 cursor-zoom-in relative mx-auto lg:w-[496px] group/mainimage"
+                        className="aspect-[4/5] overflow-hidden rounded-2xl border border-stone-200 bg-stone-100 shadow-sm w-full max-w-md lg:w-[496px] lg:h-[620px] dark:border-stone-800 dark:bg-stone-800 cursor-zoom-in relative mx-auto group/mainimage"
                         onMouseMove={handleMouseMove}
                         onMouseLeave={handleMouseLeave}
                     >
@@ -471,12 +471,12 @@ const ProductDetails = () => {
                         style={zoomStyle} />
 
                         {/* Floating Wishlist & Share action buttons on product page image */}
-                        <div className="absolute top-4 right-4 z-20 flex flex-col gap-2.5">
+                        <div className="absolute top-3.5 right-3.5 sm:top-4 sm:right-4 z-20 flex flex-col gap-2.5">
                             {/* Wishlist button */}
                             <button
                                 type="button"
                                 onClick={handleToggleWishlist}
-                                className="p-3 rounded-full bg-white/85 dark:bg-stone-900/85 backdrop-blur-md border border-stone-200/60 dark:border-stone-800 text-stone-800 dark:text-stone-200 hover:scale-110 active:scale-95 transition-all shadow-md cursor-pointer group/btn"
+                                className="p-2.5 sm:p-3 rounded-full bg-white/85 dark:bg-stone-900/85 backdrop-blur-md border border-stone-200/60 dark:border-stone-800 text-stone-800 dark:text-stone-200 hover:scale-110 active:scale-95 transition-all shadow-md cursor-pointer group/btn"
                                 title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
                                 aria-label="Toggle Wishlist"
                             >
@@ -487,7 +487,7 @@ const ProductDetails = () => {
                             <button
                                 type="button"
                                 onClick={handleShareProduct}
-                                className="p-3 rounded-full bg-white/85 dark:bg-stone-900/85 backdrop-blur-md border border-stone-200/60 dark:border-stone-800 text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:scale-110 active:scale-95 transition-all shadow-md cursor-pointer"
+                                className="p-2.5 sm:p-3 rounded-full bg-white/85 dark:bg-stone-900/85 backdrop-blur-md border border-stone-200/60 dark:border-stone-800 text-stone-700 dark:text-stone-300 hover:text-stone-950 dark:hover:text-white hover:scale-110 active:scale-95 transition-all shadow-md cursor-pointer"
                                 title="Share product"
                                 aria-label="Share Product"
                             >
@@ -498,13 +498,13 @@ const ProductDetails = () => {
                 </div>
 
                 {/* Mobile Thumbnails */}
-                <div className="md:hidden flex overflow-x-auto space-x-4 pb-2 scrollbar-none">
+                <div className="md:hidden flex overflow-x-auto space-x-3 pb-2 scrollbar-none touch-scroll">
                     {product.images?.map((image, index) => (
                         <img 
                         key={index}
                         src={image.url} 
                         alt={image.altText || `Thumbnail ${index}`} 
-                        className={`w-20 h-24 object-cover rounded-xl cursor-pointer border flex-shrink-0 ${mainImage ===
+                        className={`w-16 h-20 sm:w-20 sm:h-24 object-cover rounded-xl cursor-pointer border flex-shrink-0 ${mainImage ===
                             image.url ? "border-stone-950 dark:border-stone-100" : "border-stone-200 dark:border-stone-800 opacity-70"
                         }`}
                         onClick={() => setMainImage(image.url)}/>
@@ -513,11 +513,11 @@ const ProductDetails = () => {
 
                 {/* Right Section */}
                 <div className="min-w-0 lg:flex lg:min-h-[620px] lg:flex-col lg:justify-center">
-                    <span className="text-[10px] uppercase tracking-[0.25em] text-stone-400 font-medium block mb-1">
+                    <span className="text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.25em] text-stone-400 font-medium block mb-1">
                         {product.brand || "Zaaish Reserve"} &bull; {product.category}
                     </span>
 
-                    <h1 className="text-2xl sm:text-3xl font-serif font-light tracking-wide mb-3 text-stone-900 dark:text-stone-100">
+                    <h1 className="text-xl sm:text-3xl font-serif font-light tracking-wide mb-2 sm:mb-3 text-stone-900 dark:text-stone-100 break-words">
                         {product.name}
                     </h1>
 
@@ -1059,7 +1059,7 @@ const ProductDetails = () => {
                                 </div>
 
                                 {/* Info */}
-                                <p className="text-[11px] sm:text-xs font-serif text-stone-800 dark:text-stone-200 truncate group-hover:text-stone-500 dark:group-hover:text-stone-400 transition-colors mb-0.5 leading-snug">
+                                <p className="text-[11px] sm:text-xs font-serif text-stone-800 dark:text-stone-200 line-clamp-2 break-words group-hover:text-stone-500 dark:group-hover:text-stone-400 transition-colors mb-0.5 leading-snug">
                                     {prod.name}
                                 </p>
                                 <p className="text-[11px] sm:text-xs text-stone-500 dark:text-stone-400 font-medium tracking-wider">
@@ -1074,7 +1074,7 @@ const ProductDetails = () => {
             {/* Size Guide Modal */}
             {isSizeGuideOpen && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4">
-                    <div className="bg-white dark:bg-stone-900 w-full max-w-md rounded-3xl p-6 sm:p-8 shadow-2xl border border-stone-200 dark:border-stone-800 animate-in fade-in zoom-in-95 duration-200">
+                    <div className="bg-white dark:bg-stone-900 w-[95%] sm:w-full max-w-md rounded-3xl p-5 sm:p-8 shadow-2xl border border-stone-200 dark:border-stone-800 animate-in fade-in zoom-in-95 duration-200">
                         <div className="flex justify-between items-center mb-6">
                             <h3 className="font-serif text-lg tracking-wide uppercase text-stone-900 dark:text-stone-100">Size Guide</h3>
                             <button 

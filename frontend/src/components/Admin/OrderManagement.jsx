@@ -125,7 +125,7 @@ const OrderManagement = () => {
     }
 
     return (
-        <div className='max-w-7xl mx-auto p-6 sm:p-8 lg:p-12 w-full text-stone-900 dark:text-stone-100'>
+        <div className='max-w-7xl mx-auto p-4 sm:p-8 lg:p-12 w-full text-stone-900 dark:text-stone-100'>
             
             {/* Dedicated Print Styles for Shipping Consignment Label */}
             <style>{`
@@ -150,14 +150,14 @@ const OrderManagement = () => {
                 }
             `}</style>
 
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-8 gap-4 no-print">
+            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4 no-print">
                 <div>
-                    <h1 className='text-2xl sm:text-3xl font-serif font-light tracking-wide'>Order & Fulfillment Console</h1>
+                    <h1 className='text-xl sm:text-3xl font-serif font-light tracking-wide'>Order & Fulfillment Console</h1>
                     <p className='text-xs uppercase tracking-[0.15em] text-stone-400 mt-1'>
                         Monitor all orders, manage Cash on Delivery (COD) dispatches, and print shipping labels.
                     </p>
                 </div>
-                <div className='flex items-center gap-3'>
+                <div className='flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-end'>
                     <button
                         onClick={fetchOrders}
                         className="p-2.5 rounded-xl border border-stone-200 dark:border-stone-800 bg-white dark:bg-stone-900 text-stone-600 dark:text-stone-300 hover:text-stone-900 dark:hover:text-white transition cursor-pointer shadow-sm"
@@ -173,7 +173,7 @@ const OrderManagement = () => {
 
             {/* Filter Tabs & Search Bar */}
             <div className="space-y-4 mb-6 no-print">
-                <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none">
+                <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none touch-scroll">
                     {[
                         { id: "All", label: "All Orders", count: statusCounts.All },
                         { id: "COD", label: "COD Orders (₹60 Fee)", count: statusCounts.COD, highlight: true },
@@ -185,7 +185,7 @@ const OrderManagement = () => {
                         <button
                             key={tab.id}
                             onClick={() => setStatusFilter(tab.id)}
-                            className={`px-4 py-2.5 rounded-xl text-xs uppercase tracking-wider font-medium whitespace-nowrap transition-all cursor-pointer flex items-center space-x-2 ${
+                            className={`px-3.5 sm:px-4 py-2 sm:py-2.5 rounded-xl text-xs uppercase tracking-wider font-medium whitespace-nowrap transition-all cursor-pointer flex items-center space-x-2 shrink-0 ${
                                 statusFilter === tab.id
                                     ? tab.highlight 
                                         ? "bg-amber-500 text-stone-950 shadow-md font-bold" 
@@ -211,7 +211,7 @@ const OrderManagement = () => {
                         placeholder="Search by Order ID, customer, phone..."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-4 py-3 pl-10 text-xs tracking-wide focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 shadow-sm"
+                        className="w-full bg-white dark:bg-stone-900 border border-stone-200 dark:border-stone-800 rounded-xl px-4 py-2.5 sm:py-3 pl-10 text-xs tracking-wide focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 shadow-sm"
                     />
                     <FiSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-stone-400 text-sm" />
                 </div>
@@ -219,7 +219,7 @@ const OrderManagement = () => {
 
             {/* Orders Table */}
             <div className="bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 rounded-3xl overflow-hidden shadow-sm w-full no-print">
-                <div className="overflow-x-auto w-full">
+                <div className="overflow-x-auto scrollbar-none w-full">
                     <table className="min-w-full text-left text-stone-600 dark:text-stone-400 whitespace-nowrap">
                         <thead className="bg-stone-50 dark:bg-stone-950/60 text-[10px] uppercase text-stone-400 dark:text-stone-500 font-medium tracking-[0.2em] border-b border-stone-200 dark:border-stone-800">
                             <tr>
@@ -331,12 +331,12 @@ const OrderManagement = () => {
 
             {/* ORDER DETAILS MODAL */}
             {selectedOrder && (
-                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 no-print animate-in fade-in duration-200">
-                    <div className="bg-white dark:bg-stone-900 rounded-3xl max-w-2xl w-[95%] sm:w-full max-h-[90vh] overflow-y-auto p-6 sm:p-10 shadow-2xl border border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100">
-                        <div className="flex justify-between items-start mb-6 border-b border-stone-100 dark:border-stone-800 pb-5">
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-3 sm:p-4 no-print animate-in fade-in duration-200">
+                    <div className="bg-white dark:bg-stone-900 rounded-3xl max-w-2xl w-[95%] sm:w-full max-h-[90vh] overflow-y-auto p-5 sm:p-8 lg:p-10 shadow-2xl border border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100">
+                        <div className="flex justify-between items-start mb-5 sm:mb-6 border-b border-stone-100 dark:border-stone-800 pb-4 sm:pb-5">
                             <div>
                                 <span className="text-[10px] uppercase tracking-[0.2em] text-stone-400 font-medium">Order Inspection</span>
-                                <h3 className="text-xl sm:text-2xl font-serif font-light mt-1 tracking-wide">Order #{selectedOrder._id}</h3>
+                                <h3 className="text-lg sm:text-2xl font-serif font-light mt-1 tracking-wide break-words">Order #{selectedOrder._id}</h3>
                                 <p className="text-xs text-stone-400 mt-1 font-light">
                                     Placed on {new Date(selectedOrder.createdAt).toLocaleString()}
                                 </p>

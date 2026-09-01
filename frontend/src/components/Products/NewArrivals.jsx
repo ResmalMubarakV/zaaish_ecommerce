@@ -189,14 +189,14 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
     if (newArrivals.length === 0) return null;
 
     return (
-        <section className="py-16 sm:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
-            <div className="flex flex-col md:flex-row md:items-end justify-between mb-10 sm:mb-12 relative">
+        <section className="py-12 sm:py-20 lg:py-24 px-4 sm:px-6 lg:px-8 max-w-7xl mx-auto">
+            <div className="flex flex-col md:flex-row md:items-end justify-between mb-8 sm:mb-12 relative">
                 <div className="max-w-xl">
-                    <span className="text-stone-400 dark:text-stone-500 text-[10px] uppercase tracking-[0.3em] font-medium block mb-2">Curated Selection</span>
-                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-light text-stone-900 dark:text-stone-100 tracking-wide mb-3">
+                    <span className="text-stone-400 dark:text-stone-500 text-[10px] uppercase tracking-[0.2em] sm:tracking-[0.3em] font-medium block mb-1.5 sm:mb-2">Curated Selection</span>
+                    <h2 className="text-2xl sm:text-3xl lg:text-4xl font-serif font-light text-stone-900 dark:text-stone-100 tracking-wide mb-2 sm:mb-3">
                         Explore New Arrivals
                     </h2>
-                    <p className="text-stone-500 dark:text-stone-400 text-sm font-light leading-relaxed">
+                    <p className="text-stone-500 dark:text-stone-400 text-xs sm:text-sm font-light leading-relaxed">
                         Discover the latest pieces freshly added to elevate your seasonal wardrobe.
                     </p>
                 </div>
@@ -209,6 +209,7 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
                       className={`p-3.5 rounded-xl border transition-all cursor-pointer ${canScrollLeft
                           ? "bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 hover:border-stone-400 dark:hover:border-stone-600 shadow-sm"
                           : "bg-stone-50 dark:bg-stone-950 border-stone-100 dark:border-stone-900 text-stone-300 dark:text-stone-700 cursor-not-allowed"}`}
+                      aria-label="Scroll left"
                     >
                         <FiChevronLeft className="text-base"/>
                     </button>
@@ -218,6 +219,7 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
                       className={`p-3.5 rounded-xl border transition-all cursor-pointer ${canScrollRight
                           ? "bg-white dark:bg-stone-900 border-stone-200 dark:border-stone-800 text-stone-900 dark:text-stone-100 hover:border-stone-400 dark:hover:border-stone-600 shadow-sm"
                           : "bg-stone-50 dark:bg-stone-950 border-stone-100 dark:border-stone-900 text-stone-300 dark:text-stone-700 cursor-not-allowed"}`}
+                      aria-label="Scroll right"
                     >
                         <FiChevronRight className="text-base"/>
                     </button>
@@ -227,7 +229,7 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
             {/* Scrollable Content Container */}
             <div
                 ref={scrollRef}
-                className={`w-full overflow-x-auto flex space-x-4 sm:space-x-6 scrollbar-none pb-4 select-none ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
+                className={`w-full overflow-x-auto flex space-x-4 sm:space-x-6 scrollbar-none pb-4 select-none touch-scroll ${isDragging ? "cursor-grabbing" : "cursor-grab"}`}
                 onMouseDown={handleMouseDown}
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUpOrLeave}
@@ -248,8 +250,8 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
                     const hasDiscount = product.discountPrice && product.discountPrice < originalPrice;
 
                     return (
-                    <div key={product._id} className="min-w-[80%] sm:min-w-[42%] lg:min-w-[28%] relative flex-shrink-0 group">
-                        <div className="overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-4 shadow-sm relative aspect-[3/4]">
+                    <div key={product._id} className="min-w-[70%] xs:min-w-[65%] sm:min-w-[42%] lg:min-w-[28%] relative flex-shrink-0 group">
+                        <div className="overflow-hidden rounded-2xl bg-stone-100 dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 mb-3 sm:mb-4 shadow-sm relative aspect-[3/4]">
                             <Link to={`/product/${product._id}`} className="block w-full h-full relative">
                                 <img
                                     src={optimizedUrl}
@@ -273,7 +275,7 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
                             </Link>
 
                             {/* Floating Badges (Top Left) */}
-                            <div className="absolute top-3 left-3 z-20 flex flex-col gap-1 pointer-events-none">
+                            <div className="absolute top-2.5 left-2.5 sm:top-3 sm:left-3 z-20 flex flex-col gap-1 pointer-events-none">
                                 {hasDiscount && (
                                     <span className="px-2 py-0.5 rounded-md text-[9px] font-bold uppercase tracking-wider bg-rose-500 text-white shadow-sm">
                                         Sale
@@ -286,8 +288,8 @@ const NewArrivals = ({ products: propProducts, loading: propLoading } = {}) => {
                         </div>
 
                         <div className="flex justify-between items-start px-1">
-                            <Link to={`/product/${product._id}`} className="block min-w-0">
-                                <h4 className="font-serif text-stone-900 dark:text-stone-100 font-normal tracking-wide truncate hover:text-stone-500 dark:hover:text-stone-400 transition-colors text-sm">
+                            <Link to={`/product/${product._id}`} className="block min-w-0 w-full">
+                                <h4 className="font-serif text-stone-900 dark:text-stone-100 font-normal tracking-wide line-clamp-2 break-words leading-snug hover:text-stone-500 dark:hover:text-stone-400 transition-colors text-xs sm:text-sm">
                                     {product.name}
                                 </h4>
                                 <div className="flex items-center space-x-2 mt-1">

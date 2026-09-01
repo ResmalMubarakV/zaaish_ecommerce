@@ -10,18 +10,18 @@ const Hero = () => {
           fetchPriority="high"
           loading="eager"
           decoding="async"
-          className="w-full h-[450px] md:h-[650px] lg:h-[800px] object-cover brightness-[0.85] dark:brightness-75 transition-all transform hover:scale-105 duration-1000"
+          className="w-full h-[400px] sm:h-[550px] md:h-[650px] lg:h-[800px] object-cover brightness-[0.85] dark:brightness-75 transition-all transform hover:scale-105 duration-1000"
        /> 
        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/30 to-black/10 flex items-center justify-center">
-            <div className="text-center text-white p-6 max-w-4xl mx-auto">
-                <span className="text-[10px] sm:text-xs uppercase tracking-[0.3em] font-light text-stone-300 block mb-3">Curated Collection</span>
-                <h1 className="text-4xl sm:text-6xl md:text-8xl font-serif font-light tracking-[0.15em] uppercase mb-6 leading-tight">
-                    Vacation <br /> Ready
+            <div className="text-center text-white px-4 py-8 sm:p-6 max-w-4xl mx-auto">
+                <span className="text-[10px] sm:text-xs uppercase tracking-[0.2em] sm:tracking-[0.3em] font-light text-stone-300 block mb-2 sm:mb-3">Curated Collection</span>
+                <h1 className="text-3xl sm:text-6xl md:text-8xl font-serif font-light tracking-[0.12em] sm:tracking-[0.15em] uppercase mb-4 sm:mb-6 leading-tight break-words">
+                    Vacation <br className="hidden xs:inline" /> Ready
                 </h1>
-                <p className="text-xs sm:text-sm tracking-[0.2em] uppercase mb-10 font-light text-stone-200 max-w-lg mx-auto leading-relaxed">
+                <p className="text-[11px] sm:text-sm tracking-[0.12em] sm:tracking-[0.2em] uppercase mb-6 sm:mb-10 font-light text-stone-200 max-w-lg mx-auto leading-relaxed">
                     Explore our exclusive vacation-ready silhouettes engineered with exceptional craftsmanship and worldwide shipping.
                 </p>
-                <Link to="/collections/all" className="inline-block bg-white dark:bg-stone-100 text-stone-950 px-9 py-4 rounded-xl text-xs uppercase tracking-[0.25em] font-medium hover:bg-stone-100 dark:hover:bg-white transition-all shadow-xl cursor-pointer">
+                <Link to="/collections/all" className="inline-block bg-white dark:bg-stone-100 text-stone-950 px-6 sm:px-9 py-3.5 sm:py-4 rounded-xl text-[11px] sm:text-xs uppercase tracking-[0.18em] sm:tracking-[0.25em] font-medium hover:bg-stone-100 dark:hover:bg-white transition-all shadow-xl cursor-pointer">
                     Explore Collection
                 </Link>
             </div>

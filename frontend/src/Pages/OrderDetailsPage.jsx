@@ -65,7 +65,7 @@ const OrderDetailsPage = () => {
     }
 
     return (
-        <div className='max-w-7xl mx-auto py-16 px-6 lg:px-8 min-h-screen bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors'>
+        <div className='max-w-7xl mx-auto py-8 sm:py-16 px-4 sm:px-6 lg:px-8 min-h-screen bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors'>
             
             <style>{`
                 @page { margin: 0; }
@@ -97,10 +97,10 @@ const OrderDetailsPage = () => {
             `}</style>
 
             {/* Top Action Bar */}
-            <div className='flex justify-between items-center mb-8 no-print'>
+            <div className='flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6 sm:mb-8 no-print'>
                 <button 
                     onClick={handleBack} 
-                    className='inline-flex items-center text-xs uppercase tracking-[0.2em] font-medium text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-white transition-colors cursor-pointer'
+                    className='inline-flex items-center text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-white transition-colors cursor-pointer'
                 >
                     <FiArrowLeft className='mr-2 text-sm' /> 
                     {location.state?.from === "/profile" ? "Back to Profile" : "Back to My Orders"}
@@ -108,16 +108,16 @@ const OrderDetailsPage = () => {
 
                 <button 
                     onClick={handleDownloadReceipt}
-                    className='inline-flex items-center bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 px-5 py-3 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition shadow-sm cursor-pointer'
+                    className='w-full sm:w-auto inline-flex items-center justify-center bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 px-5 py-3 rounded-xl text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition shadow-sm cursor-pointer'
                 >
                     <FiDownload className='mr-2 text-sm' /> Download Invoice
                 </button>
             </div>
 
-            <h2 className='text-2xl md:text-3xl font-serif font-light mb-8 tracking-wide no-print'>Order Details</h2>
+            <h2 className='text-xl sm:text-3xl font-serif font-light mb-6 sm:mb-8 tracking-wide no-print'>Order Details</h2>
             
             {!orderDetails ? (<p className="text-center text-stone-400 text-xs">No Order details found</p>) : (
-                <div className='p-8 sm:p-12 rounded-3xl border border-stone-200/80 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm printable-receipt'>
+                <div className='p-5 sm:p-8 lg:p-12 rounded-3xl border border-stone-200/80 dark:border-stone-800 bg-white dark:bg-stone-900 shadow-sm printable-receipt'>
                     
                     {/* Dedicated Store Header for Print view */}
                     <div className='hidden print:block text-center border-b border-stone-200 pb-6 mb-8'>
@@ -127,14 +127,14 @@ const OrderDetailsPage = () => {
 
                     <div className='flex flex-col sm:flex-row justify-between mb-8 pb-6 border-b border-stone-100 dark:border-stone-800 print:border-stone-200'>
                         <div>
-                            <h3 className='text-lg md:text-xl font-serif font-light text-stone-900 dark:text-stone-100 print:text-stone-900 tracking-wide'>
+                            <h3 className='text-base sm:text-xl font-serif font-light text-stone-900 dark:text-stone-100 print:text-stone-900 tracking-wide break-words'>
                                 Order ID: #{orderDetails._id}
                             </h3>
                             <p className='text-stone-400 dark:text-stone-500 print:text-stone-500 text-xs mt-1 font-light'>
                                 {new Date(orderDetails.createdAt).toLocaleString()}
                             </p>
                         </div>
-                        <div className="flex flex-col items-start sm:items-end mt-4 sm:mt-0 gap-2 no-print">
+                        <div className="flex flex-wrap sm:flex-col items-start sm:items-end mt-4 sm:mt-0 gap-2 no-print">
                             <span className={`${orderDetails.isPaid ? "bg-emerald-50 dark:bg-emerald-950/50 text-emerald-700 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-800" : "bg-amber-50 dark:bg-amber-950/50 text-amber-700 dark:text-amber-400 border border-amber-200 dark:border-amber-800"} px-3 py-1 rounded-full text-[11px] font-medium uppercase tracking-wider`}>
                                 {orderDetails.isPaid ? "Paid / Approved" : "Payment Pending"}
                             </span>
@@ -146,19 +146,19 @@ const OrderDetailsPage = () => {
                     </div>
 
                     {/* Visual Order Tracking Timeline Stepper */}
-                    <div className="mb-10 p-6 sm:p-8 bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200/80 dark:border-stone-800 no-print">
-                        <h4 className="font-serif font-light text-xs uppercase tracking-[0.2em] text-stone-400 mb-8 text-center sm:text-left">
+                    <div className="mb-8 sm:mb-10 p-4 sm:p-8 bg-stone-50 dark:bg-stone-950 rounded-2xl border border-stone-200/80 dark:border-stone-800 no-print">
+                        <h4 className="font-serif font-light text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] text-stone-400 mb-6 sm:mb-8 text-center sm:text-left">
                             Fulfillment Pipeline Timeline
                         </h4>
 
-                        <div className="relative flex items-center justify-between max-w-2xl mx-auto px-4 sm:px-8">
+                        <div className="relative flex items-center justify-between max-w-2xl mx-auto px-2 sm:px-8">
                             {/* Connecting Progress Lines */}
-                            <div className="absolute top-5 left-12 right-12 h-0.5 bg-stone-200 dark:bg-stone-800 -translate-y-1/2 z-0" />
+                            <div className="absolute top-4 sm:top-5 left-8 sm:left-12 right-8 sm:right-12 h-0.5 bg-stone-200 dark:bg-stone-800 -translate-y-1/2 z-0" />
                             <div 
-                                className="absolute top-5 left-12 h-0.5 bg-stone-950 dark:bg-stone-100 -translate-y-1/2 z-0 transition-all duration-700 ease-out"
+                                className="absolute top-4 sm:top-5 left-8 sm:left-12 h-0.5 bg-stone-950 dark:bg-stone-100 -translate-y-1/2 z-0 transition-all duration-700 ease-out"
                                 style={{
                                     width: orderDetails.status === "Delivered" 
-                                        ? "calc(100% - 6rem)" 
+                                        ? "calc(100% - 4rem)" 
                                         : orderDetails.status === "Shipped" 
                                         ? "50%" 
                                         : "0%"
@@ -167,67 +167,67 @@ const OrderDetailsPage = () => {
 
                             {/* Step 1: Processing */}
                             <div className="relative z-10 flex flex-col items-center">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-500 ${
+                                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-500 ${
                                     orderDetails.status === "Processing" || orderDetails.status === "Shipped" || orderDetails.status === "Delivered"
                                         ? "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 shadow-md ring-4 ring-stone-950/10 dark:ring-stone-100/10"
                                         : "bg-stone-200 dark:bg-stone-800 text-stone-500 dark:text-stone-400"
                                 }`}>
                                     {orderDetails.status === "Shipped" || orderDetails.status === "Delivered" ? (
-                                        <FiCheck className="w-5 h-5 stroke-[2.5]" />
+                                        <FiCheck className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
                                     ) : (
-                                        <FiPackage className="w-5 h-5" />
+                                        <FiPackage className="w-4 h-4 sm:w-5 sm:h-5" />
                                     )}
                                 </div>
-                                <span className="mt-3 text-xs font-medium uppercase tracking-wider text-stone-900 dark:text-stone-100">
+                                <span className="mt-2.5 sm:mt-3 text-[10px] sm:text-xs font-medium uppercase tracking-wider text-stone-900 dark:text-stone-100">
                                     Processing
                                 </span>
-                                <span className="text-[10px] text-stone-400 font-light mt-0.5">
+                                <span className="text-[9px] sm:text-[10px] text-stone-400 font-light mt-0.5 text-center">
                                     {new Date(orderDetails.createdAt).toLocaleDateString()}
                                 </span>
                             </div>
 
                             {/* Step 2: Shipped */}
                             <div className="relative z-10 flex flex-col items-center">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-500 ${
+                                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-500 ${
                                     orderDetails.status === "Shipped" || orderDetails.status === "Delivered"
                                         ? "bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 shadow-md ring-4 ring-stone-950/10 dark:ring-stone-100/10"
                                         : "bg-stone-200 dark:bg-stone-800 text-stone-400 dark:text-stone-500"
                                 }`}>
                                     {orderDetails.status === "Delivered" ? (
-                                        <FiCheck className="w-5 h-5 stroke-[2.5]" />
+                                        <FiCheck className="w-4 h-4 sm:w-5 sm:h-5 stroke-[2.5]" />
                                     ) : (
-                                        <FiTruck className="w-5 h-5" />
+                                        <FiTruck className="w-4 h-4 sm:w-5 sm:h-5" />
                                     )}
                                 </div>
-                                <span className={`mt-3 text-xs font-medium uppercase tracking-wider ${
+                                <span className={`mt-2.5 sm:mt-3 text-[10px] sm:text-xs font-medium uppercase tracking-wider ${
                                     orderDetails.status === "Shipped" || orderDetails.status === "Delivered"
                                         ? "text-stone-900 dark:text-stone-100"
                                         : "text-stone-400 dark:text-stone-500"
                                 }`}>
                                     Shipped
                                 </span>
-                                <span className="text-[10px] text-stone-400 font-light mt-0.5">
+                                <span className="text-[9px] sm:text-[10px] text-stone-400 font-light mt-0.5 text-center">
                                     {orderDetails.shippedAt ? new Date(orderDetails.shippedAt).toLocaleDateString() : (orderDetails.status === "Shipped" || orderDetails.status === "Delivered" ? "In Transit" : "Pending")}
                                 </span>
                             </div>
 
                             {/* Step 3: Delivered */}
                             <div className="relative z-10 flex flex-col items-center">
-                                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-500 ${
+                                <div className={`w-8 h-8 sm:w-10 sm:h-10 rounded-full flex items-center justify-center text-xs font-semibold transition-all duration-500 ${
                                     orderDetails.status === "Delivered"
                                         ? "bg-emerald-600 dark:bg-emerald-400 text-white dark:text-stone-950 shadow-md ring-4 ring-emerald-500/20"
                                         : "bg-stone-200 dark:bg-stone-800 text-stone-400 dark:text-stone-500"
                                 }`}>
-                                    <FiCheckCircle className="w-5 h-5" />
+                                    <FiCheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
                                 </div>
-                                <span className={`mt-3 text-xs font-medium uppercase tracking-wider ${
+                                <span className={`mt-2.5 sm:mt-3 text-[10px] sm:text-xs font-medium uppercase tracking-wider ${
                                     orderDetails.status === "Delivered"
                                         ? "text-emerald-700 dark:text-emerald-400"
                                         : "text-stone-400 dark:text-stone-500"
                                 }`}>
                                     Delivered
                                 </span>
-                                <span className="text-[10px] text-stone-400 font-light mt-0.5">
+                                <span className="text-[9px] sm:text-[10px] text-stone-400 font-light mt-0.5 text-center">
                                     {orderDetails.deliveredAt ? new Date(orderDetails.deliveredAt).toLocaleDateString() : (orderDetails.status === "Delivered" ? "Completed" : "Expected")}
                                 </span>
                             </div>
@@ -235,20 +235,20 @@ const OrderDetailsPage = () => {
                     </div>
 
 
-                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-8 mb-8 text-xs font-light'>
-                        <div className='bg-stone-50 dark:bg-stone-950 p-5 rounded-2xl border border-stone-200/80 dark:border-stone-800'>
+                    <div className='grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 sm:gap-8 mb-8 text-xs font-light'>
+                        <div className='bg-stone-50 dark:bg-stone-950 p-4 sm:p-5 rounded-2xl border border-stone-200/80 dark:border-stone-800'>
                             <h4 className='font-medium text-[10px] uppercase tracking-[0.2em] text-stone-400 mb-2.5'>Payment Info</h4>
                             <p className='text-stone-600 dark:text-stone-300 print:text-stone-600 mb-1'>Method: {orderDetails.paymentMethod}</p>
                             <p className='text-stone-600 dark:text-stone-300 print:text-stone-600'>Status: {orderDetails.isPaid ? "Paid" : "Unpaid"}</p>
                         </div>
-                        <div className='bg-stone-50 dark:bg-stone-950 p-5 rounded-2xl border border-stone-200/80 dark:border-stone-800'>
+                        <div className='bg-stone-50 dark:bg-stone-950 p-4 sm:p-5 rounded-2xl border border-stone-200/80 dark:border-stone-800'>
                             <h4 className='font-medium text-[10px] uppercase tracking-[0.2em] text-stone-400 mb-2.5'>Shipping Info</h4>
                             <p className='text-stone-600 dark:text-stone-300 print:text-stone-600 mb-1 font-medium'>Recipient: {orderDetails.shippingAddress.firstName} {orderDetails.shippingAddress.lastName}</p>
                             <p className='text-stone-600 dark:text-stone-300 print:text-stone-600'>Address: {orderDetails.shippingAddress.address}, {orderDetails.shippingAddress.city}, {orderDetails.shippingAddress.country}</p>
                         </div>
                     </div>
 
-                    <div className="overflow-x-auto">
+                    <div className="overflow-x-auto scrollbar-none">
                         <h4 className='font-serif font-light text-base mb-4 tracking-wide text-stone-900 dark:text-stone-100 print:text-stone-900'>Products</h4>
                         <table className='min-w-full text-stone-600 dark:text-stone-400 print:text-stone-600 text-xs whitespace-nowrap'>
                             <thead className='bg-stone-50 dark:bg-stone-950/60 print:bg-stone-100 text-[10px] uppercase text-stone-400 dark:text-stone-500 print:text-stone-600 tracking-[0.2em] font-medium'>

@@ -55,36 +55,36 @@ const Profile = () => {
   };
 
   return (
-    <div className='min-h-screen bg-stone-50/50 dark:bg-stone-950 py-12 px-6 lg:px-8 text-stone-900 dark:text-stone-100 transition-colors'>
+    <div className='min-h-screen bg-stone-50/50 dark:bg-stone-950 py-8 sm:py-12 px-4 sm:px-6 lg:px-8 text-stone-900 dark:text-stone-100 transition-colors'>
       <div className='max-w-7xl mx-auto'>
         
         {/* Navigation Header */}
-        <div className='mb-8 flex justify-between items-center'>
+        <div className='mb-6 sm:mb-8 flex justify-between items-center'>
           <Link 
             to="/" 
-            className='inline-flex items-center text-xs uppercase tracking-[0.2em] font-medium text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-white transition-colors cursor-pointer'
+            className='inline-flex items-center text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium text-stone-600 dark:text-stone-400 hover:text-stone-950 dark:hover:text-white transition-colors cursor-pointer'
           >
             <FiArrowLeft className='mr-2 text-sm' /> Back to Store
           </Link>
 
           <Link
             to="/wishlist"
-            className="inline-flex items-center text-xs uppercase tracking-[0.2em] font-medium text-rose-600 dark:text-rose-400 hover:underline"
+            className="inline-flex items-center text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium text-rose-600 dark:text-rose-400 hover:underline"
           >
             <FiHeart className="mr-2" /> My Wishlist ({userInfo?.wishlist?.length || 0})
           </Link>
         </div>
 
-        <div className='grid grid-cols-1 lg:grid-cols-4 gap-8 items-start'>
+        <div className='grid grid-cols-1 lg:grid-cols-4 gap-6 sm:gap-8 items-start'>
           
           {/* User Side Panel */}
-          <div className='lg:col-span-1 bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 rounded-3xl p-8 shadow-sm space-y-6'>
+          <div className='lg:col-span-1 bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 rounded-3xl p-6 sm:p-8 shadow-sm space-y-6'>
             <div className='flex flex-col items-center text-center'>
-              <div className='w-20 h-20 bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 rounded-full flex items-center justify-center text-2xl font-serif font-light mb-4 shadow-md'>
+              <div className='w-16 h-16 sm:w-20 sm:h-20 bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 rounded-full flex items-center justify-center text-xl sm:text-2xl font-serif font-light mb-4 shadow-md'>
                 {userInfo?.name ? userInfo.name.charAt(0).toUpperCase() : "U"}
               </div>
               
-              <h1 className='text-xl font-serif font-light tracking-wide text-stone-950 dark:text-stone-100'>
+              <h1 className='text-lg sm:text-xl font-serif font-light tracking-wide text-stone-950 dark:text-stone-100 break-words'>
                 {userInfo ? userInfo.name : "Member"}
               </h1>
               
@@ -118,7 +118,7 @@ const Profile = () => {
             <div className="pt-4 border-t border-stone-100 dark:border-stone-800">
               <button 
                 onClick={handleLogout}
-                className='w-full border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 py-3.5 px-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-950 hover:text-white dark:hover:bg-stone-100 dark:hover:text-stone-950 hover:border-stone-950 transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center'
+                className='w-full border border-stone-300 dark:border-stone-700 text-stone-700 dark:text-stone-300 py-3 sm:py-3.5 px-4 rounded-xl text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium hover:bg-stone-950 hover:text-white dark:hover:bg-stone-100 dark:hover:text-stone-950 hover:border-stone-950 transition-all duration-200 cursor-pointer shadow-sm flex items-center justify-center'
               >
                 <FiLogOut className="mr-2" /> Logout
               </button>
@@ -126,12 +126,12 @@ const Profile = () => {
           </div>
 
           {/* Main Account Details & History Panel */}
-          <div className='lg:col-span-3 space-y-8'>
+          <div className='lg:col-span-3 space-y-6 sm:space-y-8'>
             
             {/* Shipping Addresses Summary */}
-            <div className="bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 rounded-3xl p-8 shadow-sm">
-              <div className="flex justify-between items-center mb-6">
-                <h2 className="text-xl font-serif font-light tracking-wide text-stone-900 dark:text-stone-100 flex items-center">
+            <div className="bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 rounded-3xl p-5 sm:p-8 shadow-sm">
+              <div className="flex justify-between items-center mb-5 sm:mb-6">
+                <h2 className="text-lg sm:text-xl font-serif font-light tracking-wide text-stone-900 dark:text-stone-100 flex items-center">
                   <FiMapPin className="mr-2.5 text-stone-400 text-lg" /> Saved Shipping Destination
                 </h2>
               </div>
@@ -139,7 +139,7 @@ const Profile = () => {
               {userInfo?.shippingAddresses && userInfo.shippingAddresses.length > 0 ? (
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   {userInfo.shippingAddresses.map((addr, idx) => (
-                    <div key={idx} className="p-5 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 text-xs font-light space-y-1">
+                    <div key={idx} className="p-4 sm:p-5 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 text-xs font-light space-y-1">
                       <p className="font-medium text-stone-900 dark:text-stone-100">{addr.firstName} {addr.lastName}</p>
                       <p className="text-stone-600 dark:text-stone-400">{addr.address}</p>
                       <p className="text-stone-600 dark:text-stone-400">{addr.city}, {addr.country} - {addr.postalCode}</p>
@@ -148,7 +148,7 @@ const Profile = () => {
                   ))}
                 </div>
               ) : (
-                <div className="p-6 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 text-center">
+                <div className="p-5 sm:p-6 rounded-2xl bg-stone-50 dark:bg-stone-950 border border-stone-200/80 dark:border-stone-800 text-center">
                   <p className="text-stone-400 text-xs uppercase tracking-wider font-light">
                     No default shipping address saved. Your address will be saved automatically upon your first checkout!
                   </p>
@@ -157,11 +157,11 @@ const Profile = () => {
             </div>
 
             {/* Recent Purchases Table */}
-            <div className='bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 rounded-3xl p-8 shadow-sm'>
-              <div className='flex justify-between items-center mb-8'>
-                <h2 className='text-xl font-serif font-light tracking-wide text-stone-900 dark:text-stone-100'>Order History</h2>
+            <div className='bg-white dark:bg-stone-900 border border-stone-200/80 dark:border-stone-800 rounded-3xl p-5 sm:p-8 shadow-sm'>
+              <div className='flex justify-between items-center mb-6 sm:mb-8'>
+                <h2 className='text-lg sm:text-xl font-serif font-light tracking-wide text-stone-900 dark:text-stone-100'>Order History</h2>
                 {orders.length > 0 && (
-                  <Link to="/my-orders" className='text-xs uppercase tracking-[0.2em] font-medium text-stone-900 dark:text-stone-100 hover:underline'>
+                  <Link to="/my-orders" className='text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium text-stone-900 dark:text-stone-100 hover:underline'>
                     View All ({orders.length}) &rarr;
                   </Link>
                 )}
@@ -172,7 +172,7 @@ const Profile = () => {
               ) : orders.length === 0 ? (
                 <p className="text-stone-400 text-xs py-12 text-center uppercase tracking-[0.2em] font-light">You haven't placed any orders yet.</p>
               ) : (
-                <div className='w-full overflow-x-auto'>
+                <div className='w-full overflow-x-auto scrollbar-none'>
                   <table className='min-w-full text-left text-stone-600 dark:text-stone-400 text-xs sm:text-sm whitespace-nowrap'>
                     <thead className='bg-stone-50 dark:bg-stone-950/60 text-[10px] uppercase text-stone-400 dark:text-stone-500 font-medium tracking-[0.2em] border-b border-stone-200 dark:border-stone-800'>
                       <tr>

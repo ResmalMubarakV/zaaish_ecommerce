@@ -57,21 +57,21 @@ const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
     return (
         <>
             {/* Drawer Container */}
-            <div className={`fixed top-0 right-0 w-4/5 sm:w-1/2 md:w-[32rem] h-full bg-white dark:bg-stone-900 shadow-2xl transform 
+            <div className={`fixed top-0 right-0 w-[min(100vw,26rem)] sm:w-[min(30rem,85vw)] md:w-[32rem] h-full bg-white dark:bg-stone-900 shadow-2xl transform 
                 transition-transform duration-300 ease-out flex flex-col z-50 text-stone-900 dark:text-stone-100 ${drawerOpen ? "translate-x-0" : "translate-x-full"}`}
             >
-                <div className="flex justify-between items-center p-6 border-b border-stone-100 dark:border-stone-800">
-                    <h2 className="text-sm font-serif font-medium uppercase tracking-[0.25em] text-stone-900 dark:text-stone-100">Shopping Cart</h2>
-                    <button onClick={toggleCartDrawer} className="text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white cursor-pointer p-1 transition-transform hover:scale-110">
-                        <IoMdClose className="h-6 w-6 stroke-[1.5]" />
+                <div className="flex justify-between items-center p-4 sm:p-6 border-b border-stone-100 dark:border-stone-800">
+                    <h2 className="text-xs sm:text-sm font-serif font-medium uppercase tracking-[0.2em] sm:tracking-[0.25em] text-stone-900 dark:text-stone-100">Shopping Cart</h2>
+                    <button onClick={toggleCartDrawer} className="text-stone-500 dark:text-stone-400 hover:text-stone-900 dark:hover:text-white cursor-pointer p-1 transition-transform hover:scale-110" aria-label="Close cart">
+                        <IoMdClose className="h-5 w-5 sm:h-6 sm:w-6 stroke-[1.5]" />
                     </button>
                 </div>
 
                 {/* Free Shipping Tracker */}
                 {cart && cart.length > 0 && (
-                    <div className="px-6 py-4 bg-stone-50 dark:bg-stone-900/60 border-b border-stone-100 dark:border-stone-800 text-xs">
-                        <div className="flex justify-between font-medium mb-1.5">
-                            <span className="text-stone-600 dark:text-stone-400">
+                    <div className="px-4 sm:px-6 py-3 sm:py-4 bg-stone-50 dark:bg-stone-900/60 border-b border-stone-100 dark:border-stone-800 text-xs">
+                        <div className="flex justify-between font-medium mb-1.5 text-[11px] sm:text-xs">
+                            <span className="text-stone-600 dark:text-stone-400 leading-snug">
                                 {totalPrice >= 3000 
                                     ? "🎉 You've unlocked FREE shipping!" 
                                     : `Spend ₹${(3000 - totalPrice).toLocaleString(undefined, {minimumFractionDigits: 2})} more for FREE shipping!`
@@ -87,31 +87,31 @@ const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
                     </div>
                 )}
 
-                <div className="grow p-6 sm:p-8 overflow-y-auto">
+                <div className="grow p-4 sm:p-6 md:p-8 overflow-y-auto">
                     {loading ? (
                         <p className="text-stone-400 text-xs py-16 text-center uppercase tracking-[0.2em] font-light">Loading cart items...</p>
                     ) : (!cart || cart.length === 0) ? (
-                        <div className="text-center py-16 px-4">
+                        <div className="text-center py-12 sm:py-16 px-4">
                             <p className="text-stone-400 text-xs uppercase tracking-[0.2em] font-light mb-6">Your shopping cart is empty.</p>
                             <div className="flex flex-col gap-2.5 max-w-xs mx-auto">
                                 <Link 
                                     to="/collections/all" 
                                     onClick={toggleCartDrawer}
-                                    className="bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 py-3.5 rounded-xl text-xs uppercase tracking-[0.15em] font-medium hover:bg-stone-850 dark:hover:bg-stone-200 transition-all cursor-pointer text-center shadow-sm"
+                                    className="bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 py-3 sm:py-3.5 rounded-xl text-xs uppercase tracking-[0.15em] font-medium hover:bg-stone-850 dark:hover:bg-stone-200 transition-all cursor-pointer text-center shadow-sm"
                                 >
                                     Shop New Arrivals
                                 </Link>
                                 <Link 
                                     to="/collections/men" 
                                     onClick={toggleCartDrawer}
-                                    className="border border-stone-200 dark:border-stone-800 text-stone-800 dark:text-stone-200 py-3 rounded-xl text-xs uppercase tracking-[0.15em] font-medium hover:bg-stone-50 dark:hover:bg-stone-900 transition-all cursor-pointer text-center"
+                                    className="border border-stone-200 dark:border-stone-800 text-stone-800 dark:text-stone-200 py-2.5 sm:py-3 rounded-xl text-xs uppercase tracking-[0.15em] font-medium hover:bg-stone-50 dark:hover:bg-stone-900 transition-all cursor-pointer text-center"
                                 >
                                     Shop Men
                                 </Link>
                                 <Link 
                                     to="/collections/women" 
                                     onClick={toggleCartDrawer}
-                                    className="border border-stone-200 dark:border-stone-800 text-stone-800 dark:text-stone-200 py-3 rounded-xl text-xs uppercase tracking-[0.15em] font-medium hover:bg-stone-50 dark:hover:bg-stone-900 transition-all cursor-pointer text-center"
+                                    className="border border-stone-200 dark:border-stone-800 text-stone-800 dark:text-stone-200 py-2.5 sm:py-3 rounded-xl text-xs uppercase tracking-[0.15em] font-medium hover:bg-stone-50 dark:hover:bg-stone-900 transition-all cursor-pointer text-center"
                                 >
                                     Shop Women
                                 </Link>
@@ -123,14 +123,14 @@ const CartDrawer = ({ drawerOpen, toggleCartDrawer }) => {
                 </div>
 
                 {cart && cart.length > 0 && (
-                    <div className="p-6 sm:p-8 bg-stone-50/80 dark:bg-stone-950 border-t border-stone-100 dark:border-stone-800 sticky bottom-0">
-                        <div className="flex justify-between items-center mb-6 font-serif font-light text-base tracking-wide text-stone-900 dark:text-stone-100">
-                            <span className="text-xs uppercase tracking-[0.2em] text-stone-500 font-medium">Subtotal</span>
+                    <div className="p-4 sm:p-6 md:p-8 bg-stone-50/80 dark:bg-stone-950 border-t border-stone-100 dark:border-stone-800 sticky bottom-0">
+                        <div className="flex justify-between items-center mb-4 sm:mb-6 font-serif font-light text-sm sm:text-base tracking-wide text-stone-900 dark:text-stone-100">
+                            <span className="text-[11px] sm:text-xs uppercase tracking-[0.2em] text-stone-500 font-medium">Subtotal</span>
                             <span className="font-medium">₹{totalPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</span>
                         </div>
                         <button 
                             onClick={handleCheckout} 
-                            className="w-full bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 py-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition-all cursor-pointer shadow-sm"
+                            className="w-full bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 py-3.5 sm:py-4 rounded-xl text-[11px] sm:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition-all cursor-pointer shadow-sm"
                         >
                             Proceed to Checkout
                         </button>
