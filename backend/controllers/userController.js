@@ -35,7 +35,7 @@ const registerUser = async (req, res, next) => {
 
         const payload = { id: user._id, role: user.role };
 
-        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "40h" }, (err, token) => {
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "30d" }, (err, token) => {
             if (err) throw err;
 
             res.status(201).json({
@@ -85,7 +85,7 @@ const loginUser = async (req, res, next) => {
 
         const payload = { id: user._id, role: user.role };
 
-        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "40h" }, (err, token) => {
+        jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: "30d" }, (err, token) => {
             if (err) throw err;
 
             res.json({

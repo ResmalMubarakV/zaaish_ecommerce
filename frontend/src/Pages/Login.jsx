@@ -1,67 +1,147 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import login from "../assets/login.webp"
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { toast } from 'sonner';
 
 const Login = () => {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
 
-    const handleSubmit = async (e) => {
-      e.preventDefault();
-      try {
-          const response = await fetch("/api/users/login", {
-              method: "POST",
-              headers: { "Content-Type": "application/json" },
-              body: JSON.stringify({ email, password })
-          });
-          const data = await response.json();
-          
-          if (response.ok) {
-              localStorage.setItem("token", data.token);
-              localStorage.setItem("userInfo", JSON.stringify(data.user));
-              
-              const pendingItem = sessionStorage.getItem("pendingCartItem");
-              if (pendingItem) {
-                  try {
-                      const itemData = JSON.parse(pendingItem);
-                      const cartResponse = await fetch('/api/cart', {
-                          method: "POST",
-                          headers: {
-                              "Content-Type": "application/json",
-                              Authorization: `Bearer ${data.token}`
-                          },
-                          body: JSON.stringify(itemData)
-                      });
+    const emailInputRef = useRef(null);
+    const passwordInputRef = useRef(null);
+    const autoSubmittedRef = useRef(false);
 
-                      if (cartResponse.ok) {
-                          sessionStorage.removeItem("pendingCartItem");
-                          window.dispatchEvent(new Event("cartUpdated"));
-                          window.dispatchEvent(new Event("wishlistUpdated"));
-                      }
-                  } catch (cartError) {
-                          console.error("Error syncing pending cart item:", cartError);
-                  }
-              }
-              
-              const isBuyNow = sessionStorage.getItem("pendingBuyNow");
-              if (isBuyNow) {
-                  sessionStorage.removeItem("pendingBuyNow");
-                  navigate("/checkout");
-              } else if (data.user.role === "admin") {
-                  navigate("/admin");
-              } else {
-                  navigate("/");
-              }
-          } else {
-              alert(data.message || "Invalid credentials");
-          }
-      } catch (error) {
-          console.error("Login error:", error);
-          alert("Server error during login");
-      }
+    const executeLogin = async (loginEmail, loginPassword) => {
+        const cleanEmail = (loginEmail || email || "").trim();
+        const cleanPassword = (loginPassword || password || "");
+
+        if (!cleanEmail || !cleanPassword || isSubmitting || autoSubmittedRef.current) {
+            return;
+        }
+
+        autoSubmittedRef.current = true;
+        setIsSubmitting(true);
+
+        try {
+            const response = await fetch("/api/users/login", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ email: cleanEmail, password: cleanPassword })
+            });
+            const data = await response.json();
+            
+            if (response.ok) {
+                localStorage.setItem("token", data.token);
+                localStorage.setItem("userInfo", JSON.stringify(data.user));
+                toast.success(`Welcome back, ${data.user.name || 'valued client'}!`);
+                
+                const pendingItem = sessionStorage.getItem("pendingCartItem");
+                if (pendingItem) {
+                    try {
+                        const itemData = JSON.parse(pendingItem);
+                        const cartResponse = await fetch('/api/cart', {
+                            method: "POST",
+                            headers: {
+                                "Content-Type": "application/json",
+                                Authorization: `Bearer ${data.token}`
+                            },
+                            body: JSON.stringify(itemData)
+                        });
+
+                        if (cartResponse.ok) {
+                            sessionStorage.removeItem("pendingCartItem");
+                            window.dispatchEvent(new Event("cartUpdated"));
+                            window.dispatchEvent(new Event("wishlistUpdated"));
+                        }
+                    } catch (cartError) {
+                        console.error("Error syncing pending cart item:", cartError);
+                    }
+                }
+                
+                const isBuyNow = sessionStorage.getItem("pendingBuyNow");
+                if (isBuyNow) {
+                    sessionStorage.removeItem("pendingBuyNow");
+                    navigate("/checkout");
+                } else if (data.user.role === "admin") {
+                    navigate("/admin");
+                } else {
+                    navigate("/");
+                }
+            } else {
+                autoSubmittedRef.current = false;
+                setIsSubmitting(false);
+                toast.error(data.message || "Invalid email or password");
+            }
+        } catch (error) {
+            console.error("Login error:", error);
+            autoSubmittedRef.current = false;
+            setIsSubmitting(false);
+            toast.error("Server error during login");
+        }
+    };
+
+    const handleSubmit = async (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        const currentEmail = email || emailInputRef.current?.value || "";
+        const currentPassword = password || passwordInputRef.current?.value || "";
+        autoSubmittedRef.current = false; // Reset to allow explicit manual submit
+        executeLogin(currentEmail, currentPassword);
+    };
+
+    // Auto-detect Google Chrome saved credentials / Autofill
+    useEffect(() => {
+        const checkAndAutoLogin = () => {
+            if (autoSubmittedRef.current || isSubmitting) return;
+
+            const domEmail = emailInputRef.current?.value || "";
+            const domPassword = passwordInputRef.current?.value || "";
+
+            if (domEmail && domPassword && domEmail.includes("@") && domPassword.length >= 6) {
+                setEmail(domEmail);
+                setPassword(domPassword);
+                executeLogin(domEmail, domPassword);
+            }
+        };
+
+        // Poll for browser autofill on initial mount and when user clicks saved account from Google
+        const interval = setInterval(checkAndAutoLogin, 250);
+        const timeout = setTimeout(() => clearInterval(interval), 6000);
+
+        return () => {
+            clearInterval(interval);
+            clearTimeout(timeout);
+        };
+    }, [isSubmitting]);
+
+    const handleEmailChange = (e) => {
+        const val = e.target.value;
+        setEmail(val);
+        const domPass = passwordInputRef.current?.value;
+        if (val && domPass && val.includes("@") && domPass.length >= 6) {
+            setPassword(domPass);
+            executeLogin(val, domPass);
+        }
+    };
+
+    const handlePasswordChange = (e) => {
+        const val = e.target.value;
+        setPassword(val);
+        const domEmail = emailInputRef.current?.value;
+        if (domEmail && val && domEmail.includes("@") && val.length >= 6) {
+            setEmail(domEmail);
+            executeLogin(domEmail, val);
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSubmit(e);
+        }
     };
 
   return (
@@ -81,25 +161,32 @@ const Login = () => {
           </p>
           
           <div className='mb-5'>
-            <label className='block text-[10px] uppercase tracking-[0.2em] font-medium mb-2 text-stone-400 dark:text-stone-500'>Email Address</label>
+            <label htmlFor="email" className='block text-[10px] uppercase tracking-[0.2em] font-medium mb-2 text-stone-400 dark:text-stone-500'>Email Address</label>
             <input 
+             ref={emailInputRef}
+             id="email"
+             name="email"
              type="email" 
              value={email} 
-             onChange={(e) => setEmail(e.target.value)}
-             onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
+             onChange={handleEmailChange}
+             onKeyDown={handleKeyDown}
+             autoComplete="username email"
              className='w-full p-3.5 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-sm font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors'
              placeholder="Enter your email address"
              required />
           </div>
           
           <div className='mb-8'>
-            <label className='block text-[10px] uppercase tracking-[0.2em] font-medium mb-2 text-stone-400 dark:text-stone-500'>Password</label>
+            <label htmlFor="password" className='block text-[10px] uppercase tracking-[0.2em] font-medium mb-2 text-stone-400 dark:text-stone-500'>Password</label>
             <div className='relative'>
               <input 
+               ref={passwordInputRef}
+               id="password"
+               name="password"
                type={showPassword ? "text" : "password"}
                value={password}
-               onChange={(e) => setPassword(e.target.value)} 
-               onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
+               onChange={handlePasswordChange} 
+               onKeyDown={handleKeyDown}
                className='w-full p-3.5 pr-12 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-sm font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors'
                placeholder="Enter your password"
                autoComplete="current-password"
@@ -110,8 +197,12 @@ const Login = () => {
             </div>
           </div>
           
-          <button type='submit' className='w-full bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 p-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition-all cursor-pointer shadow-sm'>
-            Sign In
+          <button 
+            type='submit' 
+            disabled={isSubmitting}
+            className='w-full bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 p-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition-all cursor-pointer shadow-sm disabled:opacity-50'
+          >
+            {isSubmitting ? "Signing In..." : "Sign In"}
           </button>
           
           <p className='mt-8 text-center text-xs text-stone-500 dark:text-stone-400 font-light'>

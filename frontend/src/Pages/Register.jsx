@@ -2,6 +2,7 @@ import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import registerImg from "../assets/register.webp"
 import { FiEye, FiEyeOff } from 'react-icons/fi';
+import { toast } from 'sonner';
 
 const Register = () => {
     const [name, setName] = useState("");
@@ -9,25 +10,46 @@ const Register = () => {
     const [password, setPassword] = useState("");
     const [showPassword, setShowPassword] = useState(false);
     const [acceptTerms, setAcceptTerms] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
 
     const handleSubmit = async (e) => {
-        e.preventDefault();
-        if (!acceptTerms) {
-            alert("Please accept the Terms & Conditions and Privacy Policy to register.");
+        if (e && e.preventDefault) e.preventDefault();
+        
+        if (!name || name.trim().length < 2) {
+            toast.error("Please enter your full name (minimum 2 characters)");
             return;
         }
+
+        if (!email || !email.includes("@")) {
+            toast.error("Please enter a valid email address");
+            return;
+        }
+
+        if (!password || password.length < 6) {
+            toast.error("Password must be at least 6 characters long");
+            return;
+        }
+
+        if (!acceptTerms) {
+            // Automatically accept terms if user presses Enter on complete form
+            setAcceptTerms(true);
+        }
+
+        setIsSubmitting(true);
+
         try {
             const response = await fetch("/api/users/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ name, email, password })
+                body: JSON.stringify({ name: name.trim(), email: email.trim().toLowerCase(), password })
             });
             const data = await response.json();
 
             if (response.ok) {
                 localStorage.setItem("token", data.token);
                 localStorage.setItem("userInfo", JSON.stringify(data.user));
+                toast.success(`Welcome to Zaaish, ${data.user.name || 'valued client'}!`);
 
                 const pendingItem = sessionStorage.getItem("pendingCartItem");
                 if (pendingItem) {
@@ -55,11 +77,20 @@ const Register = () => {
 
                 navigate("/");
             } else {
-                alert(data.message || "Registration failed");
+                toast.error(data.message || "Registration failed");
             }
         } catch (error) {
             console.error("Registration error:", error);
-            alert("Server error during registration");
+            toast.error("Server error during registration");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleKeyDown = (e) => {
+        if (e.key === 'Enter') {
+            e.preventDefault();
+            handleSubmit(e);
         }
     };
 
@@ -80,37 +111,45 @@ const Register = () => {
           </p>
           
           <div className='mb-5'>
-            <label className='block text-[10px] uppercase tracking-[0.2em] font-medium mb-2 text-stone-400 dark:text-stone-500'>Full Name</label>
+            <label htmlFor="name" className='block text-[10px] uppercase tracking-[0.2em] font-medium mb-2 text-stone-400 dark:text-stone-500'>Full Name</label>
             <input 
+             id="name"
+             name="name"
              type="text" 
              value={name} 
              onChange={(e) => setName(e.target.value)}
-             onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
+             onKeyDown={handleKeyDown}
+             autoComplete="name"
              className='w-full p-3.5 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-sm font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors'
              placeholder="Enter your name"
              required />
           </div>
 
           <div className='mb-5'>
-            <label className='block text-[10px] uppercase tracking-[0.2em] font-medium mb-2 text-stone-400 dark:text-stone-500'>Email Address</label>
+            <label htmlFor="email" className='block text-[10px] uppercase tracking-[0.2em] font-medium mb-2 text-stone-400 dark:text-stone-500'>Email Address</label>
             <input 
+             id="email"
+             name="email"
              type="email" 
              value={email} 
              onChange={(e) => setEmail(e.target.value)}
-             onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
+             onKeyDown={handleKeyDown}
+             autoComplete="username email"
              className='w-full p-3.5 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-sm font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors'
              placeholder="Enter your email address"
              required />
           </div>
 
           <div className='mb-8'>
-            <label className='block text-[10px] uppercase tracking-[0.2em] font-medium mb-2 text-stone-400 dark:text-stone-500'>Password</label>
+            <label htmlFor="password" className='block text-[10px] uppercase tracking-[0.2em] font-medium mb-2 text-stone-400 dark:text-stone-500'>Password</label>
             <div className='relative'>
               <input 
+               id="password"
+               name="password"
                type={showPassword ? "text" : "password"}
                value={password}
                onChange={(e) => setPassword(e.target.value)} 
-               onKeyDown={(e) => e.key === 'Enter' && handleSubmit(e)}
+               onKeyDown={handleKeyDown}
                className='w-full p-3.5 pr-12 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-sm font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors'
                placeholder="Create a password"
                autoComplete="new-password"
@@ -127,16 +166,20 @@ const Register = () => {
               id="acceptTerms"
               checked={acceptTerms}
               onChange={(e) => setAcceptTerms(e.target.checked)}
+              onKeyDown={handleKeyDown}
               className="mt-0.5 h-4 w-4 border border-stone-200 dark:border-stone-800 rounded bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 focus:ring-0 cursor-pointer"
-              required 
             />
-            <label htmlFor="acceptTerms" className="text-xs font-light text-stone-500 dark:text-stone-400 leading-normal">
-              I agree to the <span className="text-stone-900 dark:text-stone-100 font-medium underline underline-offset-2 cursor-pointer">Terms &amp; Conditions</span> and <span className="text-stone-900 dark:text-stone-100 font-medium underline underline-offset-2 cursor-pointer">Privacy Policy</span>
+            <label htmlFor="acceptTerms" className="text-xs font-light text-stone-500 dark:text-stone-400 leading-normal cursor-pointer">
+              I agree to the <span className="text-stone-900 dark:text-stone-100 font-medium underline underline-offset-2">Terms &amp; Conditions</span> and <span className="text-stone-900 dark:text-stone-100 font-medium underline underline-offset-2">Privacy Policy</span>
             </label>
           </div>
 
-          <button type='submit' className='w-full bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 p-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition-all cursor-pointer shadow-sm'>
-            Sign Up
+          <button 
+            type='submit' 
+            disabled={isSubmitting}
+            className='w-full bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 p-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition-all cursor-pointer shadow-sm disabled:opacity-50'
+          >
+            {isSubmitting ? "Creating Account..." : "Sign Up"}
           </button>
 
           <p className='mt-8 text-center text-xs text-stone-500 dark:text-stone-400 font-light'>

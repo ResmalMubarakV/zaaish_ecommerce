@@ -24,6 +24,7 @@ const ProductManagement = lazy(() => import("./components/Admin/ProductManagemen
 const EditProductPage = lazy(() => import("./components/Admin/EditProductPage"));
 const AddProductPage = lazy(() => import("./components/Admin/AddProductPage"));
 const OrderManagement = lazy(() => import("./components/Admin/OrderManagement"));
+const CouponManagement = lazy(() => import("./components/Admin/CouponManagement"));
 const AdminLogin = lazy(() => import("./Pages/AdminLogin"));
 
 const LoadingSpinner = () => (
@@ -65,6 +66,7 @@ const App = () => {
               <Route path="products" element={<ProductManagement />} />
               <Route path="products/new" element={<AddProductPage />} />
               <Route path="products/:id/edit" element={<EditProductPage />} />
+              <Route path="coupons" element={<CouponManagement />} />
               <Route path="orders" element={<OrderManagement />} />
             </Route>
           </Routes>

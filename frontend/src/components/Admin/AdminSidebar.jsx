@@ -1,5 +1,5 @@
 import React from 'react';
-import { FiHome, FiBox, FiShoppingBag, FiUsers, FiExternalLink, FiLogOut } from 'react-icons/fi';
+import { FiHome, FiBox, FiShoppingBag, FiUsers, FiTag, FiExternalLink, FiLogOut } from 'react-icons/fi';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
 
 const AdminSidebar = () => {
@@ -15,6 +15,7 @@ const AdminSidebar = () => {
         { path: "/admin", name: "Dashboard", icon: FiHome, end: true },
         { path: "/admin/orders", name: "Orders & COD", icon: FiShoppingBag, end: false },
         { path: "/admin/products", name: "Products Catalog", icon: FiBox, end: false },
+        { path: "/admin/coupons", name: "Promo & Coupons", icon: FiTag, end: false },
         { path: "/admin/users", name: "Customer Accounts", icon: FiUsers, end: false },
     ];
 

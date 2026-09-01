@@ -39,6 +39,12 @@ const Checkout = () => {
     const [discount, setDiscount] = useState(0);
     const [promoError, setPromoError] = useState("");
     const [appliedCode, setAppliedCode] = useState("");
+    const [appliedMessage, setAppliedMessage] = useState("");
+    const [activeOffers, setActiveOffers] = useState([
+        { code: "ZAAISH10", discountType: "percentage", discountValue: 10 },
+        { code: "WELCOME10", discountType: "percentage", discountValue: 10 }
+    ]);
+    const [isValidatingPromo, setIsValidatingPromo] = useState(false);
 
     // Payment Methods: "cod" | "paypal"
     const [paymentMethod, setPaymentMethod] = useState("cod");
@@ -51,19 +57,54 @@ const Checkout = () => {
     const codFee = (paymentMethod === "cod" && isIndia) ? 60 : 0;
     const finalTotal = Math.max(0, cart.totalPrice - discount + codFee);
 
-    const handleApplyPromo = (e) => {
-        e.preventDefault();
-        const code = promoCode.trim().toUpperCase();
-        if (code === "WELCOME10" || code === "ZAAISH10" || code === "LUXURY") {
-            const discountAmount = cart.totalPrice * 0.1; // 10% off
-            setDiscount(discountAmount);
-            setAppliedCode(code);
-            setPromoError("");
-            toast.success(`Promo code ${code} applied! 10% discount subtracted.`);
-        } else {
-            setPromoError("Invalid promo code");
-            toast.error("Invalid promo code");
+    const handleApplyPromo = async (codeToApply) => {
+        const targetCode = typeof codeToApply === "string" ? codeToApply.trim().toUpperCase() : promoCode.trim().toUpperCase();
+        if (!targetCode) {
+            setPromoError("Please enter a promo code");
+            return;
         }
+
+        try {
+            setIsValidatingPromo(true);
+            setPromoError("");
+
+            const res = await fetch("/api/coupons/validate", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    code: targetCode,
+                    orderAmount: cart.totalPrice
+                })
+            });
+
+            const data = await res.json();
+            if (res.ok && data.valid) {
+                setDiscount(data.discountAmount);
+                setAppliedCode(data.code);
+                setPromoCode(data.code);
+                setAppliedMessage(data.message || `Code ${data.code} applied!`);
+                setPromoError("");
+                toast.success(data.message || `Promo code ${data.code} applied!`);
+            } else {
+                setPromoError(data.message || "Invalid promo code");
+                toast.error(data.message || "Invalid promo code");
+            }
+        } catch (error) {
+            console.error("Coupon validation error:", error);
+            setPromoError("Error validating promo code");
+            toast.error("Error validating promo code");
+        } finally {
+            setIsValidatingPromo(false);
+        }
+    };
+
+    const handleRemovePromo = () => {
+        setDiscount(0);
+        setAppliedCode("");
+        setPromoCode("");
+        setAppliedMessage("");
+        setPromoError("");
+        toast.info("Promo code removed");
     };
 
     useEffect(() => {
@@ -129,7 +170,20 @@ const Checkout = () => {
             }
         };
 
+        const fetchActiveCoupons = async () => {
+            try {
+                const res = await fetch('/api/coupons/active');
+                const data = await res.json();
+                if (res.ok && data.coupons && data.coupons.length > 0) {
+                    setActiveOffers(data.coupons);
+                }
+            } catch (e) {
+                console.warn("Could not load active coupons:", e);
+            }
+        };
+
         fetchCartAndUser();
+        fetchActiveCoupons();
     }, []);
 
     const validateAddress = () => {
@@ -705,45 +759,47 @@ const Checkout = () => {
 
                     {/* Promo Code Input */}
                     <div className='border-t border-stone-100 dark:border-stone-800 pt-5 sm:pt-6 pb-5 sm:pb-6'>
-                        <div className='flex gap-2 sm:gap-3'>
+                        <form onSubmit={(e) => { e.preventDefault(); handleApplyPromo(promoCode); }} className='flex gap-2 sm:gap-3'>
                             <input 
                                 type="text" 
                                 value={promoCode} 
                                 onChange={(e) => setPromoCode(e.target.value)}
                                 placeholder="PROMO CODE"
-                                className='grow p-2.5 sm:p-3 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-xs font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors uppercase placeholder:text-stone-400 min-w-0'
+                                className='grow p-2.5 sm:p-3 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-xs font-mono font-bold tracking-wider focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors uppercase placeholder:text-stone-400 min-w-0'
                                 disabled={!!appliedCode}
                             />
-                            <button 
-                                type="button"
-                                onClick={handleApplyPromo}
-                                className='bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 px-3.5 sm:px-4 rounded-xl text-xs uppercase tracking-wider font-semibold cursor-pointer hover:bg-stone-800 dark:hover:bg-stone-200 transition-all border border-stone-950 dark:border-stone-100 disabled:opacity-50 disabled:cursor-not-allowed shrink-0'
-                                disabled={!!appliedCode || !promoCode}
-                            >
-                                Apply
-                            </button>
-                        </div>
+                            {appliedCode ? (
+                                <button 
+                                    type="button"
+                                    onClick={handleRemovePromo}
+                                    className='bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900/60 px-3.5 sm:px-4 rounded-xl text-xs uppercase tracking-wider font-semibold cursor-pointer hover:bg-rose-100 transition-all shrink-0'
+                                >
+                                    Remove
+                                </button>
+                            ) : (
+                                <button 
+                                    type="submit"
+                                    disabled={isValidatingPromo || !promoCode}
+                                    className='bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 px-3.5 sm:px-4 rounded-xl text-xs uppercase tracking-wider font-semibold cursor-pointer hover:bg-stone-800 dark:hover:bg-stone-200 transition-all border border-stone-950 dark:border-stone-100 disabled:opacity-50 disabled:cursor-not-allowed shrink-0'
+                                >
+                                    {isValidatingPromo ? "..." : "Apply"}
+                                </button>
+                            )}
+                        </form>
                         {promoError && <p className='text-rose-500 text-[10px] mt-2 font-medium tracking-wide'>{promoError}</p>}
-                        {appliedCode && <p className='text-emerald-600 dark:text-emerald-400 text-[10px] mt-2 font-medium tracking-wide'>🎉 Code {appliedCode} applied (10% discount)</p>}
+                        {appliedCode && <p className='text-emerald-600 dark:text-emerald-400 text-[10px] mt-2 font-medium tracking-wide'>{appliedMessage || `🎉 Code ${appliedCode} applied!`}</p>}
                         
-                        {!appliedCode && (
+                        {!appliedCode && activeOffers.length > 0 && (
                             <div className="mt-3 flex items-center gap-2 overflow-x-auto scrollbar-none touch-scroll py-1">
                                 <span className="text-[10px] text-stone-400 uppercase tracking-widest font-semibold shrink-0">Offers:</span>
-                                {["ZAAISH10", "WELCOME10", "LUXURY"].map((code) => (
+                                {activeOffers.map((offer) => (
                                     <button
-                                        key={code}
+                                        key={offer.code}
                                         type="button"
-                                        onClick={() => {
-                                            setPromoCode(code);
-                                            const discountAmount = cart.totalPrice * 0.1;
-                                            setDiscount(discountAmount);
-                                            setAppliedCode(code);
-                                            setPromoError("");
-                                            toast.success(`Promo code ${code} applied successfully!`);
-                                        }}
-                                        className="p-1.5 px-2.5 sm:px-3 border border-stone-200 dark:border-stone-800 bg-stone-100/50 dark:bg-stone-900 rounded-lg text-[9px] font-black uppercase tracking-wider text-stone-700 dark:text-stone-300 hover:border-stone-950 dark:hover:border-stone-100 transition cursor-pointer whitespace-nowrap"
+                                        onClick={() => handleApplyPromo(offer.code)}
+                                        className="p-1.5 px-2.5 sm:px-3 border border-stone-200 dark:border-stone-800 bg-stone-100/50 dark:bg-stone-900 rounded-lg text-[9px] font-mono font-bold uppercase tracking-wider text-stone-700 dark:text-stone-300 hover:border-stone-950 dark:hover:border-stone-100 transition cursor-pointer whitespace-nowrap"
                                     >
-                                        {code} (10%)
+                                        {offer.code} ({offer.discountType === "fixed" ? `₹${offer.discountValue} OFF` : `${offer.discountValue}% OFF`})
                                     </button>
                                 ))}
                             </div>
@@ -759,7 +815,7 @@ const Checkout = () => {
                         
                         {discount > 0 && (
                             <div className='flex justify-between items-center text-emerald-600 dark:text-emerald-400 font-medium'>
-                                <span>Discount (10%)</span>
+                                <span>Promo Discount ({appliedCode || "Applied"})</span>
                                 <span>- ₹{discount.toLocaleString(undefined, {minimumFractionDigits: 2})}</span>
                             </div>
                         )}
