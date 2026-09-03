@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import login from "../assets/login.webp"
+import login from "../assets/login.webp";
 import { FiEye, FiEyeOff } from 'react-icons/fi';
 import { toast } from 'sonner';
 
@@ -11,19 +11,18 @@ const Login = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
 
-    const emailInputRef = useRef(null);
-    const passwordInputRef = useRef(null);
-    const autoSubmittedRef = useRef(false);
+    const handleSubmit = async (e) => {
+        if (e && e.preventDefault) e.preventDefault();
 
-    const executeLogin = async (loginEmail, loginPassword) => {
-        const cleanEmail = (loginEmail || email || "").trim();
-        const cleanPassword = (loginPassword || password || "");
+        const cleanEmail = email.trim();
+        const cleanPassword = password;
 
-        if (!cleanEmail || !cleanPassword || isSubmitting || autoSubmittedRef.current) {
+        if (!cleanEmail || !cleanPassword) {
+            toast.error("Please enter both email and password");
             return;
         }
 
-        autoSubmittedRef.current = true;
+        if (isSubmitting) return;
         setIsSubmitting(true);
 
         try {
@@ -72,153 +71,87 @@ const Login = () => {
                     navigate("/");
                 }
             } else {
-                autoSubmittedRef.current = false;
-                setIsSubmitting(false);
                 toast.error(data.message || "Invalid email or password");
             }
         } catch (error) {
             console.error("Login error:", error);
-            autoSubmittedRef.current = false;
-            setIsSubmitting(false);
             toast.error("Server error during login");
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
-    const handleSubmit = async (e) => {
-        if (e && e.preventDefault) e.preventDefault();
-        const currentEmail = email || emailInputRef.current?.value || "";
-        const currentPassword = password || passwordInputRef.current?.value || "";
-        autoSubmittedRef.current = false; // Reset to allow explicit manual submit
-        executeLogin(currentEmail, currentPassword);
-    };
-
-    // Auto-detect Google Chrome saved credentials / Autofill
-    useEffect(() => {
-        const checkAndAutoLogin = () => {
-            if (autoSubmittedRef.current || isSubmitting) return;
-
-            const domEmail = emailInputRef.current?.value || "";
-            const domPassword = passwordInputRef.current?.value || "";
-
-            if (domEmail && domPassword && domEmail.includes("@") && domPassword.length >= 6) {
-                setEmail(domEmail);
-                setPassword(domPassword);
-                executeLogin(domEmail, domPassword);
-            }
-        };
-
-        // Poll for browser autofill on initial mount and when user clicks saved account from Google
-        const interval = setInterval(checkAndAutoLogin, 250);
-        const timeout = setTimeout(() => clearInterval(interval), 6000);
-
-        return () => {
-            clearInterval(interval);
-            clearTimeout(timeout);
-        };
-    }, [isSubmitting]);
-
-    const handleEmailChange = (e) => {
-        const val = e.target.value;
-        setEmail(val);
-        const domPass = passwordInputRef.current?.value;
-        if (val && domPass && val.includes("@") && domPass.length >= 6) {
-            setPassword(domPass);
-            executeLogin(val, domPass);
-        }
-    };
-
-    const handlePasswordChange = (e) => {
-        const val = e.target.value;
-        setPassword(val);
-        const domEmail = emailInputRef.current?.value;
-        if (domEmail && val && domEmail.includes("@") && val.length >= 6) {
-            setEmail(domEmail);
-            executeLogin(domEmail, val);
-        }
-    };
-
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            handleSubmit(e);
-        }
-    };
-
-  return (
-    <div className='flex min-h-[calc(100dvh-73px)] h-auto md:h-[calc(100vh-73px)] w-full bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors overflow-hidden'>
-      
-      {/* Left Side: Form Container */}
-      <div className='w-full md:w-1/2 flex flex-col justify-center items-center p-4 sm:p-8 lg:p-10 h-full overflow-y-auto'>
-        <form onSubmit={handleSubmit} className='my-6 w-full max-w-md bg-white dark:bg-stone-900 p-5 sm:p-10 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm'>
+    return (
+        <div className='flex min-h-[calc(100dvh-73px)] h-auto md:h-[calc(100vh-73px)] w-full bg-stone-50/50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 transition-colors overflow-hidden'>
           
-          <div className='flex justify-center mb-6'>
-            <h2 className='text-2xl font-serif tracking-[0.25em] uppercase text-stone-950 dark:text-stone-100 font-light'>Zaaish</h2>
-          </div>
-          
-          <h2 className='text-xl font-serif font-light text-center mb-2 tracking-wide'>Welcome Back</h2>
-          <p className='text-center mb-8 text-stone-400 dark:text-stone-500 text-[10px] uppercase tracking-[0.2em] font-medium'>
-            Please enter your details to sign in
-          </p>
-          
-          <div className='mb-5'>
-            <label htmlFor="email" className='block text-[10px] uppercase tracking-[0.2em] font-medium mb-2 text-stone-400 dark:text-stone-500'>Email Address</label>
-            <input 
-             ref={emailInputRef}
-             id="email"
-             name="email"
-             type="email" 
-             value={email} 
-             onChange={handleEmailChange}
-             onKeyDown={handleKeyDown}
-             autoComplete="username email"
-             className='w-full p-3.5 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-sm font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors'
-             placeholder="Enter your email address"
-             required />
-          </div>
-          
-          <div className='mb-8'>
-            <label htmlFor="password" className='block text-[10px] uppercase tracking-[0.2em] font-medium mb-2 text-stone-400 dark:text-stone-500'>Password</label>
-            <div className='relative'>
-              <input 
-               ref={passwordInputRef}
-               id="password"
-               name="password"
-               type={showPassword ? "text" : "password"}
-               value={password}
-               onChange={handlePasswordChange} 
-               onKeyDown={handleKeyDown}
-               className='w-full p-3.5 pr-12 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-sm font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors'
-               placeholder="Enter your password"
-               autoComplete="current-password"
-               required />
-              <button type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} className='absolute inset-y-0 right-0 flex w-12 items-center justify-center text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 cursor-pointer'>
-                {showPassword ? <FiEyeOff className='h-4 w-4' /> : <FiEye className='h-4 w-4' />}
+          {/* Left Side: Form Container */}
+          <div className='w-full md:w-1/2 flex flex-col justify-center items-center p-4 sm:p-8 lg:p-10 h-full overflow-y-auto'>
+            <form onSubmit={handleSubmit} className='my-6 w-full max-w-md bg-white dark:bg-stone-900 p-5 sm:p-10 rounded-3xl border border-stone-200/80 dark:border-stone-800 shadow-sm'>
+              
+              <div className='flex justify-center mb-6'>
+                <h2 className='text-2xl font-serif tracking-[0.25em] uppercase text-stone-950 dark:text-stone-100 font-light'>Zaaish</h2>
+              </div>
+              
+              <h2 className='text-xl font-serif font-light text-center mb-2 tracking-wide'>Welcome Back</h2>
+              <p className='text-center mb-8 text-stone-400 dark:text-stone-500 text-[10px] uppercase tracking-[0.2em] font-medium'>
+                Please enter your details to sign in
+              </p>
+              
+              <div className='mb-5'>
+                <label htmlFor="email" className='block text-[10px] uppercase tracking-[0.2em] font-medium mb-2 text-stone-400 dark:text-stone-500'>Email Address</label>
+                <input 
+                 id="email"
+                 name="email"
+                 type="email" 
+                 value={email} 
+                 onChange={(e) => setEmail(e.target.value)}
+                 autoComplete="username email"
+                 className='w-full p-3.5 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-sm font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors'
+                 placeholder="Enter your email address"
+                 required />
+              </div>
+              
+              <div className='mb-8'>
+                <label htmlFor="password" className='block text-[10px] uppercase tracking-[0.2em] font-medium mb-2 text-stone-400 dark:text-stone-500'>Password</label>
+                <div className='relative'>
+                  <input 
+                   id="password"
+                   name="password"
+                   type={showPassword ? "text" : "password"}
+                   value={password}
+                   onChange={(e) => setPassword(e.target.value)} 
+                   className='w-full p-3.5 pr-12 border border-stone-200 dark:border-stone-800 rounded-xl bg-stone-50 dark:bg-stone-950 text-stone-900 dark:text-stone-100 text-sm font-light focus:outline-none focus:border-stone-900 dark:focus:border-stone-100 transition-colors'
+                   placeholder="Enter your password"
+                   autoComplete="current-password"
+                   required />
+                  <button type="button" onClick={() => setShowPassword((visible) => !visible)} aria-label={showPassword ? "Hide password" : "Show password"} aria-pressed={showPassword} className='absolute inset-y-0 right-0 flex w-12 items-center justify-center text-stone-400 hover:text-stone-900 dark:hover:text-stone-100 cursor-pointer'>
+                    {showPassword ? <FiEyeOff className='h-4 w-4' /> : <FiEye className='h-4 w-4' />}
+                  </button>
+                </div>
+              </div>
+              
+              <button 
+                type='submit' 
+                disabled={isSubmitting}
+                className='w-full bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 p-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition-all cursor-pointer shadow-sm disabled:opacity-50'
+              >
+                {isSubmitting ? "Signing In..." : "Sign In"}
               </button>
-            </div>
+              
+              <p className='mt-8 text-center text-xs text-stone-500 dark:text-stone-400 font-light'>
+                Don't have an account?{" "}
+                <Link to="/register" className='text-stone-900 dark:text-stone-100 font-medium underline underline-offset-4'>Register</Link>
+              </p>
+            </form>
+          </div>
+
+          {/* Right Side: Image Banner */}
+          <div className='hidden md:block w-1/2 h-full bg-stone-900 overflow-hidden'>
+            <img src={login} alt="Login To Account" className='h-full w-full object-cover brightness-[0.85]'/>
           </div>
           
-          <button 
-            type='submit' 
-            disabled={isSubmitting}
-            className='w-full bg-stone-950 dark:bg-stone-100 text-white dark:text-stone-950 p-4 rounded-xl text-xs uppercase tracking-[0.2em] font-medium hover:bg-stone-800 dark:hover:bg-stone-200 transition-all cursor-pointer shadow-sm disabled:opacity-50'
-          >
-            {isSubmitting ? "Signing In..." : "Sign In"}
-          </button>
-          
-          <p className='mt-8 text-center text-xs text-stone-500 dark:text-stone-400 font-light'>
-            Don't have an account?{" "}
-            <Link to="/register" className='text-stone-900 dark:text-stone-100 font-medium underline underline-offset-4'>Register</Link>
-          </p>
-        </form>
-      </div>
-
-      {/* Right Side: Image Banner */}
-      <div className='hidden md:block w-1/2 h-full bg-stone-900 overflow-hidden'>
-        <img src={login} alt="Login To Account" className='h-full w-full object-cover brightness-[0.85]'/>
-      </div>
-      
-    </div>
-  )
-}
+        </div>
+    );
+};
 
 export default Login;

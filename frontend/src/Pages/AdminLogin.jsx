@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 
@@ -8,19 +8,18 @@ const AdminLogin = () => {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const navigate = useNavigate();
 
-    const emailInputRef = useRef(null);
-    const passwordInputRef = useRef(null);
-    const autoSubmittedRef = useRef(false);
+    const handleAdminSubmit = async (e) => {
+        if (e && e.preventDefault) e.preventDefault();
 
-    const executeAdminLogin = async (loginEmail, loginPassword) => {
-        const cleanEmail = (loginEmail || email || "").trim();
-        const cleanPassword = (loginPassword || password || "");
+        const cleanEmail = email.trim();
+        const cleanPassword = password;
 
-        if (!cleanEmail || !cleanPassword || isSubmitting || autoSubmittedRef.current) {
+        if (!cleanEmail || !cleanPassword) {
+            toast.error("Please provide both admin email and password");
             return;
         }
 
-        autoSubmittedRef.current = true;
+        if (isSubmitting) return;
         setIsSubmitting(true);
 
         try {
@@ -38,79 +37,16 @@ const AdminLogin = () => {
                     toast.success(`Admin authenticated: ${data.user.name}`);
                     navigate("/admin");
                 } else {
-                    autoSubmittedRef.current = false;
-                    setIsSubmitting(false);
                     toast.error("Access Denied: You do not have administrator privileges.");
                 }
             } else {
-                autoSubmittedRef.current = false;
-                setIsSubmitting(false);
                 toast.error(data.message || "Invalid admin credentials");
             }
         } catch (error) {
             console.error("Admin login error:", error);
-            autoSubmittedRef.current = false;
-            setIsSubmitting(false);
             toast.error("Server error during admin login");
-        }
-    };
-
-    const handleAdminSubmit = async (e) => {
-        if (e && e.preventDefault) e.preventDefault();
-        const currentEmail = email || emailInputRef.current?.value || "";
-        const currentPassword = password || passwordInputRef.current?.value || "";
-        autoSubmittedRef.current = false;
-        executeAdminLogin(currentEmail, currentPassword);
-    };
-
-    // Auto-detect Google Chrome saved credentials
-    useEffect(() => {
-        const checkAutofill = () => {
-            if (autoSubmittedRef.current || isSubmitting) return;
-
-            const domEmail = emailInputRef.current?.value || "";
-            const domPassword = passwordInputRef.current?.value || "";
-
-            if (domEmail && domPassword && domEmail.includes("@") && domPassword.length >= 6) {
-                setEmail(domEmail);
-                setPassword(domPassword);
-                executeAdminLogin(domEmail, domPassword);
-            }
-        };
-
-        const interval = setInterval(checkAutofill, 250);
-        const timeout = setTimeout(() => clearInterval(interval), 6000);
-
-        return () => {
-            clearInterval(interval);
-            clearTimeout(timeout);
-        };
-    }, [isSubmitting]);
-
-    const handleEmailChange = (e) => {
-        const val = e.target.value;
-        setEmail(val);
-        const domPass = passwordInputRef.current?.value;
-        if (val && domPass && val.includes("@") && domPass.length >= 6) {
-            setPassword(domPass);
-            executeAdminLogin(val, domPass);
-        }
-    };
-
-    const handlePasswordChange = (e) => {
-        const val = e.target.value;
-        setPassword(val);
-        const domEmail = emailInputRef.current?.value;
-        if (domEmail && val && domEmail.includes("@") && val.length >= 6) {
-            setEmail(domEmail);
-            executeAdminLogin(domEmail, val);
-        }
-    };
-
-    const handleKeyDown = (e) => {
-        if (e.key === 'Enter') {
-            e.preventDefault();
-            handleAdminSubmit(e);
+        } finally {
+            setIsSubmitting(false);
         }
     };
 
@@ -125,13 +61,11 @@ const AdminLogin = () => {
                     <div className='mb-5'>
                         <label htmlFor="adminEmail" className='block text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400 mb-2'>Admin Email</label>
                         <input 
-                            ref={emailInputRef}
                             id="adminEmail"
                             name="email"
                             type="email" 
                             value={email} 
-                            onChange={handleEmailChange}
-                            onKeyDown={handleKeyDown}
+                            onChange={(e) => setEmail(e.target.value)}
                             autoComplete="username email"
                             className='w-full p-3.5 border border-stone-800 rounded-xl bg-stone-950 text-stone-100 text-sm font-light focus:outline-none focus:border-stone-500 transition-colors'
                             placeholder="admin@example.com"
@@ -141,13 +75,11 @@ const AdminLogin = () => {
                     <div className='mb-8'>
                         <label htmlFor="adminPassword" className='block text-[10px] font-medium uppercase tracking-[0.2em] text-stone-400 mb-2'>Password</label>
                         <input 
-                            ref={passwordInputRef}
                             id="adminPassword"
                             name="password"
                             type="password" 
-                            value={password}
-                            onChange={handlePasswordChange} 
-                            onKeyDown={handleKeyDown}
+                            value={password} 
+                            onChange={(e) => setPassword(e.target.value)}
                             autoComplete="current-password"
                             className='w-full p-3.5 border border-stone-800 rounded-xl bg-stone-950 text-stone-100 text-sm font-light focus:outline-none focus:border-stone-500 transition-colors'
                             placeholder="••••••••"
